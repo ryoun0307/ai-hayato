@@ -1,0 +1,13 @@
+{
+  "name": "ai-hayato",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "AIハヤト - 音声AIアシスタント（Netlify Functions 中継）",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0"
+  }
+}

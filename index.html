@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIハヤト</title>
+<style>
+  :root {
+    --bg: #1a1210;
+    --bg2: #2a1a15;
+    --panel: #f4ead6;
+    --panel-ink: #3a2518;
+    --red: #8e1c1c;
+    --red-deep: #5c0f12;
+    --gold: #d4a64a;
+    --gold-soft: #e9cf8f;
+    --muted: #8a7563;
+    --user: #fff7e8;
+    --hayato: #efe2c5;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: radial-gradient(ellipse at top, #3a2018 0%, var(--bg) 60%);
+    color: var(--panel-ink);
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+    display: flex; justify-content: center;
+  }
+  .app {
+    width: 100%; max-width: 760px; height: 100vh;
+    display: flex; flex-direction: column;
+    padding: 16px;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: linear-gradient(180deg, var(--red) 0%, var(--red-deep) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 10px;
+    padding: 10px 16px;
+    color: var(--gold-soft);
+    box-shadow: 0 4px 18px rgba(0,0,0,.5);
+  }
+  header h1 { margin: 0; font-size: 1.4rem; letter-spacing: .08em; }
+  header h1 span { color: var(--gold); }
+  .status { font-size: .8rem; color: var(--gold-soft); opacity: .85; }
+  .icon-btn {
+    background: transparent; border: 1px solid var(--gold); color: var(--gold-soft);
+    border-radius: 8px; padding: 6px 10px; cursor: pointer; font: inherit; font-size: .85rem;
+  }
+  .icon-btn:hover { background: rgba(212,166,74,.15); }
+
+  .log {
+    flex: 1; overflow-y: auto; margin: 14px 0;
+    background: var(--panel);
+    border: 2px solid var(--gold);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: inset 0 0 40px rgba(120,80,30,.25);
+  }
+  .msg { margin: 0 0 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+  .msg .who { font-size: .75rem; color: var(--muted); margin-bottom: 2px; }
+  .msg .body { padding: 10px 14px; border-radius: 10px; display: inline-block; max-width: 100%; }
+  .msg.user { text-align: right; }
+  .msg.user .body { background: var(--user); border: 1px solid #e3d3b0; text-align: left; }
+  .msg.hayato .body { background: var(--hayato); border-left: 4px solid var(--red); }
+  .msg.system .body { background: transparent; color: var(--muted); font-size: .85rem; padding: 0; }
+  .msg.error .body { background: #f6d6d0; border-left: 4px solid #b3261e; }
+
+  .controls { display: flex; gap: 10px; align-items: center; }
+  .mic {
+    flex: none; width: 64px; height: 64px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #c0392b, var(--red-deep));
+    border: 3px solid var(--gold); color: var(--gold-soft);
+    font-size: 1.6rem; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,.5);
+    transition: transform .1s;
+  }
+  .mic:active { transform: scale(.95); }
+  .mic.listening { animation: pulse 1.2s infinite; }
+  .mic:disabled { opacity: .5; cursor: not-allowed; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(212,166,74,.7); }
+    70% { box-shadow: 0 0 0 16px rgba(212,166,74,0); }
+    100% { box-shadow: 0 0 0 0 rgba(212,166,74,0); }
+  }
+  .input-wrap { flex: 1; display: flex; gap: 8px; }
+  #textInput {
+    flex: 1; min-width: 0; padding: 12px 14px; border-radius: 10px;
+    border: 2px solid var(--gold); background: var(--panel); color: var(--panel-ink);
+    font: inherit; font-size: 1rem;
+  }
+  .send {
+    padding: 0 16px; border-radius: 10px; border: 2px solid var(--gold);
+    background: var(--red); color: var(--gold-soft); font: inherit; cursor: pointer;
+  }
+  .send:disabled { opacity: .5; cursor: not-allowed; }
+
+  dialog {
+    border: 2px solid var(--gold); border-radius: 12px; background: var(--panel);
+    color: var(--panel-ink); max-width: 480px; width: calc(100% - 32px); padding: 20px;
+  }
+  dialog::backdrop { background: rgba(0,0,0,.6); }
+  dialog h2 { margin-top: 0; color: var(--red); }
+  label { display: block; margin: 12px 0 4px; font-size: .9rem; }
+  dialog input, dialog select {
+    width: 100%; padding: 8px 10px; border: 1px solid #c9b48a; border-radius: 6px;
+    background: #fffaf0; font: inherit; color: inherit;
+  }
+  .hint { font-size: .75rem; color: var(--muted); margin-top: 4px; }
+  .row { display: flex; gap: 8px; align-items: center; }
+  .row input[type=checkbox] { width: auto; }
+  .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+  .dialog-actions button {
+    padding: 8px 16px; border-radius: 8px; border: 1px solid var(--red); font: inherit; cursor: pointer;
+  }
+  .primary { background: var(--red); color: var(--gold-soft); }
+  .secondary { background: transparent; color: var(--red); }
+
+  @media (max-width: 480px) {
+    .app { padding: 10px; }
+    header h1 { font-size: 1.15rem; }
+    .mic { width: 56px; height: 56px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>✦ <span>AI</span>ハヤト ✦</h1>
+      <div class="status" id="status">待機中</div>
+    </div>
+    <div class="row">
+      <button class="icon-btn" id="stopBtn" title="読み上げを止める">⏹ 停止</button>
+      <button class="icon-btn" id="clearBtn" title="会話をリセット">↺ リセット</button>
+      <button class="icon-btn" id="settingsBtn" title="設定">⚙ 設定</button>
+    </div>
+  </header>
+
+  <main class="log" id="log" aria-live="polite"></main>
+
+  <div class="controls">
+    <button class="mic" id="micBtn" title="押して話す">🎙</button>
+    <div class="input-wrap">
+      <input id="textInput" type="text" placeholder="話しかけるか、ここに入力…" autocomplete="off">
+      <button class="send" id="sendBtn">送信</button>
+    </div>
+  </div>
+</div>
+
+<dialog id="settings">
+  <h2>設定</h2>
+  <label for="passcode">合言葉</label>
+  <input id="passcode" type="password" placeholder="Netlifyで HAYATO_PASSCODE を設定した場合だけ入力" autocomplete="off">
+  <div class="hint">APIキーはサーバー（Netlify）側にあり、この画面には出ません。合言葉は他人にハヤトを使われないためのものです。</div>
+
+  <label for="userName">ハヤトからの呼ばれ方</label>
+  <input id="userName" type="text" placeholder="例：ボス、良さん">
+
+  <label for="voiceSelect">ハヤトの声</label>
+  <select id="voiceSelect"></select>
+
+  <label for="rate">話す速さ（<span id="rateVal">1.1</span>）</label>
+  <input id="rate" type="range" min="0.7" max="1.6" step="0.1" value="1.1">
+
+  <div class="row" style="margin-top:12px">
+    <input id="autoListen" type="checkbox">
+    <label for="autoListen" style="margin:0">ハヤトが話し終えたら自動で聞き取りを再開する</label>
+  </div>
+
+  <div class="dialog-actions">
+    <button class="secondary" id="cancelSettings">閉じる</button>
+    <button class="primary" id="saveSettings">保存</button>
+  </div>
+</dialog>
+
+<script type="module">
+// ハヤトの人格（システムプロンプト）とAPIキーは、中継サーバー
+// netlify/functions/chat.mjs 側にあります。この画面には含まれません。
+const API_URL = "/api/chat";
+
+// ============================================================
+//  設定（localStorage）
+// ============================================================
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("hayato." + k); return v === null ? d : v; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("hayato." + k, v); } catch {} },
+};
+const settings = {
+  passcode: store.get("passcode", ""),
+  userName: store.get("userName", ""),
+  voice: store.get("voice", ""),
+  rate: parseFloat(store.get("rate", "1.1")),
+  autoListen: store.get("autoListen", "false") === "true",
+};
+
+// ============================================================
+//  DOM
+// ============================================================
+const $ = (id) => document.getElementById(id);
+const logEl = $("log"), statusEl = $("status"), micBtn = $("micBtn");
+const textInput = $("textInput"), sendBtn = $("sendBtn");
+const dlg = $("settings");
+
+function setStatus(t) { statusEl.textContent = t; }
+function addMsg(role, text) {
+  const div = document.createElement("div");
+  div.className = "msg " + role;
+  const labels = { user: settings.userName || "あなた", hayato: "ハヤト", system: "", error: "エラー" };
+  div.innerHTML = (labels[role] ? `<div class="who"></div>` : "") + `<div class="body"></div>`;
+  if (labels[role]) div.querySelector(".who").textContent = labels[role];
+  div.querySelector(".body").textContent = text;
+  logEl.appendChild(div);
+  logEl.scrollTop = logEl.scrollHeight;
+  return div.querySelector(".body");
+}
+
+// ============================================================
+//  音声合成（読み上げ）
+// ============================================================
+const synth = window.speechSynthesis;
+let voices = [];
+function loadVoices() {
+  voices = synth ? synth.getVoices().filter(v => v.lang && v.lang.startsWith("ja")) : [];
+  const sel = $("voiceSelect");
+  sel.innerHTML = "";
+  if (!voices.length) {
+    sel.innerHTML = `<option value="">（日本語の音声が見つかりません）</option>`;
+    return;
+  }
+  for (const v of voices) {
+    const o = document.createElement("option");
+    o.value = v.name; o.textContent = v.name;
+    sel.appendChild(o);
+  }
+  // 男性っぽい声を優先（Keita / Ichiro など）
+  const preferred = settings.voice || (voices.find(v => /Keita|Ichiro|Otoya|Daichi|Male|男性/i.test(v.name)) || voices[0]).name;
+  sel.value = preferred;
+}
+if (synth) { loadVoices(); synth.onvoiceschanged = loadVoices; }
+
+let speakQueue = 0;
+function cleanForSpeech(t) {
+  return t.replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク").trim();
+}
+function speak(text) {
+  if (!synth) return;
+  const t = cleanForSpeech(text);
+  if (!t) return;
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = "ja-JP";
+  u.rate = settings.rate;
+  u.pitch = 0.9;
+  const v = voices.find(v => v.name === ($("voiceSelect").value || settings.voice));
+  if (v) u.voice = v;
+  speakQueue++;
+  setStatus("話しています…");
+  u.onend = u.onerror = () => {
+    speakQueue = Math.max(0, speakQueue - 1);
+    if (speakQueue === 0 && !busy) {
+      setStatus("待機中");
+      if (settings.autoListen) startListening();
+    }
+  };
+  synth.speak(u);
+}
+function stopSpeaking() { if (synth) synth.cancel(); speakQueue = 0; if (!busy) setStatus("待機中"); }
+
+// ============================================================
+//  音声認識（聞き取り）
+// ============================================================
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog = null, listening = false;
+if (SR) {
+  recog = new SR();
+  recog.lang = "ja-JP";
+  recog.interimResults = true;
+  recog.continuous = false;
+  recog.onresult = (e) => {
+    let finalText = "", interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const r = e.results[i];
+      if (r.isFinal) finalText += r[0].transcript; else interim += r[0].transcript;
+    }
+    textInput.value = finalText || interim;
+    if (finalText) { stopListening(); send(finalText); }
+  };
+  recog.onerror = (e) => {
+    stopListening();
+    if (e.error === "not-allowed") addMsg("error", "マイクの使用が許可されていません。ブラウザのアドレスバーからマイクを許可してください。");
+    else if (e.error !== "no-speech" && e.error !== "aborted") addMsg("error", "音声認識エラー: " + e.error);
+  };
+  recog.onend = () => { if (listening) stopListening(); };
+} else {
+  micBtn.disabled = true;
+  micBtn.title = "このブラウザは音声入力に対応していません（Chrome / Edge を推奨）";
+}
+function startListening() {
+  if (!recog || listening || busy) return;
+  stopSpeaking();
+  try { recog.start(); } catch { return; }
+  listening = true;
+  micBtn.classList.add("listening");
+  setStatus("聞いています…");
+}
+function stopListening() {
+  if (!recog) return;
+  listening = false;
+  micBtn.classList.remove("listening");
+  try { recog.stop(); } catch {}
+  if (!busy && speakQueue === 0) setStatus("待機中");
+}
+
+// ============================================================
+//  Claude との会話
+// ============================================================
+const MAX_HISTORY = 40;  // サーバー側の上限と合わせる
+let history = [];   // 中継サーバー経由で Claude に渡す会話履歴
+let busy = false;
+
+async function send(text) {
+  text = (text || "").trim();
+  if (!text || busy) return;
+  textInput.value = "";
+  addMsg("user", text);
+  history.push({ role: "user", content: text });
+
+  busy = true;
+  sendBtn.disabled = true;
+  setStatus("考えています…");
+  const bodyEl = addMsg("hayato", "…");
+  let shown = "", pending = "";
+
+  // 履歴が長くなりすぎたら古いものから捨てる（先頭は必ず user にする）
+  while (history.length > MAX_HISTORY - 1 || (history.length && history[0].role !== "user")) history.shift();
+
+  const onText = (delta) => {
+    if (!shown) bodyEl.textContent = "";
+    shown += delta;
+    bodyEl.textContent = shown;
+    logEl.scrollTop = logEl.scrollHeight;
+    // 文の区切りごとに読み上げ（話し始めを速くする）
+    pending += delta;
+    const m = pending.match(/^[\s\S]*[。！？!?\n]/);
+    if (m) { speak(m[0]); pending = pending.slice(m[0].length); }
+  };
+
+  try {
+    let res;
+    try {
+      res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-hayato-passcode": settings.passcode },
+        body: JSON.stringify({ messages: history, userName: settings.userName }),
+      });
+    } catch {
+      throw new Error("中継サーバーに接続できません。Netlify上（または netlify dev）で開いているか確認してください。");
+    }
+    if (!res.ok) {
+      let detail = "";
+      try { detail = (await res.json()).error; } catch {}
+      if (res.status === 404) detail = "中継サーバーが見つかりません。Netlify上（または netlify dev）で開いているか確認してください。";
+      throw new Error(detail || `サーバーエラー（${res.status}）`);
+    }
+
+    // 改行区切りJSONを少しずつ読む
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = "", final = null;
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      let nl;
+      while ((nl = buf.indexOf("\n")) >= 0) {
+        const line = buf.slice(0, nl).trim();
+        buf = buf.slice(nl + 1);
+        if (!line) continue;
+        const ev = JSON.parse(line);
+        if (ev.type === "text") onText(ev.text);
+        else if (ev.type === "done") final = ev;
+        else if (ev.type === "error") throw new Error(ev.message);
+      }
+    }
+    if (!final) throw new Error("返答が途中で切れました。もう一度話しかけてください。");
+    if (pending.trim()) speak(pending);
+
+    if (final.stop_reason === "refusal") {
+      bodyEl.textContent = "申し訳ありません、その件にはお答えできません。";
+      speak(bodyEl.textContent);
+      history.pop();   // 断られたやり取りは履歴に残さない
+    } else {
+      history.push({ role: "assistant", content: final.content });
+      if (!shown) bodyEl.textContent = "（返答なし）";
+    }
+  } catch (err) {
+    history.pop();
+    if (!shown) bodyEl.parentElement.remove();
+    addMsg("error", String(err && err.message || err));
+  } finally {
+    busy = false;
+    sendBtn.disabled = false;
+    if (speakQueue === 0) {
+      setStatus("待機中");
+      if (settings.autoListen && !synth) startListening();
+    }
+  }
+}
+
+// ============================================================
+//  UI イベント
+// ============================================================
+micBtn.addEventListener("click", () => listening ? stopListening() : startListening());
+sendBtn.addEventListener("click", () => send(textInput.value));
+textInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); send(textInput.value); }
+});
+$("stopBtn").addEventListener("click", stopSpeaking);
+$("clearBtn").addEventListener("click", () => {
+  stopSpeaking(); history = []; logEl.innerHTML = ""; greet();
+});
+
+function openSettings() {
+  $("passcode").value = settings.passcode;
+  $("userName").value = settings.userName;
+  $("rate").value = settings.rate; $("rateVal").textContent = settings.rate;
+  $("autoListen").checked = settings.autoListen;
+  if (settings.voice) $("voiceSelect").value = settings.voice;
+  dlg.showModal();
+}
+$("settingsBtn").addEventListener("click", openSettings);
+$("cancelSettings").addEventListener("click", () => dlg.close());
+$("rate").addEventListener("input", (e) => $("rateVal").textContent = e.target.value);
+$("saveSettings").addEventListener("click", () => {
+  settings.passcode = $("passcode").value.trim();
+  settings.userName = $("userName").value.trim();
+  settings.voice = $("voiceSelect").value;
+  settings.rate = parseFloat($("rate").value);
+  settings.autoListen = $("autoListen").checked;
+  store.set("passcode", settings.passcode);
+  store.set("userName", settings.userName);
+  store.set("voice", settings.voice);
+  store.set("rate", String(settings.rate));
+  store.set("autoListen", String(settings.autoListen));
+  dlg.close();
+  addMsg("system", "設定を保存しました。");
+});
+
+function greet() {
+  const name = settings.userName || "ボス";
+  addMsg("hayato", `お待ちしていました、${name}。ハヤトです。マイクを押すか、文字で話しかけてください。`);
+}
+// 旧バージョンでブラウザに保存したAPIキーが残っていれば消す
+try { localStorage.removeItem("hayato.apiKey"); } catch {}
+greet();
+</script>
+</body>
+</html>
