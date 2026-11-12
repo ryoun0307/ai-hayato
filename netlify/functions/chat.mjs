@@ -107,9 +107,21 @@ export default async (req) => {
       } catch (err) {
         let message = "Claude との通信でエラーが起きました。";
         let status = 500;
-        if (err instanceof Anthropic.AuthenticationError) message = "サーバーのAPIキーが正しくありません。";
-        else if (err instanceof Anthropic.RateLimitError) message = "リクエストが多すぎます。少し待ってから話しかけてください。";
-        else if (err instanceof Anthropic.APIConnectionError) message = "Claude に接続できませんでした。";
+        const raw = String(err?.message || "");
+        if (/credit balance|billing|insufficient.*(credit|fund)/i.test(raw) || err?.status === 402) {
+          // 残高不足（Anthropic は "Your credit balance is too low..." を返す）
+          message = "Anthropic の残高がなくなりました。console.anthropic.com の「Billing（請求）」でチャージしてください。";
+        } else if (err instanceof Anthropic.AuthenticationError) {
+          message = "サーバーのAPIキーが正しくないか、有効期限が切れています。新しいキーを作って Netlify に登録し直してください。";
+        } else if (err instanceof Anthropic.PermissionDeniedError) {
+          message = "このAPIキーには利用する権限がありません。コンソールでキーの設定を確認してください。";
+        } else if (err instanceof Anthropic.RateLimitError) {
+          message = "リクエストが多すぎるか、月の上限額に達しました。少し待つか、コンソールの「Limits」を確認してください。";
+        } else if (err instanceof Anthropic.APIConnectionError) {
+          message = "Claude に接続できませんでした。少し待ってからもう一度話しかけてください。";
+        } else if (err?.status === 529 || err?.status >= 500) {
+          message = "Claude 側が混み合っています。少し待ってからもう一度話しかけてください。";
+        }
         if (err instanceof Anthropic.APIError && err.status) status = err.status;
         console.error("[hayato]", status, err?.message);
         send({ type: "error", status, message });
