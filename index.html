@@ -398,6 +398,40 @@
     .panel-hint { flex-basis: 100%; font-size: .75rem; color: rgba(219,227,245,.55); }
   }
 
+  /* ---------- スマホなど幅の狭い画面：PC に近いすっきりした形 ---------- */
+  @media (max-width: 899px) {
+    /* 上部は、左上に小さく「HAYATO / PERSONAL AI」と状態だけ。ボタンは画面をタップすると出る */
+    header {
+      background: transparent; border: none; border-radius: 0;
+      padding: 2px 4px 0; justify-content: flex-start;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+    header h1, header .row { display: none; }
+    .title-box { display: flex; align-items: baseline; gap: 10px; }
+    .brand {
+      display: block; font-size: .72rem; letter-spacing: .24em; color: #d9e2f6;
+      text-shadow: 0 1px 6px rgba(0,0,0,.7);
+    }
+    header .status { font-size: .7rem; color: #cfd9f0; opacity: .85; text-shadow: 0 1px 6px rgba(0,0,0,.7); }
+
+    /* 入力欄の上に、タップで出るボタンの列 */
+    .panel { display: flex; flex-direction: column; gap: 8px; }
+    .panel-tools {
+      order: -1; display: none; flex-wrap: wrap; align-items: center; gap: 8px;
+      padding: 10px; background: rgba(8, 12, 24, .9);
+      border: 1px solid rgba(170, 190, 230, .18); border-radius: 12px;
+    }
+    body.panel-open .panel-tools { display: flex; }
+    .tool-btn {
+      padding: 8px 12px; border-radius: 10px; cursor: pointer; font: inherit; font-size: .82rem;
+      background: rgba(10, 16, 30, .7); color: #e8eefc; border: 1px solid rgba(170, 190, 230, .35);
+    }
+    .tool-check { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: .82rem; color: #dbe3f5; }
+    .tool-check.desktop-only { display: none; }
+    .tool-check input { width: 16px; height: 16px; accent-color: #9fb6ea; }
+    .panel-hint { flex-basis: 100%; font-size: .7rem; color: rgba(219,227,245,.55); }
+  }
+
   @media (max-width: 480px) {
     .app { padding: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
     header { padding: 8px 10px; gap: 6px; }
@@ -463,10 +497,12 @@
     </div>
     <div class="panel-tools">
       <button class="tool-btn" id="historyBtn2">📜 履歴</button>
+      <button class="tool-btn" id="stopBtn2">⏹ 読み上げ停止</button>
+      <button class="tool-btn mobile-only" id="clearBtn2">↺ 新しい会話</button>
+      <button class="tool-btn mobile-only" id="settingsBtn2">⚙ 設定</button>
       <label class="tool-check"><input type="checkbox" id="readAloud"> 返答を読み上げる</label>
-      <button class="tool-btn" id="stopBtn2">読み上げ停止</button>
-      <label class="tool-check"><input type="checkbox" id="autoListen2"> 常時会話モード（返答後に自動で聞き取り）</label>
-      <span class="panel-hint">画面のどこかをクリックすると、このパネルを閉じます</span>
+      <label class="tool-check desktop-only"><input type="checkbox" id="autoListen2"> 常時会話モード（返答後に自動で聞き取り）</label>
+      <span class="panel-hint">画面のどこかを<span class="desktop-only">クリック</span><span class="mobile-only">タップ</span>すると、閉じます</span>
     </div>
   </div>
 </div>
@@ -1599,6 +1635,8 @@ textInput.addEventListener("keydown", (e) => {
 $("stopBtn").addEventListener("click", stopSpeaking);
 $("stopBtn2").addEventListener("click", stopSpeaking);
 $("historyBtn2").addEventListener("click", () => $("historyBtn").click());
+$("clearBtn2").addEventListener("click", () => { $("clearBtn").click(); setPanel(false); });
+$("settingsBtn2").addEventListener("click", () => { setPanel(false); openSettings(); });
 $("clearBtn").addEventListener("click", () => {
   stopSpeaking(); resetConversation(); logEl.innerHTML = ""; clearThread(); greet();
 });
@@ -1626,10 +1664,11 @@ function updatePanelHeight() {
 function setPanel(open) {
   document.body.classList.toggle("panel-open", open);
   updatePanelHeight();
-  if (open) setTimeout(() => textInput.focus(), 50);
+  // PC では、開いたらすぐ文字を打てるようにする（スマホはキーボードが勝手に出ないよう、そのまま）
+  if (open && wideMQ.matches) setTimeout(() => textInput.focus(), 50);
 }
+// 画面をクリック／タップすると、PC は操作パネル、スマホはボタンの列が開く（もう一度で閉じる）
 $("thread").parentElement.addEventListener("click", (e) => {
-  if (!wideMQ.matches) return;
   // 会話の文字を選んだり、お知らせを読んだりするときは開け閉めしない
   if (e.target.closest(".thread, .toast")) return;
   setPanel(!document.body.classList.contains("panel-open"));
@@ -1645,6 +1684,9 @@ window.addEventListener("resize", updatePanelHeight);
 if (wideMQ.matches && store.get("panelHint", "") !== "done") {
   setTimeout(() => showToast("画面をクリックすると、下に操作パネル（入力欄・マイク・読み上げ設定など）が開きます。", "info"), 1200);
   store.set("panelHint", "done");
+} else if (!wideMQ.matches && store.get("panelHintMobile", "") !== "done") {
+  setTimeout(() => showToast("画面をタップすると、履歴・停止・新しい会話・設定などのボタンが出ます。", "info"), 1500);
+  store.set("panelHintMobile", "done");
 }
 
 function openSettings() {
