@@ -75,20 +75,47 @@
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     padding: 12px 0 8px; gap: 6px;
   }
-  .bubble {
-    position: relative; width: min(100%, 560px);
-    max-height: 34%; overflow-y: auto;
-    background: rgba(250, 244, 230, .94); color: var(--panel-ink);
-    border: 2px solid var(--gold); border-radius: 16px;
-    padding: 12px 16px; line-height: 1.7; font-size: 1rem;
-    white-space: pre-wrap; word-break: break-word;
-    box-shadow: 0 6px 24px rgba(0,0,0,.45);
-    flex: none;
-    margin-top: auto; /* 吹き出しとハヤトを下に寄せる（はみ出すときは上に詰める） */
+  /* ---------- セリフ欄（左：ハヤト、右：あなた） ---------- */
+  .thread {
+    width: min(100%, 640px);
+    flex: 0 1 auto; max-height: 48%; min-height: 0;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 4px 2px;
+    margin-top: auto; /* セリフ欄とハヤトを下に寄せる（はみ出すときは上に詰める） */
+    /* 上のほうの古いセリフは、ふわっと消えていくように見せる */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22px);
+            mask-image: linear-gradient(to bottom, transparent 0, #000 22px);
+    scrollbar-width: none;
   }
-  .bubble[hidden] { display: none; }
-  .bubble .more { display: block; margin-top: 6px; font-size: .8rem; color: var(--muted); }
-  .bubble.thinking { color: var(--muted); }
+  .thread::-webkit-scrollbar { display: none; }
+  .line { display: flex; flex-direction: column; max-width: 84%; }
+  .line.hayato { align-self: flex-start; align-items: flex-start; }
+  .line.user   { align-self: flex-end;   align-items: flex-end; }
+  .line .name {
+    font-size: .72rem; letter-spacing: .05em; margin: 0 10px 3px;
+    color: var(--gold-soft); text-shadow: 0 1px 4px rgba(0,0,0,.8);
+  }
+  .line .text {
+    position: relative;
+    padding: 10px 14px; border-radius: 16px;
+    line-height: 1.65; font-size: .98rem;
+    white-space: pre-wrap; word-break: break-word;
+    box-shadow: 0 4px 18px rgba(0,0,0,.4);
+  }
+  /* ハヤトのセリフ：明るい羊皮紙色、左下にしっぽ */
+  .line.hayato .text {
+    background: rgba(250, 244, 230, .93); color: var(--panel-ink);
+    border: 1.5px solid var(--gold); border-bottom-left-radius: 4px;
+  }
+  /* あなたのセリフ：宇宙に合う青いガラス風、右下にしっぽ */
+  .line.user .text {
+    background: rgba(48, 70, 150, .78); color: #f2f5ff;
+    border: 1.5px solid rgba(160, 185, 255, .7); border-bottom-right-radius: 4px;
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  }
+  .line.thinking .text { color: var(--muted); }
+  .line .more { display: block; margin-top: 6px; font-size: .78rem; color: var(--muted); }
 
   .hayato {
     position: relative; flex: 1 1 0; min-height: 110px; max-height: 460px;
@@ -148,14 +175,6 @@
     .hayato .float, .hayato .aura, .hayato.talking .bob { animation: none; }
   }
 
-  .you {
-    max-width: min(100%, 560px); align-self: flex-end;
-    font-size: .85rem; color: var(--ink-light);
-    background: var(--glass); border: 1px solid rgba(255,255,255,.18);
-    border-radius: 12px; padding: 6px 12px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .you[hidden] { display: none; }
   .toast {
     width: min(100%, 560px);
     font-size: .85rem; line-height: 1.6;
@@ -276,7 +295,8 @@
     .icon-btn { padding: 6px 6px; font-size: .72rem; }
     header .row { gap: 4px; }
     .mic { width: 56px; height: 56px; }
-    .bubble { font-size: .95rem; max-height: 38%; }
+    .line .text { font-size: .93rem; }
+    .line { max-width: 88%; }
     .history { padding: 8px; }
   }
 </style>
@@ -302,7 +322,8 @@
   </header>
 
   <section class="stage">
-    <div class="bubble" id="bubble" aria-live="polite"></div>
+    <!-- セリフ欄：左にハヤト、右にあなた -->
+    <div class="thread" id="thread" aria-live="polite"></div>
     <div class="hayato" id="hayato">
       <div class="aura"></div>
       <div class="float">
@@ -350,7 +371,6 @@
         </div>
       </div>
     </div>
-    <div class="you" id="youLine" hidden></div>
     <div class="toast" id="toast" hidden></div>
   </section>
 
@@ -522,22 +542,49 @@ function addMsg(role, text) {
 // ============================================================
 //  ステージ（吹き出し・あなたの言葉・お知らせ）
 // ============================================================
-const bubbleEl = $("bubble"), youEl = $("youLine"), toastEl = $("toast"), hayatoEl = $("hayato");
+const threadEl = $("thread"), toastEl = $("toast"), hayatoEl = $("hayato");
+const MAX_LINES = 8;      // セリフ欄に並べておく数（それより古いものは 📜履歴 で読める）
+let curHayatoLine = null; // 今ハヤトが話しているセリフ
+
+// セリフ欄に1行足す（role: "hayato" は左、"user" は右）
+function threadLine(role, text) {
+  const div = document.createElement("div");
+  div.className = "line " + role;
+  const name = document.createElement("div");
+  name.className = "name";
+  name.textContent = role === "hayato" ? "ハヤト" : (settings.userName || "あなた");
+  const body = document.createElement("div");
+  body.className = "text";
+  body.textContent = text;
+  div.append(name, body);
+  threadEl.appendChild(div);
+  while (threadEl.children.length > MAX_LINES) threadEl.firstChild.remove();
+  threadEl.scrollTop = threadEl.scrollHeight;
+  return div;
+}
+// あなたのセリフ（右）
+function showYou(text) {
+  if (!text) return;
+  threadLine("user", text);
+  curHayatoLine = null; // 次のハヤトの返事は新しい行にする
+}
+// ハヤトのセリフ（左）。返事が届くたびに同じ行を書き換える
 function showBubble(text, { thinking = false, more = false } = {}) {
-  bubbleEl.hidden = false;
-  bubbleEl.classList.toggle("thinking", thinking);
-  bubbleEl.textContent = text;
+  if (!curHayatoLine) curHayatoLine = threadLine("hayato", "");
+  curHayatoLine.classList.toggle("thinking", thinking);
+  const body = curHayatoLine.querySelector(".text");
+  body.textContent = text;
   if (more) {
     const s = document.createElement("span");
     s.className = "more";
     s.textContent = "（詳しい説明は 📜履歴 で読めます）";
-    bubbleEl.appendChild(s);
+    body.appendChild(s);
   }
-  bubbleEl.scrollTop = bubbleEl.scrollHeight;
+  threadEl.scrollTop = threadEl.scrollHeight;
 }
-function showYou(text) {
-  youEl.hidden = !text;
-  youEl.textContent = text ? `${settings.userName || "あなた"}：${text}` : "";
+function clearThread() {
+  threadEl.innerHTML = "";
+  curHayatoLine = null;
 }
 let toastTimer = null;
 function showToast(text, kind = "info") {
@@ -1292,7 +1339,7 @@ textInput.addEventListener("keydown", (e) => {
 });
 $("stopBtn").addEventListener("click", stopSpeaking);
 $("clearBtn").addEventListener("click", () => {
-  stopSpeaking(); resetConversation(); logEl.innerHTML = ""; greet();
+  stopSpeaking(); resetConversation(); logEl.innerHTML = ""; clearThread(); greet();
 });
 
 function openSettings() {
@@ -1363,7 +1410,6 @@ function greet() {
   const hello = `お待ちしていました、${name}。ハヤトです。マイクを押すか、文字で話しかけてください。`;
   addMsg("hayato", hello);
   showBubble(hello);
-  showYou("");
   if (!settings.apiKey) addMsg("system", "はじめに「⚙ 設定」で Claude の APIキーを入力してください。");
 }
 try { localStorage.removeItem("hayato.passcode"); } catch {}
