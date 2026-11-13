@@ -187,6 +187,14 @@
   <label for="userName">ハヤトからの呼ばれ方</label>
   <input id="userName" type="text" placeholder="例：ボス、良さん">
 
+  <label for="modelSelect">いつも使うモデル</label>
+  <select id="modelSelect">
+    <option value="opus">Opus 5.5（一番賢い・料金は基準）</option>
+    <option value="sonnet">Sonnet 5.5（賢くて速い・約1/2）</option>
+    <option value="haiku">Haiku 5.5（とても速い・約1/40）</option>
+  </select>
+  <div class="hint">話しかけるときに「オーパスで」「ソネットで」「ハイクで」と言うと、その質問だけ切り替えられます。</div>
+
   <label for="voiceSelect">ハヤトの声</label>
   <select id="voiceSelect"></select>
 
@@ -210,8 +218,28 @@
 <script type="module">
 import Anthropic from "https://esm.sh/@anthropic-ai/sdk@1.8.0";
 
-const MODEL = "claude-opus-5-5";
 const MAX_HISTORY = 40; // 会話履歴の上限（長くなりすぎて料金が膨らむのを防ぐ）
+
+// ============================================================
+//  使えるモデル
+// ============================================================
+const MODELS = {
+  opus:   { id: "claude-opus-5-5",   label: "Opus",   search: "web_search_20260209", fallback: true },
+  sonnet: { id: "claude-sonnet-5-5", label: "Sonnet", search: "web_search_20260209", fallback: true },
+  haiku:  { id: "claude-haiku-5-5",  label: "Haiku",  search: "web_search_20250305", fallback: false },
+};
+
+// 話しかけた言葉から「どのモデルで」「じっくり考えるか」「詳しく答えるか」を読み取る
+function detectMode(text) {
+  let model = null;
+  if (/(オーパス|opus)/i.test(text)) model = "opus";
+  else if (/(ソネット|sonnet)/i.test(text)) model = "sonnet";
+  else if (/(ハイク|haiku|俳句)\s*で/i.test(text)) model = "haiku";
+  const racing = /(競馬|馬券|重賞|出走|レース.*予想|予想.*レース)/.test(text);
+  const deep = racing || /(じっくり|深く考え|よく考え|しっかり考え|熟考)/.test(text);
+  const detail = racing || /(詳しく|くわしく|詳細|しっかり説明|丁寧に説明)/.test(text);
+  return { model: model || settings.model, deep, detail, racing };
+}
 
 // ============================================================
 //  ハヤトの人格（システムプロンプト）
@@ -230,12 +258,24 @@ function buildSystemPrompt(userName) {
 # 話し方
 - 一人称は「私」。${name}のことは「${name}」と呼ぶ。
 - 落ち着いた丁寧語。ただし堅苦しすぎず、簡潔に。「〜でございます」のような過剰な敬語は使わない。
-- 音声で読み上げられる前提で話す。1回の返答は基本2〜4文、長くても200字程度。詳しい説明を求められたときだけ長くしてよい。
+- 音声で読み上げられる前提で話す。1回の返答は基本2〜4文、長くても200字程度。
 - 箇条書き、見出し、記号（*、#、- など）、絵文字、URLの羅列は使わない。耳で聞いて自然な文章にする。
 - 意見するときは「私は〜だと考えます。理由は〜です。それでも進めるなら、〜しておきます。」のように、意見・理由・代替案をセットで短く伝える。
+- メッセージの末尾に（回答形式: 詳しく…）とあるときは、その形式に従う。【要点】は耳で聞いて分かる2〜3文、【詳細】は画面で読む前提で、改行と「・」で整理して詳しく書いてよい。
+
+# Web検索
+- あなたは web_search ツールでネットを調べられる。
+- 使うのは、最新の情報や事実確認が必要なときだけ（ニュース、天気、スポーツや競馬の情報、営業時間、価格、日程、最近の出来事など）。一般的な知識や相談、考え方の質問では検索しない。料金がかかるので、むやみに検索しない。
+- 調べた結果を答えるときは、どこで調べたか（サイト名）を短く添える。URLは読み上げない。
+- 調べても分からなかったことは、分からないと言う。推測で埋めない。
+
+# 競馬予想
+- 競馬の予想を頼まれたら、出走表、過去の成績、コースや距離の適性、馬場状態、調教の様子、騎手や調教師などを、必要に応じて調べたうえで判断する。
+- 本命・対抗・単穴・注目馬と、それぞれの根拠を示す。買い目の例を出す場合は、点数を絞った現実的なものにする。
+- 情報が足りない点や不確実な点は、はっきり伝える。予想は参考意見であり、的中を保証しないことを最後に一言添える。
 
 # できないこと
-- あなたは会話しかできない。メール送信、予定登録、ネット検索、家電操作などは実行できない。できるふりをせず、代わりに手順や文面を用意して${name}に渡す。`;
+- メール送信、予定登録、家電操作などは実行できない。できるふりをせず、代わりに手順や文面を用意して${name}に渡す。`;
 }
 
 // ============================================================
@@ -251,7 +291,9 @@ const settings = {
   voice: store.get("voice", ""),
   rate: parseFloat(store.get("rate", "1.1")),
   autoListen: store.get("autoListen", "false") === "true",
+  model: store.get("model", "opus"),
 };
+if (!MODELS[settings.model]) settings.model = "opus";
 
 // ============================================================
 //  DOM
@@ -342,7 +384,7 @@ function watchSpeaking() {
   }, 400);
 }
 function cleanForSpeech(t) {
-  return t.replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク").trim();
+  return t.replace(/【要点】/g, "").replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク").trim();
 }
 function speak(text) {
   if (!synth) return;
@@ -569,6 +611,12 @@ function resetConversation() {
   history = [];
   systemPrompt = null;
 }
+// 失敗したやり取り（その質問と、途中までの返事）を末尾から取り除く。
+// 末尾を落とすだけなので、それより前の会話は変わらず、署名も壊れない。
+function dropTurn(userTurn) {
+  const i = history.lastIndexOf(userTurn);
+  if (i >= 0) history.length = i;
+}
 
 function errorMessage(err) {
   const raw = String(err?.message || err || "");
@@ -588,25 +636,44 @@ function errorMessage(err) {
 }
 
 // 1回分の応答を受け取る。混雑などで何も話す前に失敗したら、1回だけやり直す。
-async function askClaude(onText) {
+// mode: detectMode() の結果（モデル・じっくり・詳しく）
+// onEvent: 「ネットで調べ始めた」などを画面に知らせる
+async function askClaude(onText, mode, onEvent = () => {}) {
   const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
   if (!systemPrompt) {
     systemPrompt = buildSystemPrompt(settings.userName) +
       "\n\n# 現在日時\n" + (settings.userName || "ボス") + "のメッセージの末尾にある（送信時刻: …）が、その時点の現在日時。" +
       "日時を答えるときや予定を考えるときに使う。送信時刻そのものを毎回読み上げたり、繰り返したりしない。";
   }
+  const m = MODELS[mode.model] || MODELS.opus;
+  const params = {
+    model: m.id,
+    // 詳しく・じっくりのときは長く書けるようにする
+    max_tokens: (mode.deep || mode.detail) ? 16000 : 4096,
+    system: systemPrompt,
+    messages: history,
+    // ふだんは速さ優先（low）、じっくり考えるときは high
+    output_config: { effort: mode.deep ? "high" : "low" },
+    // Web検索：最新の情報が必要なときだけ Claude が自分で使う
+    tools: [{
+      type: m.search, name: "web_search",
+      max_uses: mode.deep ? 8 : 3,
+      user_location: { type: "approximate", country: "JP", timezone: "Asia/Tokyo" },
+    }],
+    // 会話の前半を一時保存して、2回目以降の料金を下げる
+    cache_control: { type: "ephemeral" },
+  };
+  if (m.fallback) {
+    params.betas = ["server-side-fallback-2026-07-01"];
+    params.fallbacks = "default"; // 安全判定で断られた場合は自動で別モデルに切り替え
+  }
   const run = async () => {
     let sentText = false;
-    const stream = client.beta.messages.stream({
-      model: MODEL,
-      max_tokens: 4096,
-      system: systemPrompt,
-      messages: history,
-      output_config: { effort: "low" }, // 音声会話なので応答速度を優先
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default", // 安全判定で断られた場合は自動で別モデルに切り替え
-    });
+    const stream = client.beta.messages.stream(params);
     stream.on("text", (d) => { sentText = true; onText(d); });
+    stream.on("streamEvent", (ev) => {
+      if (ev.type === "content_block_start" && ev.content_block?.type === "server_tool_use") onEvent("search");
+    });
     try { return await stream.finalMessage(); }
     catch (e) { e.sentText = sentText; throw e; }
   };
@@ -639,22 +706,44 @@ async function send(text) {
     addMsg("system", "会話が長くなったので、ハヤトの記憶を新しくしました。");
   }
   const now = new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "full", timeStyle: "short" });
-  const userTurn = { role: "user", content: `${text}\n\n（送信時刻: ${now}）` };
+  const mode = detectMode(text);
+  // 答え方の指示は、毎回のメッセージの末尾に付ける（前提＝システムプロンプトは会話中に変えられないため）
+  let hints = `（送信時刻: ${now}）`;
+  if (mode.detail) hints += "\n（回答形式: 詳しく。1行目に【要点】と書いて、音声で読み上げる2〜3文の要約を書く。次に改行して【詳細】と書き、画面で読む詳しい説明を書く。詳細では改行と「・」で整理してよい。）";
+  if (mode.racing) hints += "\n（競馬予想: 必要に応じてWeb検索で出走表・過去成績・馬場状態・調教・騎手などを確認してから判断する。）";
+  const userTurn = { role: "user", content: `${text}\n\n${hints}` };
   history.push(userTurn);
 
   busy = true;
   sendBtn.disabled = true;
-  setStatus("考えています…");
+  setStatus(mode.deep ? "じっくり考えています…" : "考えています…");
   const bodyEl = addMsg("hayato", "…");
-  let shown = "", pending = "";
+  const whoEl = bodyEl.parentElement.querySelector(".who");
+  const tags = [MODELS[mode.model].label];
+  if (mode.deep) tags.push("じっくり");
+  if (mode.detail) tags.push("詳しく");
+  const setWho = () => { whoEl.textContent = `ハヤト（${tags.join("・")}）`; };
+  setWho();
+  let shown = "", pending = "", cut = false;
 
+  const onEvent = (kind) => {
+    if (kind === "search") {
+      if (!tags.includes("Web検索")) { tags.push("Web検索"); setWho(); }
+      setStatus("ネットで調べています…");
+    }
+  };
   const onText = (delta) => {
     if (!shown) bodyEl.textContent = "";
     shown += delta;
     bodyEl.textContent = shown;
     logEl.scrollTop = logEl.scrollHeight;
-    // 文の区切りごとに読み上げ（話し始めを速くする）
+    if (cut) return; // 詳しく答えるときは【詳細】以降は読み上げない
     pending += delta;
+    if (mode.detail) {
+      const i = pending.indexOf("【詳細】");
+      if (i >= 0) { speak(pending.slice(0, i)); pending = ""; cut = true; return; }
+    }
+    // 文の区切りごとに読み上げ（話し始めを速くする）
     const m = pending.match(/^[\s\S]*[。！？!?\n]/);
     if (m) { speak(m[0]); pending = pending.slice(m[0].length); }
   };
@@ -662,27 +751,32 @@ async function send(text) {
   try {
     let final;
     try {
-      final = await askClaude(onText);
+      final = await askClaude(onText, mode, onEvent);
     } catch (e) {
       // 万一、署名のエラーが出たら、会話の記憶を新しくして同じ質問をもう一度送る
       if (shown || !/signature/i.test(String(e?.message))) throw e;
       resetConversation();
       history.push(userTurn);
       addMsg("system", "ハヤトの記憶を新しくして、もう一度聞き直しています。");
-      final = await askClaude(onText);
+      final = await askClaude(onText, mode, onEvent);
     }
-    if (pending.trim()) speak(pending);
+    // Web検索が長引くと途中で一度区切られる（pause_turn）ので、続きを頼む
+    for (let i = 0; i < 4 && final.stop_reason === "pause_turn"; i++) {
+      history.push({ role: "assistant", content: final.content });
+      final = await askClaude(onText, mode, onEvent);
+    }
+    if (!cut && pending.trim()) speak(pending);
 
     if (final.stop_reason === "refusal") {
       bodyEl.textContent = "申し訳ありません、その件にはお答えできません。";
       speak(bodyEl.textContent);
-      history.pop();   // 断られたやり取りは履歴に残さない
+      dropTurn(userTurn);   // 断られたやり取りは履歴に残さない
     } else {
       history.push({ role: "assistant", content: final.content });
       if (!shown) bodyEl.textContent = "（返答なし）";
     }
   } catch (err) {
-    history.pop();
+    dropTurn(userTurn);
     if (!shown) bodyEl.parentElement.remove();
     addMsg("error", errorMessage(err));
   } finally {
@@ -712,6 +806,7 @@ $("clearBtn").addEventListener("click", () => {
 function openSettings() {
   $("apiKey").value = settings.apiKey;
   $("userName").value = settings.userName;
+  $("modelSelect").value = settings.model;
   $("rate").value = settings.rate; $("rateVal").textContent = settings.rate;
   $("autoListen").checked = settings.autoListen;
   if (settings.voice) $("voiceSelect").value = settings.voice;
@@ -739,6 +834,8 @@ $("saveSettings").addEventListener("click", () => {
   // 呼ばれ方を変えたら前提が変わるので、次の会話から新しい前提で始める
   if (newName !== settings.userName) resetConversation();
   settings.userName = newName;
+  settings.model = $("modelSelect").value;
+  store.set("model", settings.model);
   settings.voice = $("voiceSelect").value;
   settings.rate = parseFloat($("rate").value);
   settings.autoListen = $("autoListen").checked;

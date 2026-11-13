@@ -3,7 +3,11 @@
 ## このプロジェクト
 - 私（ユーザー）専属の音声AIアシスタント「AIハヤト」。
 - `index.html` 1ファイルに HTML・CSS・JavaScript をまとめた構成。
-- 会話は Claude（`claude-opus-5-5`）。ブラウザから Anthropic の公式SDK（esm.sh 経由）で直接呼ぶ。
+- 会話は Claude。ブラウザから Anthropic の公式SDK（esm.sh 経由）で直接呼ぶ。
+  - モデル：設定画面の「いつも使うモデル」（初期値 Opus 5.5）。話しかけた言葉に「オーパスで／ソネットで／ハイクで」があればその質問だけ切り替え（`detectMode`）。
+  - 「じっくり」→ effort high、「詳しく」→【要点】だけ読み上げ・【詳細】は画面のみ。競馬の話題は両方オン。
+  - Web検索（server tool）は常に渡し、使うかは Claude が判断（人格設定で「最新情報が必要なときだけ」と指示）。
+  - iPhone はブラウザの音声認識が読み上げ後に壊れるため、キーボードの音声入力方式（`startDictation`）。
 - ハヤトの人格（システムプロンプト）は `index.html` の `buildSystemPrompt` にある。
 - 公開先：GitHub Pages（リポジトリ `ryoun0307/ai-hayato` の `main`）。公開は無料・回数制限なし。
 - APIキーは各端末のブラウザ（localStorage）にだけ保存する。ユーザーが画面の「⚙ 設定」で自分で入力する。
