@@ -32,6 +32,15 @@
 
   /* ---------- 宇宙の背景（canvas に描く） ---------- */
   #space { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+  /* 背景映像：画面いっぱいに広げる（はみ出した部分は切る） */
+  #bgVideo {
+    position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0;
+    object-fit: cover; opacity: 0; transition: opacity 1.2s ease;
+    pointer-events: none;
+  }
+  #bgVideo.ready { opacity: 1; }
+  /* 文字が読みやすいよう、背景を少しだけ暗くする */
+  .bg-shade { position: fixed; inset: 0; z-index: 0; background: rgba(2, 2, 12, .22); pointer-events: none; }
 
   .app {
     position: relative; z-index: 1;
@@ -101,6 +110,9 @@
     transform-origin: 50% 60%;
   }
   .hayato .bob { position: absolute; inset: 0; }
+  /* 動画のキャラ（縦長 9:16）を使うとき */
+  .hayato.video .float { aspect-ratio: 9 / 16; height: 100%; }
+  .hayato.video.talking .bob { animation: none; } /* 動画自体が動くので、弾む動きは付けない */
   .hayato.talking .bob { animation: bob .36s ease-in-out infinite; }
   .hayato .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .hayato .art[hidden] { display: none; }
@@ -271,6 +283,9 @@
 </head>
 <body>
 <canvas id="space" aria-hidden="true"></canvas>
+<!-- 宇宙の背景映像（読み込めないときは、上の canvas の描いた宇宙が見える） -->
+<video id="bgVideo" src="media/space.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+<div class="bg-shade" aria-hidden="true"></div>
 
 <div class="app">
   <header>
@@ -292,10 +307,10 @@
       <div class="aura"></div>
       <div class="float">
         <div class="bob">
-          <!-- あなたが用意した絵：images/hayato_close.png（口を閉じた絵）と images/hayato_open.png（口を開けた絵） -->
-          <img class="art mouth-close" id="imgClose" alt="ハヤト" hidden>
-          <img class="art mouth-open" id="imgOpen" alt="" hidden>
-          <!-- 絵がまだないときの仮のキャラ -->
+          <!-- キャラの動画（緑の背景を透明にして canvas に描く） -->
+          <video id="charVideo" src="media/hayato_talk.mp4" muted loop playsinline preload="auto" aria-hidden="true" style="display:none"></video>
+          <canvas class="art" id="charCanvas" aria-label="ハヤト" hidden></canvas>
+          <!-- 動画が使えないときの仮のキャラ -->
           <svg class="art" id="hayatoSvg" viewBox="0 0 300 400" role="img" aria-label="ハヤト（仮の絵）">
             <!-- マント -->
             <path d="M92 232 Q60 330 78 372 L222 372 Q240 330 208 232 Z" fill="#5c0f12"/>
@@ -534,18 +549,109 @@ function showToast(text, kind = "info") {
 }
 
 // ============================================================
-//  ハヤトの絵（あなたの絵があれば使い、なければ仮の絵）
+//  背景の宇宙映像
 // ============================================================
-const IMG_CLOSE = "images/hayato_close.png";
-const IMG_OPEN = "images/hayato_open.png";
-(function loadArt() {
-  const c = $("imgClose"), o = $("imgOpen"), svg = $("hayatoSvg");
-  c.onload = () => { c.hidden = false; svg.style.display = "none"; };
-  c.onerror = () => { c.hidden = true; };           // 絵がないときは仮の絵のまま
-  o.onload = () => { o.hidden = false; };
-  o.onerror = () => { o.hidden = true; };           // 口を開けた絵がなければ、口パクなしで動く
-  c.src = IMG_CLOSE;
-  o.src = IMG_OPEN;
+(function bgVideo() {
+  const v = $("bgVideo");
+  const ready = () => { v.classList.add("ready"); };
+  v.addEventListener("playing", ready);
+  v.addEventListener("error", () => { v.remove(); }); // 読み込めなければ、描いた宇宙を見せる
+  const tryPlay = () => { v.play().catch(() => {}); };
+  tryPlay();
+  // iPhone の省電力モードなどで自動再生が止められたときは、最初のタップで再生する
+  window.addEventListener("pointerdown", tryPlay, { once: true });
+})();
+
+// ============================================================
+//  キャラの動画（緑の背景を、その場で透明にして描く）
+// ============================================================
+const IDLE_TIME = 0.4; // 黙っているときに止めておく場面（口を閉じた場面）の秒数
+const charVideo = $("charVideo"), charCanvas = $("charCanvas");
+let charReady = false;
+const setCharTalking = (function setupCharacter() {
+  const gl = charCanvas.getContext("webgl", { premultipliedAlpha: true, alpha: true });
+  if (!gl) return () => {}; // WebGL が使えない端末は、仮の絵のまま
+  const vs = `attribute vec2 p; varying vec2 v;
+    void main(){ v = vec2((p.x+1.0)*0.5, (1.0-p.y)*0.5); gl_Position = vec4(p,0.0,1.0); }`;
+  // 緑っぽさ（G が R・B よりどれだけ強いか）で透明度を決め、ふちに残る緑も抑える
+  const fs = `precision mediump float; varying vec2 v; uniform sampler2D t;
+    void main(){
+      vec4 c = texture2D(t, v);
+      float m = max(c.r, c.b);
+      float k = c.g - m;
+      float a = 1.0 - smoothstep(0.06, 0.16, k);
+      if (c.g > m) c.g = mix(c.g, m, 0.9);
+      gl_FragColor = vec4(c.rgb * a, a);
+    }`;
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+  const pr = gl.createProgram();
+  gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs));
+  gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(pr);
+  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return () => {};
+  gl.useProgram(pr);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(pr, "p");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+  function draw() {
+    if (charVideo.readyState < 2) return;
+    // 画面に表示される大きさに合わせて描く（大きすぎると重くなるので上限あり）
+    const r = charCanvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(360, Math.min(720, Math.round(r.width * dpr * 1.5) || 360));
+    const h = Math.round(w * 16 / 9);
+    if (charCanvas.width !== w || charCanvas.height !== h) { charCanvas.width = w; charCanvas.height = h; }
+    gl.viewport(0, 0, w, h);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, charVideo);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  let talkingNow = false;
+  function loop() {
+    // 話している間だけ毎コマ描き直す（黙っている間は止めた場面のままなので描き直さない）
+    if (talkingNow) draw();
+    requestAnimationFrame(loop);
+  }
+  charVideo.addEventListener("loadeddata", () => {
+    charVideo.currentTime = IDLE_TIME;
+  });
+  charVideo.addEventListener("seeked", () => {
+    if (!charReady) {
+      charReady = true;
+      charCanvas.hidden = false;
+      $("hayatoSvg").style.display = "none";
+      hayatoEl.classList.add("video");
+    }
+    draw();
+  });
+  charVideo.addEventListener("error", () => { /* 読み込めなければ仮の絵のまま */ });
+  window.addEventListener("resize", () => { if (!talkingNow) draw(); });
+  charVideo.load();
+  requestAnimationFrame(loop);
+
+  return function setTalking(on) {
+    if (!charReady || on === talkingNow) return;
+    talkingNow = on;
+    if (on) {
+      // 毎回同じ動きにならないよう、少しずらした場面から話し始める
+      const d = charVideo.duration || 10;
+      charVideo.currentTime = Math.random() * Math.max(0, d - 3);
+      charVideo.play().catch(() => {});
+    } else {
+      charVideo.pause();
+      charVideo.currentTime = IDLE_TIME; // 口を閉じた場面に戻す
+    }
+  };
 })();
 
 // 口パクと状態（話している・考えている）の切り替え
@@ -555,6 +661,7 @@ const IMG_OPEN = "images/hayato_open.png";
     const talking = speakQueue > 0 || (synth && synth.speaking);
     hayatoEl.classList.toggle("talking", !!talking);
     hayatoEl.classList.toggle("thinking", busy && !talking);
+    setCharTalking(!!talking);
     if (talking) {
       // 話している間は、少し不規則に口を開け閉めする
       if (--flip <= 0) { open = !open; flip = open ? 1 + Math.floor(Math.random() * 2) : 1 + Math.floor(Math.random() * 3); }
