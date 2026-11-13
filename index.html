@@ -25,7 +25,7 @@
   body {
     background: var(--space);
     color: var(--ink-light);
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", "Meiryo", sans-serif;
     display: flex; justify-content: center;
     overflow: hidden;
   }
@@ -59,7 +59,10 @@
     color: var(--gold-soft);
     backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   }
-  header h1 { margin: 0; font-size: 1.4rem; letter-spacing: .08em; white-space: nowrap; }
+  header h1 {
+    margin: 0; font-size: 1.4rem; letter-spacing: .08em; white-space: nowrap;
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+  }
   header h1 span { color: var(--gold); }
   .status { font-size: .8rem; color: var(--gold-soft); opacity: .85; }
   .icon-btn {
@@ -92,38 +95,34 @@
   .line { display: flex; flex-direction: column; max-width: 84%; }
   .line.hayato { align-self: flex-start; align-items: flex-start; }
   .line.user   { align-self: flex-end;   align-items: flex-end; }
-  .line .name {
-    font-size: .72rem; letter-spacing: .05em; margin: 0 10px 3px;
-    color: var(--gold-soft); text-shadow: 0 1px 4px rgba(0,0,0,.8);
-  }
-  .line .text {
+  /* 名前は出さない（見本に合わせる） */
+  .line .name { display: none; }
+  /* セリフ：濃い紺の半透明の四角い枠に、白いゴシック体 */
+  .line .text, .user-now {
     position: relative;
-    padding: 10px 14px; border-radius: 16px;
-    line-height: 1.65; font-size: .98rem;
+    padding: 12px 18px; border-radius: 12px;
+    background: rgba(14, 22, 42, .82); color: #eef2fb;
+    border: 1px solid rgba(150, 175, 230, .22);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", "Meiryo", sans-serif;
+    line-height: 1.65; font-size: .95rem;
     white-space: pre-wrap; word-break: break-word;
-    box-shadow: 0 4px 18px rgba(0,0,0,.4);
+    box-shadow: 0 4px 18px rgba(0,0,0,.35);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   }
-  /* ハヤトのセリフ：明るい羊皮紙色、左下にしっぽ */
-  .line.hayato .text {
-    background: rgba(250, 244, 230, .93); color: var(--panel-ink);
-    border: 1.5px solid var(--gold); border-bottom-left-radius: 4px;
-  }
-  /* あなたのセリフ：宇宙に合う青いガラス風、右下にしっぽ */
-  .line.user .text {
-    background: rgba(48, 70, 150, .78); color: #f2f5ff;
-    border: 1.5px solid rgba(160, 185, 255, .7); border-bottom-right-radius: 4px;
-    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  }
-  .line.thinking .text { color: var(--muted); }
-  .line .more { display: block; margin-top: 6px; font-size: .78rem; color: var(--muted); }
+  /* ハヤトのセリフは列の幅いっぱい、あなたのセリフは右に寄せて短く */
+  .line.hayato { align-self: stretch; align-items: stretch; max-width: 100%; }
+  .line.thinking .text { color: rgba(238, 242, 251, .6); }
+  .line .more { display: block; margin-top: 6px; font-size: .78rem; color: rgba(238, 242, 251, .6); }
+  /* 右上の「あなたの最新の一言」（PC の画面だけで出す） */
+  .user-now { display: none; }
 
-  .hayato {
+  .avatar {
     position: relative; flex: 1 1 0; min-height: 110px; max-height: 460px;
     width: 100%;
     display: flex; align-items: flex-end; justify-content: center;
   }
   /* 宇宙なので地面の影ではなく、足もとに淡い光の輪 */
-  .hayato .aura {
+  .avatar .aura {
     position: absolute; bottom: 2%; left: 50%;
     width: 46%; max-width: 220px; aspect-ratio: 4 / 1;
     transform: translateX(-50%);
@@ -131,29 +130,29 @@
     animation: aura 5s ease-in-out infinite;
     pointer-events: none;
   }
-  .hayato .float {
+  .avatar .float {
     position: relative; height: 92%; aspect-ratio: 3 / 4; max-width: 90%;
     animation: float 5s ease-in-out infinite;
     transform-origin: 50% 60%;
   }
-  .hayato .bob { position: absolute; inset: 0; }
+  .avatar .bob { position: absolute; inset: 0; }
   /* 動画のキャラ（縦長 9:16）を使うとき */
-  .hayato.video .float { aspect-ratio: 9 / 16; height: 100%; }
-  .hayato.video.talking .bob { animation: none; } /* 動画自体が動くので、弾む動きは付けない */
-  .hayato.talking .bob { animation: bob .36s ease-in-out infinite; }
-  .hayato .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-  .hayato .art[hidden] { display: none; }
+  .avatar.video .float { aspect-ratio: 9 / 16; height: 100%; }
+  .avatar.video.talking .bob { animation: none; } /* 動画自体が動くので、弾む動きは付けない */
+  .avatar.talking .bob { animation: bob .36s ease-in-out infinite; }
+  .avatar .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .avatar .art[hidden] { display: none; }
   /* 口パク：絵（画像）を使うときは2枚を重ねて、見せる方を切り替える */
-  .hayato .art.mouth-open { visibility: hidden; }
-  .hayato.open .art.mouth-open { visibility: visible; }
-  .hayato.open .art.mouth-close { visibility: hidden; }
+  .avatar .art.mouth-open { visibility: hidden; }
+  .avatar.open .art.mouth-open { visibility: visible; }
+  .avatar.open .art.mouth-close { visibility: hidden; }
   /* 仮のキャラ（SVG）の口 */
   #hayatoSvg .m-open { display: none; }
-  .hayato.open #hayatoSvg .m-open { display: inline; }
-  .hayato.open #hayatoSvg .m-close { display: none; }
+  .avatar.open #hayatoSvg .m-open { display: inline; }
+  .avatar.open #hayatoSvg .m-close { display: none; }
   #hayatoSvg .eyes { animation: blink 4.5s infinite; transform-origin: 50% 37%; transform-box: view-box; }
   /* 考え中は淡く光る */
-  .hayato.thinking .float { filter: drop-shadow(0 0 14px rgba(150,170,255,.55)); }
+  .avatar.thinking .float { filter: drop-shadow(0 0 14px rgba(150,170,255,.55)); }
 
   @keyframes float {
     0%, 100% { transform: translateY(0) rotate(-1.2deg); }
@@ -172,7 +171,7 @@
     96%           { transform: scaleY(.1); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .hayato .float, .hayato .aura, .hayato.talking .bob { animation: none; }
+    .avatar .float, .avatar .aura, .avatar.talking .bob { animation: none; }
   }
 
   .toast {
@@ -290,29 +289,55 @@
 
   /* ---------- PC など横に広い画面：キャラを中央に大きく、セリフは左右に ---------- */
   @media (min-width: 900px) {
-    .app { max-width: 1400px; }
-    .stage { position: relative; padding: 8px 0 4px; }
-    /* キャラは、ステージの高さいっぱいまで大きくする */
-    .hayato { flex: 1 1 0; max-height: none; min-height: 0; }
-    .hayato.video .float { height: 100%; max-width: none; }
-    .hayato .float { height: 100%; }
-    /* セリフ欄はキャラの上に重ねて、左右に分けて並べる */
+    .app { max-width: none; padding: 0; }
+    /* ヘッダーは、画面の上の中央に細く小さく浮かせる */
+    header {
+      position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5;
+      padding: 5px 8px 5px 16px; gap: 14px; border-radius: 999px;
+      background: rgba(10, 14, 30, .55); border-color: rgba(212,166,74,.35);
+    }
+    header > div:first-child { display: flex; align-items: baseline; gap: 10px; }
+    header h1 { font-size: .95rem; }
+    .icon-btn { font-size: .75rem; padding: 4px 10px; border-radius: 999px; }
+
+    /* ステージは画面全体。キャラを画面の高さいっぱいに、中央に大きく */
+    .stage { position: fixed; inset: 0; padding: 0; z-index: 1; }
+    .avatar {
+      position: absolute; left: 0; right: 0; top: 7vh; bottom: 92px;
+      max-height: none; min-height: 0;
+    }
+    .avatar .float, .avatar.video .float { height: 100%; max-width: none; }
+
+    /* 左上：会話（ハヤトのセリフは列いっぱい、あなたのセリフは列の中で右寄せ） */
     .thread {
-      position: absolute; inset: 8px 0 4px 0; z-index: 2;
-      width: 100%; max-height: none; margin: 0;
-      padding: 0 8px;
-      pointer-events: none;           /* キャラの上をさわっても邪魔しない */
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 40px);
-              mask-image: linear-gradient(to bottom, transparent 0, #000 40px);
+      position: absolute; top: 28px; left: 10px; z-index: 3;
+      width: min(25vw, 460px); max-height: calc(100dvh - 140px);
+      margin: 0; padding: 0;
+      -webkit-mask-image: none; mask-image: none;
     }
-    .thread > :first-child { margin-top: auto; } /* 新しいセリフが下にたまっていく */
-    .line { pointer-events: auto; }
-    /* キャラの幅（≒ 画面の高さから上下の部品を引いた高さ × 9/16 × 絵の中の人物の割合）を避けて、
-       左右の空いた場所いっぱいにセリフを出す */
-    .line {
-      max-width: max(240px, calc((100% - (100dvh - 190px) * 0.5625 * 0.72) / 2 - 24px));
+    .line { max-width: 100%; }
+    .line.user { max-width: 85%; }
+
+    /* 右上：あなたの最新の一言 */
+    .user-now {
+      display: block; position: absolute; top: 28px; right: 10px; z-index: 3;
+      width: min(25vw, 460px);
     }
-    .line .text { font-size: 1.02rem; }
+    .user-now[hidden] { display: none; }
+
+    /* お知らせは入力欄のすぐ上の中央に */
+    .toast {
+      position: absolute; bottom: 92px; left: 50%; transform: translateX(-50%); z-index: 4;
+      width: min(640px, 60vw);
+    }
+
+    /* 入力欄：下の中央に小さくまとめる */
+    .controls {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 5;
+      width: min(720px, 50vw);
+    }
+    .mic { width: 52px; height: 52px; font-size: 1.3rem; }
+    #textInput { padding: 10px 14px; background: rgba(10, 14, 30, .65); }
   }
 
   @media (max-width: 480px) {
@@ -351,7 +376,7 @@
   <section class="stage">
     <!-- セリフ欄：左にハヤト、右にあなた -->
     <div class="thread" id="thread" aria-live="polite"></div>
-    <div class="hayato" id="hayato">
+    <div class="avatar" id="hayato">
       <div class="aura"></div>
       <div class="float">
         <div class="bob">
@@ -398,6 +423,8 @@
         </div>
       </div>
     </div>
+    <!-- PC の画面で、右上に出す「あなたの最新の一言」 -->
+    <div class="user-now" id="userNow" hidden></div>
     <div class="toast" id="toast" hidden></div>
   </section>
 
@@ -593,6 +620,9 @@ function threadLine(role, text) {
 function showYou(text) {
   if (!text) return;
   threadLine("user", text);
+  const now = $("userNow");
+  now.textContent = text;
+  now.hidden = false;
   curHayatoLine = null; // 次のハヤトの返事は新しい行にする
 }
 // ハヤトのセリフ（左）。返事が届くたびに同じ行を書き換える
@@ -612,6 +642,7 @@ function showBubble(text, { thinking = false, more = false } = {}) {
 function clearThread() {
   threadEl.innerHTML = "";
   curHayatoLine = null;
+  $("userNow").hidden = true;
 }
 let toastTimer = null;
 function showToast(text, kind = "info") {
