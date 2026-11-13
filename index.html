@@ -383,8 +383,18 @@ function stopListening(abort = true) {
 // ============================================================
 //  Claude との会話
 // ============================================================
-let history = [];   // Claude に渡す会話履歴
+// 【重要】Claude は返事の「考えた内容」に、その会話専用の署名を付ける。
+// 会話の途中で前提（システムプロンプト）や過去のやり取りを変えると、署名が合わずエラーになる。
+// そのため、前提は会話の最初に1回だけ作って固定し、過去のやり取りは書き換えず後ろに足すだけにする。
+// 時刻のように毎回変わる情報は、前提ではなく毎回のメッセージの末尾に付ける。
+let history = [];         // Claude に渡す会話履歴（後ろに足すだけ）
+let systemPrompt = null;  // この会話の前提（会話の最初に作って固定）
 let busy = false;
+
+function resetConversation() {
+  history = [];
+  systemPrompt = null;
+}
 
 function errorMessage(err) {
   const raw = String(err?.message || err || "");
@@ -406,13 +416,17 @@ function errorMessage(err) {
 // 1回分の応答を受け取る。混雑などで何も話す前に失敗したら、1回だけやり直す。
 async function askClaude(onText) {
   const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
-  const now = new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "full", timeStyle: "short" });
+  if (!systemPrompt) {
+    systemPrompt = buildSystemPrompt(settings.userName) +
+      "\n\n# 現在日時\n" + (settings.userName || "ボス") + "のメッセージの末尾にある（送信時刻: …）が、その時点の現在日時。" +
+      "日時を答えるときや予定を考えるときに使う。送信時刻そのものを毎回読み上げたり、繰り返したりしない。";
+  }
   const run = async () => {
     let sentText = false;
     const stream = client.beta.messages.stream({
       model: MODEL,
       max_tokens: 4096,
-      system: buildSystemPrompt(settings.userName) + `\n\n# 現在日時\n${now}`,
+      system: systemPrompt,
       messages: history,
       output_config: { effort: "low" }, // 音声会話なので応答速度を優先
       betas: ["server-side-fallback-2026-07-01"],
@@ -442,16 +456,22 @@ async function send(text) {
   }
   textInput.value = "";
   addMsg("user", text);
-  history.push({ role: "user", content: text });
+
+  // 履歴が長くなりすぎたら、古いものを削るのではなく会話の記憶を新しくする
+  // （途中を削ると署名が合わなくなるため）
+  if (history.length >= MAX_HISTORY - 1) {
+    resetConversation();
+    addMsg("system", "会話が長くなったので、ハヤトの記憶を新しくしました。");
+  }
+  const now = new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "full", timeStyle: "short" });
+  const userTurn = { role: "user", content: `${text}\n\n（送信時刻: ${now}）` };
+  history.push(userTurn);
 
   busy = true;
   sendBtn.disabled = true;
   setStatus("考えています…");
   const bodyEl = addMsg("hayato", "…");
   let shown = "", pending = "";
-
-  // 履歴が長くなりすぎたら古いものから捨てる（先頭は必ず user にする）
-  while (history.length > MAX_HISTORY - 1 || (history.length && history[0].role !== "user")) history.shift();
 
   const onText = (delta) => {
     if (!shown) bodyEl.textContent = "";
@@ -465,7 +485,17 @@ async function send(text) {
   };
 
   try {
-    const final = await askClaude(onText);
+    let final;
+    try {
+      final = await askClaude(onText);
+    } catch (e) {
+      // 万一、署名のエラーが出たら、会話の記憶を新しくして同じ質問をもう一度送る
+      if (shown || !/signature/i.test(String(e?.message))) throw e;
+      resetConversation();
+      history.push(userTurn);
+      addMsg("system", "ハヤトの記憶を新しくして、もう一度聞き直しています。");
+      final = await askClaude(onText);
+    }
     if (pending.trim()) speak(pending);
 
     if (final.stop_reason === "refusal") {
@@ -500,7 +530,7 @@ textInput.addEventListener("keydown", (e) => {
 });
 $("stopBtn").addEventListener("click", stopSpeaking);
 $("clearBtn").addEventListener("click", () => {
-  stopSpeaking(); history = []; logEl.innerHTML = ""; greet();
+  stopSpeaking(); resetConversation(); logEl.innerHTML = ""; greet();
 });
 
 function openSettings() {
@@ -516,7 +546,10 @@ $("cancelSettings").addEventListener("click", () => dlg.close());
 $("rate").addEventListener("input", (e) => $("rateVal").textContent = e.target.value);
 $("saveSettings").addEventListener("click", () => {
   settings.apiKey = $("apiKey").value.trim();
-  settings.userName = $("userName").value.trim();
+  const newName = $("userName").value.trim();
+  // 呼ばれ方を変えたら前提が変わるので、次の会話から新しい前提で始める
+  if (newName !== settings.userName) resetConversation();
+  settings.userName = newName;
   settings.voice = $("voiceSelect").value;
   settings.rate = parseFloat($("rate").value);
   settings.autoListen = $("autoListen").checked;
