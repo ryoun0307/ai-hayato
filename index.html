@@ -119,6 +119,24 @@
   .primary { background: var(--red); color: var(--gold-soft); }
   .secondary { background: transparent; color: var(--red); }
 
+  /* iPhone 用「タップして開始」画面（ここで読み上げを有効にする） */
+  .start-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    background: radial-gradient(ellipse at center, #3a2018 0%, var(--bg) 70%);
+    color: var(--gold-soft); text-align: center; padding: 24px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .start-overlay[hidden] { display: none; }
+  .start-overlay .title { font-size: 2rem; letter-spacing: .08em; }
+  .start-overlay .title span { color: var(--gold); }
+  .start-overlay .tap {
+    border: 2px solid var(--gold); border-radius: 999px; padding: 14px 32px;
+    background: linear-gradient(180deg, var(--red) 0%, var(--red-deep) 100%);
+    font-size: 1.1rem; color: var(--gold-soft);
+  }
+  .start-overlay .note { font-size: .8rem; opacity: .8; }
+
   @media (max-width: 480px) {
     .app { padding: 10px; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
     header { padding: 8px 10px; gap: 8px; }
@@ -152,6 +170,12 @@
       <button class="send" id="sendBtn">送信</button>
     </div>
   </div>
+</div>
+
+<div class="start-overlay" id="startOverlay" hidden role="button" aria-label="タップしてハヤトを起動">
+  <div class="title">✦ <span>AI</span>ハヤト ✦</div>
+  <div class="tap">タップして開始</div>
+  <div class="note">iPhone では、最初にタップすると声が出るようになります</div>
 </div>
 
 <dialog id="settings">
@@ -341,15 +365,22 @@ function stopSpeaking() { if (synth) synth.cancel(); speakQueue = 0; if (!busy) 
 //  音声認識（聞き取り）
 // ============================================================
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recog = null, listening = false;
-if (SR) {
-  recog = new SR();
-  recog.lang = "ja-JP";
-  recog.interimResults = true;
-  recog.continuous = false;
+const isStandalone = window.navigator.standalone === true ||
+  (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+let recog = null, listening = false, gotSomething = false, startTimer = null;
+let heard = "", silenceTimer = null;
+
+// iPhone では同じ聞き取りを使い回すと2回目以降に動かないことがあるので、毎回作り直す
+function createRecognizer() {
+  const r = new SR();
+  r.lang = "ja-JP";
+  r.interimResults = true;
+  r.continuous = false;
+  r.onstart = () => { clearTimeout(startTimer); setStatus("聞いています…（もう一度押すと送信）"); };
   // iPhone の Safari は「確定(isFinal)」を返さずに終わることがあるので、
   // 聞き取れた文章を毎回まるごと保持し、話が途切れたら（または終了時に）送る。
-  recog.onresult = (e) => {
+  r.onresult = (e) => {
+    gotSomething = true;
     let text = "", allFinal = true;
     for (let i = 0; i < e.results.length; i++) {
       text += e.results[i][0].transcript;
@@ -361,34 +392,67 @@ if (SR) {
     if (allFinal && text.trim()) finishListening();
     else silenceTimer = setTimeout(finishListening, 1500); // 1.5秒黙ったら送信
   };
-  recog.onerror = (e) => {
+  r.onerror = (e) => {
+    gotSomething = true;
     const err = e.error;
     if (err === "not-allowed" || err === "service-not-allowed") {
-      addMsg("error", /iPhone|iPad/.test(navigator.userAgent)
-        ? "音声入力が使えません。iPhoneの「設定」→「一般」→「キーボード」で「音声入力」をオンにし、Safariのマイクを許可してください（設定→アプリ→Safari→マイク）。"
+      addMsg("error", isIOS
+        ? "音声入力が使えません（" + err + "）。iPhoneの「設定」→「一般」→「キーボード」で「音声入力」をオンにし、「設定」→「アプリ」→「Safari」→「マイク」を「確認」か「許可」にしてください。"
         : "マイクの使用が許可されていません。ブラウザのアドレスバーからマイクを許可してください。");
     } else if (err === "audio-capture") {
-      addMsg("error", "マイクが見つかりません。ほかのアプリがマイクを使っていないか確認してください。");
-    } else if (err !== "no-speech" && err !== "aborted") {
+      addMsg("error", "マイクが使えません（audio-capture）。ほかのアプリがマイクを使っていないか確認してください。");
+    } else if (err === "no-speech") {
+      addMsg("system", "声が聞き取れませんでした。マイクを押してから、はっきり話しかけてください。");
+    } else if (err !== "aborted") {
       addMsg("error", "音声認識エラー: " + err);
     }
     stopListening(false);
   };
-  recog.onend = () => { if (listening) finishListening(); };
-} else {
-  micBtn.disabled = true;
-  micBtn.title = "このブラウザは音声入力に対応していません（Chrome / Edge を推奨）";
+  r.onend = () => {
+    clearTimeout(startTimer);
+    if (!listening) return;
+    if (!gotSomething && !heard.trim()) addMsg("system", "声が聞き取れませんでした。もう一度マイクを押して話しかけてください。");
+    finishListening();
+  };
+  return r;
 }
-let heard = "", silenceTimer = null;
+
+if (!SR) {
+  micBtn.title = "このブラウザは音声入力に対応していません";
+}
 function startListening() {
-  if (!recog || listening || busy) return;
-  stopSpeaking();
+  if (listening || busy) return;
+  if (!SR) {
+    addMsg("error", isStandalone
+      ? "ホーム画面のアイコンから開くと、音声入力が使えません。Safari で直接開いてください。"
+      : "このブラウザは音声入力に対応していません。iPhone は Safari、PC は Chrome で開いてください。");
+    return;
+  }
+  if (synth) synth.cancel();
+  speakQueue = 0;
   heard = "";
+  gotSomething = false;
   textInput.value = "";
-  try { recog.start(); } catch { return; }
+  recog = createRecognizer();
+  try {
+    recog.start();
+  } catch (e) {
+    addMsg("error", "マイクを開始できませんでした（" + (e?.name || e) + "）。もう一度押してください。");
+    return;
+  }
   listening = true;
   micBtn.classList.add("listening");
-  setStatus("聞いています…（もう一度押すと送信）");
+  setStatus("マイクを準備中…");
+  // 4秒たっても聞き取りが始まらなければ、原因を表示する
+  clearTimeout(startTimer);
+  startTimer = setTimeout(() => {
+    if (listening && !gotSomething && statusEl.textContent.startsWith("マイクを準備中")) {
+      addMsg("error", "マイクが反応しません。" + (isStandalone
+        ? "ホーム画面のアイコンからではなく、Safari で直接開いてみてください。"
+        : "iPhoneの「設定」→「一般」→「キーボード」→「音声入力」がオンか確認してください。"));
+      stopListening(true);
+    }
+  }, 4000);
 }
 // 聞き取りを終えて、聞こえた文章があれば送る
 function finishListening() {
@@ -400,6 +464,7 @@ function finishListening() {
 function stopListening(abort = true) {
   if (!recog) return;
   clearTimeout(silenceTimer);
+  clearTimeout(startTimer);
   listening = false;
   micBtn.classList.remove("listening");
   try { abort ? recog.abort() : recog.stop(); } catch {}
@@ -549,10 +614,8 @@ async function send(text) {
 // ============================================================
 //  UI イベント
 // ============================================================
-micBtn.addEventListener("click", () => {
-  unlockAudio();
-  listening ? finishListening() : startListening();
-});
+// マイクのときは読み上げの合図を出さない（iPhone では音を出した直後だとマイクが動かないため）
+micBtn.addEventListener("click", () => listening ? finishListening() : startListening());
 sendBtn.addEventListener("click", () => { unlockAudio(); send(textInput.value); });
 textInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); unlockAudio(); send(textInput.value); }
@@ -603,6 +666,24 @@ $("saveSettings").addEventListener("click", () => {
   dlg.close();
   addMsg("system", "設定を保存しました。");
 });
+
+// iPhone では「タップして開始」を押した瞬間に挨拶を読み上げ、それを読み上げ許可の合図にする
+if (isIOS && synth) {
+  const ov = $("startOverlay");
+  ov.hidden = false;
+  ov.addEventListener("click", () => {
+    const name = settings.userName || "ボス";
+    const u = new SpeechSynthesisUtterance(`お待ちしていました、${name}。`);
+    u.lang = "ja-JP";
+    u.rate = settings.rate;
+    const chosen = $("voiceSelect").value;
+    const v = chosen && voices.find(v => v.name === chosen);
+    if (v) u.voice = v;
+    synth.speak(u);
+    audioUnlocked = true;
+    ov.hidden = true;
+  }, { once: true });
+}
 
 function greet() {
   const name = settings.userName || "ボス";
