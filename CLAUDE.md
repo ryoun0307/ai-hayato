@@ -2,27 +2,29 @@
 
 ## このプロジェクト
 - 私（ユーザー）専属の音声AIアシスタント「AIハヤト」。
-- 画面：`index.html`（HTML・CSS・JavaScript を1ファイルに）
-- 中継サーバー：`netlify/functions/chat.mjs`（Netlify Functions。APIキーはここだけで使う）
-- ハヤトの人格（システムプロンプト）は `chat.mjs` の `buildSystemPrompt` にある。
-- 公開先：https://ai-hayato-ryo.netlify.app （Netlify、GitHub `ryoun0307/ai-hayato` と連携）
-- APIキー `ANTHROPIC_API_KEY` は Netlify の環境変数にだけ置く。ファイルにもチャットにも書かない。
+- `index.html` 1ファイルに HTML・CSS・JavaScript をまとめた構成。
+- 会話は Claude（`claude-opus-5-5`）。ブラウザから Anthropic の公式SDK（esm.sh 経由）で直接呼ぶ。
+- ハヤトの人格（システムプロンプト）は `index.html` の `buildSystemPrompt` にある。
+- 公開先：GitHub Pages（リポジトリ `ryoun0307/ai-hayato` の `main`）。公開は無料・回数制限なし。
+- APIキーは各端末のブラウザ（localStorage）にだけ保存する。ユーザーが画面の「⚙ 設定」で自分で入力する。
+  **APIキーをファイルやチャットに書かない。コミットしない。**
+- リポジトリは Public。人格設定などが見られることは、ユーザーが了承済み。
 
-## GitHub と公開のルール（必ず守る）
-Netlify の無料プランは月300クレジットで、本番を公開し直すたびに約15クレジット使う。
+## 経緯（同じ失敗をしないために）
+- 以前は Netlify（中継サーバー）で公開していたが、Netlify 無料プランは本番公開1回で約15クレジット（月300）を使い、
+  修正のたびに公開してクレジットを大きく減らしてしまった。2026-11-13 に GitHub Pages へ移行した。
+- **料金が発生する操作（有料サービスへの公開、API の呼び出しなど）は、事前にユーザーへ費用を伝えて確認する。**
 
-1. 作業中の変更は **`dev` ブランチ** にコミットし、作業の区切りで `git push origin dev` して GitHub に保存する。
-   `dev` は netlify.toml の `ignore` 設定で公開されない（クレジットを使わない）。
-2. **`main`（本番）には直接コミット・プッシュしない。**
-3. 本番に出すのは、ユーザーが「公開して」「本番に出して」と言ったときだけ。
-   その前に必ず「公開すると Netlify のクレジットを約15使います。よいですか？」と確認する。
-4. 公開するときは、修正をまとめて1回で出す（`dev` を `main` にマージして `git push origin main`）。
-5. 作業を始めるときは、まず `git switch dev` と `git pull origin dev` で最新の状態にする。
+## GitHub のルール
+1. 作業は `dev` ブランチでコミットし、区切りで `git push origin dev` して GitHub に保存する。
+2. 公開（`dev` を `main` にマージして `git push origin main`）は、ユーザーが「公開して」と言ったときに行う。
+   GitHub Pages は無料なので確認は軽くてよいが、何を公開するかはひと言伝える。
+3. 作業を始めるときは `git switch dev` と `git pull origin dev` で最新にする。
 
 ## 動作確認
-- このPCには Node.js がないので、中継サーバーを手元で動かせない。
-- 画面の見た目は、`index.html` をブラウザで開いて確認する（返事は来ない）。
-- 本番の会話テストで Claude API を呼ぶと、少額だが Anthropic の料金がかかる。必要最小限にする。
+- 画面の見た目は `index.html` をブラウザで開いて確認できる（APIキーを入れれば会話も可能。ただし Claude の料金がかかる）。
+- iPhone（Safari）での音声入力・読み上げは、公開URLを実機で開かないと確認できない。
+- Claude Code アプリ内のブラウザではマイクが使えない。
 
 ## 説明のしかた
 - ユーザーはエンジニアではない。日本語で、専門用語は言い換えて、手順は1つずつ具体的に説明する。

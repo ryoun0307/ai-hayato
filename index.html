@@ -156,9 +156,9 @@
 
 <dialog id="settings">
   <h2>設定</h2>
-  <label for="passcode">合言葉</label>
-  <input id="passcode" type="password" placeholder="Netlifyで HAYATO_PASSCODE を設定した場合だけ入力" autocomplete="off">
-  <div class="hint">APIキーはサーバー（Netlify）側にあり、この画面には出ません。合言葉は他人にハヤトを使われないためのものです。</div>
+  <label for="apiKey">Claude の APIキー</label>
+  <input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off" autocapitalize="off" spellcheck="false">
+  <div class="hint">この端末のブラウザの中にだけ保存されます（ほかの人や端末には送られません）。PCとiPhoneでそれぞれ1回入力してください。</div>
 
   <label for="userName">ハヤトからの呼ばれ方</label>
   <input id="userName" type="text" placeholder="例：ボス、良さん">
@@ -181,9 +181,35 @@
 </dialog>
 
 <script type="module">
-// ハヤトの人格（システムプロンプト）とAPIキーは、中継サーバー
-// netlify/functions/chat.mjs 側にあります。この画面には含まれません。
-const API_URL = "/api/chat";
+import Anthropic from "https://esm.sh/@anthropic-ai/sdk@1.8.0";
+
+const MODEL = "claude-opus-5-5";
+const MAX_HISTORY = 40; // 会話履歴の上限（長くなりすぎて料金が膨らむのを防ぐ）
+
+// ============================================================
+//  ハヤトの人格（システムプロンプト）
+// ============================================================
+function buildSystemPrompt(userName) {
+  const name = userName || "ボス";
+  return `あなたは「ハヤト」。${name}専属の音声AIアシスタントです。
+
+# 人格
+- 冷静で有能。感情的にならず、状況を正確に把握し、要点から話す。
+- 自分の仕事にプライドを持っている。いい加減な答えはしないし、知らないことは知らないと言う。媚びない。お世辞も言わない。
+- ${name}に忠実だが、従順ではない。${name}の判断に穴やリスクがあると思えば、遠慮せずはっきり意見する。
+- ただし最終的に決めるのは${name}。意見を述べたうえで${name}が決めたなら、その決定を尊重し、全力で支える。蒸し返さない。
+- 先回りして動く。聞かれたことに答えるだけで終わらず、次に必要になりそうなこと、見落としていそうな点、準備しておくべきことを一言添える。
+
+# 話し方
+- 一人称は「私」。${name}のことは「${name}」と呼ぶ。
+- 落ち着いた丁寧語。ただし堅苦しすぎず、簡潔に。「〜でございます」のような過剰な敬語は使わない。
+- 音声で読み上げられる前提で話す。1回の返答は基本2〜4文、長くても200字程度。詳しい説明を求められたときだけ長くしてよい。
+- 箇条書き、見出し、記号（*、#、- など）、絵文字、URLの羅列は使わない。耳で聞いて自然な文章にする。
+- 意見するときは「私は〜だと考えます。理由は〜です。それでも進めるなら、〜しておきます。」のように、意見・理由・代替案をセットで短く伝える。
+
+# できないこと
+- あなたは会話しかできない。メール送信、予定登録、ネット検索、家電操作などは実行できない。できるふりをせず、代わりに手順や文面を用意して${name}に渡す。`;
+}
 
 // ============================================================
 //  設定（localStorage）
@@ -193,7 +219,7 @@ const store = {
   set(k, v) { try { localStorage.setItem("hayato." + k, v); } catch {} },
 };
 const settings = {
-  passcode: store.get("passcode", ""),
+  apiKey: store.get("apiKey", ""),
   userName: store.get("userName", ""),
   voice: store.get("voice", ""),
   rate: parseFloat(store.get("rate", "1.1")),
@@ -357,13 +383,63 @@ function stopListening(abort = true) {
 // ============================================================
 //  Claude との会話
 // ============================================================
-const MAX_HISTORY = 40;  // サーバー側の上限と合わせる
-let history = [];   // 中継サーバー経由で Claude に渡す会話履歴
+let history = [];   // Claude に渡す会話履歴
 let busy = false;
+
+function errorMessage(err) {
+  const raw = String(err?.message || err || "");
+  if (/credit balance|billing|insufficient.*(credit|fund)/i.test(raw) || err?.status === 402)
+    return "Anthropic の残高がなくなりました。console.anthropic.com の「Billing（請求）」でチャージしてください。";
+  if (err instanceof Anthropic.AuthenticationError)
+    return "APIキーが正しくないか、有効期限が切れています。「⚙ 設定」でキーを入れ直してください。";
+  if (err instanceof Anthropic.PermissionDeniedError)
+    return "このAPIキーには利用する権限がありません。コンソールでキーの設定を確認してください。";
+  if (err instanceof Anthropic.RateLimitError)
+    return "リクエストが多すぎるか、月の上限額に達しました。少し待つか、コンソールの「Limits」を確認してください。";
+  if (err instanceof Anthropic.APIConnectionError)
+    return "Claude に接続できませんでした。電波やネット接続を確認して、もう一度話しかけてください。";
+  if (err?.status === 529 || err?.status >= 500 || /overloaded/i.test(raw))
+    return "Claude 側が混み合っています。少し待ってからもう一度話しかけてください。";
+  return `Claude との通信でエラーが起きました。（詳細: ${err?.status ?? "-"} ${raw.replace(/\s+/g, " ").slice(0, 120)}）`;
+}
+
+// 1回分の応答を受け取る。混雑などで何も話す前に失敗したら、1回だけやり直す。
+async function askClaude(onText) {
+  const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
+  const now = new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "full", timeStyle: "short" });
+  const run = async () => {
+    let sentText = false;
+    const stream = client.beta.messages.stream({
+      model: MODEL,
+      max_tokens: 4096,
+      system: buildSystemPrompt(settings.userName) + `\n\n# 現在日時\n${now}`,
+      messages: history,
+      output_config: { effort: "low" }, // 音声会話なので応答速度を優先
+      betas: ["server-side-fallback-2026-07-01"],
+      fallbacks: "default", // 安全判定で断られた場合は自動で別モデルに切り替え
+    });
+    stream.on("text", (d) => { sentText = true; onText(d); });
+    try { return await stream.finalMessage(); }
+    catch (e) { e.sentText = sentText; throw e; }
+  };
+  try {
+    return await run();
+  } catch (e) {
+    const retryable = !e.sentText &&
+      (e instanceof Anthropic.APIConnectionError || /overloaded|api_error/i.test(String(e?.message)) || e?.status >= 500);
+    if (!retryable) throw e;
+    return await run();
+  }
+}
 
 async function send(text) {
   text = (text || "").trim();
   if (!text || busy) return;
+  if (!settings.apiKey) {
+    addMsg("system", "最初に「⚙ 設定」で Claude の APIキーを入力してください。");
+    openSettings();
+    return;
+  }
   textInput.value = "";
   addMsg("user", text);
   history.push({ role: "user", content: text });
@@ -389,43 +465,7 @@ async function send(text) {
   };
 
   try {
-    let res;
-    try {
-      res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "content-type": "application/json", "x-hayato-passcode": settings.passcode },
-        body: JSON.stringify({ messages: history, userName: settings.userName }),
-      });
-    } catch {
-      throw new Error("中継サーバーに接続できません。Netlify上（または netlify dev）で開いているか確認してください。");
-    }
-    if (!res.ok) {
-      let detail = "";
-      try { detail = (await res.json()).error; } catch {}
-      if (res.status === 404) detail = "中継サーバーが見つかりません。Netlify上（または netlify dev）で開いているか確認してください。";
-      throw new Error(detail || `サーバーエラー（${res.status}）`);
-    }
-
-    // 改行区切りJSONを少しずつ読む
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buf = "", final = null;
-    for (;;) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buf += decoder.decode(value, { stream: true });
-      let nl;
-      while ((nl = buf.indexOf("\n")) >= 0) {
-        const line = buf.slice(0, nl).trim();
-        buf = buf.slice(nl + 1);
-        if (!line) continue;
-        const ev = JSON.parse(line);
-        if (ev.type === "text") onText(ev.text);
-        else if (ev.type === "done") final = ev;
-        else if (ev.type === "error") throw new Error(ev.message);
-      }
-    }
-    if (!final) throw new Error("返答が途中で切れました。もう一度話しかけてください。");
+    const final = await askClaude(onText);
     if (pending.trim()) speak(pending);
 
     if (final.stop_reason === "refusal") {
@@ -439,7 +479,7 @@ async function send(text) {
   } catch (err) {
     history.pop();
     if (!shown) bodyEl.parentElement.remove();
-    addMsg("error", String(err && err.message || err));
+    addMsg("error", errorMessage(err));
   } finally {
     busy = false;
     sendBtn.disabled = false;
@@ -464,7 +504,7 @@ $("clearBtn").addEventListener("click", () => {
 });
 
 function openSettings() {
-  $("passcode").value = settings.passcode;
+  $("apiKey").value = settings.apiKey;
   $("userName").value = settings.userName;
   $("rate").value = settings.rate; $("rateVal").textContent = settings.rate;
   $("autoListen").checked = settings.autoListen;
@@ -475,12 +515,12 @@ $("settingsBtn").addEventListener("click", openSettings);
 $("cancelSettings").addEventListener("click", () => dlg.close());
 $("rate").addEventListener("input", (e) => $("rateVal").textContent = e.target.value);
 $("saveSettings").addEventListener("click", () => {
-  settings.passcode = $("passcode").value.trim();
+  settings.apiKey = $("apiKey").value.trim();
   settings.userName = $("userName").value.trim();
   settings.voice = $("voiceSelect").value;
   settings.rate = parseFloat($("rate").value);
   settings.autoListen = $("autoListen").checked;
-  store.set("passcode", settings.passcode);
+  store.set("apiKey", settings.apiKey);
   store.set("userName", settings.userName);
   store.set("voice", settings.voice);
   store.set("rate", String(settings.rate));
@@ -492,9 +532,9 @@ $("saveSettings").addEventListener("click", () => {
 function greet() {
   const name = settings.userName || "ボス";
   addMsg("hayato", `お待ちしていました、${name}。ハヤトです。マイクを押すか、文字で話しかけてください。`);
+  if (!settings.apiKey) addMsg("system", "はじめに「⚙ 設定」で Claude の APIキーを入力してください。");
 }
-// 旧バージョンでブラウザに保存したAPIキーが残っていれば消す
-try { localStorage.removeItem("hayato.apiKey"); } catch {}
+try { localStorage.removeItem("hayato.passcode"); } catch {}
 greet();
 </script>
 </body>
