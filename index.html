@@ -6,8 +6,7 @@
 <title>AIハヤト</title>
 <style>
   :root {
-    --bg: #1a1210;
-    --bg2: #2a1a15;
+    --space: #04030c;
     --panel: #f4ead6;
     --panel-ink: #3a2518;
     --red: #8e1c1c;
@@ -17,58 +16,144 @@
     --muted: #8a7563;
     --user: #fff7e8;
     --hayato: #efe2c5;
+    --glass: rgba(14, 12, 34, .62);
+    --glass-strong: rgba(10, 8, 26, .82);
+    --ink-light: #f3ecdc;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
   body {
-    background: radial-gradient(ellipse at top, #3a2018 0%, var(--bg) 60%);
-    color: var(--panel-ink);
+    background: var(--space);
+    color: var(--ink-light);
     font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
     display: flex; justify-content: center;
+    overflow: hidden;
   }
+
+  /* ---------- 宇宙の背景（canvas に描く） ---------- */
+  #space { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+
   .app {
+    position: relative; z-index: 1;
     width: 100%; max-width: 760px;
     height: 100vh; height: 100dvh; /* iPhone のアドレスバーを考慮した高さ */
     display: flex; flex-direction: column;
     padding: 16px;
-    /* 右下に Netlify が表示するバッジと重ならないよう、下に余白を取る */
-    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
   header {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    background: linear-gradient(180deg, var(--red) 0%, var(--red-deep) 100%);
-    border: 2px solid var(--gold);
-    border-radius: 10px;
+    background: var(--glass);
+    border: 1px solid rgba(212,166,74,.55);
+    border-radius: 12px;
     padding: 10px 16px;
     color: var(--gold-soft);
-    box-shadow: 0 4px 18px rgba(0,0,0,.5);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   }
-  header h1 { margin: 0; font-size: 1.4rem; letter-spacing: .08em; }
+  header h1 { margin: 0; font-size: 1.4rem; letter-spacing: .08em; white-space: nowrap; }
   header h1 span { color: var(--gold); }
   .status { font-size: .8rem; color: var(--gold-soft); opacity: .85; }
   .icon-btn {
     background: transparent; border: 1px solid var(--gold); color: var(--gold-soft);
     border-radius: 8px; padding: 6px 10px; cursor: pointer; font: inherit; font-size: .85rem;
+    white-space: nowrap;
   }
   .icon-btn:hover { background: rgba(212,166,74,.15); }
 
-  .log {
-    flex: 1; overflow-y: auto; margin: 14px 0;
-    background: var(--panel);
-    border: 2px solid var(--gold);
-    border-radius: 10px;
-    padding: 16px;
-    box-shadow: inset 0 0 40px rgba(120,80,30,.25);
+  /* ---------- ステージ（吹き出し＋ハヤト） ---------- */
+  .stage {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding: 12px 0 8px; gap: 6px;
   }
-  .msg { margin: 0 0 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
-  .msg .who { font-size: .75rem; color: var(--muted); margin-bottom: 2px; }
-  .msg .body { padding: 10px 14px; border-radius: 10px; display: inline-block; max-width: 100%; }
-  .msg.user { text-align: right; }
-  .msg.user .body { background: var(--user); border: 1px solid #e3d3b0; text-align: left; }
-  .msg.hayato .body { background: var(--hayato); border-left: 4px solid var(--red); }
-  .msg.system .body { background: transparent; color: var(--muted); font-size: .85rem; padding: 0; }
-  .msg.error .body { background: #f6d6d0; border-left: 4px solid #b3261e; }
+  .bubble {
+    position: relative; width: min(100%, 560px);
+    max-height: 34%; overflow-y: auto;
+    background: rgba(250, 244, 230, .94); color: var(--panel-ink);
+    border: 2px solid var(--gold); border-radius: 16px;
+    padding: 12px 16px; line-height: 1.7; font-size: 1rem;
+    white-space: pre-wrap; word-break: break-word;
+    box-shadow: 0 6px 24px rgba(0,0,0,.45);
+    flex: none;
+    margin-top: auto; /* 吹き出しとハヤトを下に寄せる（はみ出すときは上に詰める） */
+  }
+  .bubble[hidden] { display: none; }
+  .bubble .more { display: block; margin-top: 6px; font-size: .8rem; color: var(--muted); }
+  .bubble.thinking { color: var(--muted); }
 
+  .hayato {
+    position: relative; flex: 1 1 0; min-height: 110px; max-height: 460px;
+    width: 100%;
+    display: flex; align-items: flex-end; justify-content: center;
+  }
+  /* 宇宙なので地面の影ではなく、足もとに淡い光の輪 */
+  .hayato .aura {
+    position: absolute; bottom: 2%; left: 50%;
+    width: 46%; max-width: 220px; aspect-ratio: 4 / 1;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(140,160,255,.45) 0%, rgba(140,160,255,0) 70%);
+    animation: aura 5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .hayato .float {
+    position: relative; height: 92%; aspect-ratio: 3 / 4; max-width: 90%;
+    animation: float 5s ease-in-out infinite;
+    transform-origin: 50% 60%;
+  }
+  .hayato .bob { position: absolute; inset: 0; }
+  .hayato.talking .bob { animation: bob .36s ease-in-out infinite; }
+  .hayato .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .hayato .art[hidden] { display: none; }
+  /* 口パク：絵（画像）を使うときは2枚を重ねて、見せる方を切り替える */
+  .hayato .art.mouth-open { visibility: hidden; }
+  .hayato.open .art.mouth-open { visibility: visible; }
+  .hayato.open .art.mouth-close { visibility: hidden; }
+  /* 仮のキャラ（SVG）の口 */
+  #hayatoSvg .m-open { display: none; }
+  .hayato.open #hayatoSvg .m-open { display: inline; }
+  .hayato.open #hayatoSvg .m-close { display: none; }
+  #hayatoSvg .eyes { animation: blink 4.5s infinite; transform-origin: 50% 37%; transform-box: view-box; }
+  /* 考え中は淡く光る */
+  .hayato.thinking .float { filter: drop-shadow(0 0 14px rgba(150,170,255,.55)); }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-1.2deg); }
+    50%      { transform: translateY(-16px) rotate(1.2deg); }
+  }
+  @keyframes aura {
+    0%, 100% { transform: translateX(-50%) scale(1);   opacity: .9; }
+    50%      { transform: translateX(-50%) scale(.82); opacity: .55; }
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+  }
+  @keyframes blink {
+    0%, 94%, 100% { transform: scaleY(1); }
+    96%           { transform: scaleY(.1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hayato .float, .hayato .aura, .hayato.talking .bob { animation: none; }
+  }
+
+  .you {
+    max-width: min(100%, 560px); align-self: flex-end;
+    font-size: .85rem; color: var(--ink-light);
+    background: var(--glass); border: 1px solid rgba(255,255,255,.18);
+    border-radius: 12px; padding: 6px 12px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .you[hidden] { display: none; }
+  .toast {
+    width: min(100%, 560px);
+    font-size: .85rem; line-height: 1.6;
+    background: rgba(40, 18, 22, .88); color: #ffd9d3;
+    border: 1px solid #b3261e; border-radius: 10px; padding: 8px 12px;
+  }
+  .toast.info { background: var(--glass-strong); color: var(--gold-soft); border-color: rgba(212,166,74,.6); }
+  .toast[hidden] { display: none; }
+
+  /* ---------- 入力欄 ---------- */
   .controls { display: flex; gap: 10px; align-items: center; }
   .mic {
     flex: none; width: 64px; height: 64px; border-radius: 50%;
@@ -89,18 +174,53 @@
   .input-wrap { flex: 1; display: flex; gap: 8px; }
   #textInput {
     flex: 1; min-width: 0; padding: 12px 14px; border-radius: 10px;
-    border: 2px solid var(--gold); background: var(--panel); color: var(--panel-ink);
+    border: 1px solid rgba(212,166,74,.7); background: var(--glass-strong); color: var(--ink-light);
     font: inherit; font-size: 1rem;
   }
+  #textInput::placeholder { color: rgba(243,236,220,.55); }
   .send {
     padding: 0 16px; border-radius: 10px; border: 2px solid var(--gold);
     background: var(--red); color: var(--gold-soft); font: inherit; cursor: pointer;
   }
   .send:disabled { opacity: .5; cursor: not-allowed; }
 
+  /* ---------- 履歴（折りたたみ） ---------- */
+  .history {
+    position: fixed; inset: 0; z-index: 40;
+    display: flex; justify-content: center;
+    background: rgba(2, 2, 10, .55);
+    padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+  .history[hidden] { display: none; }
+  .history-panel {
+    width: 100%; max-width: 760px; height: 100%;
+    display: flex; flex-direction: column;
+    background: var(--panel); color: var(--panel-ink);
+    border: 2px solid var(--gold); border-radius: 12px; overflow: hidden;
+  }
+  .history-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; background: linear-gradient(180deg, var(--red) 0%, var(--red-deep) 100%);
+    color: var(--gold-soft);
+  }
+  .log {
+    flex: 1; overflow-y: auto;
+    padding: 16px;
+    box-shadow: inset 0 0 40px rgba(120,80,30,.25);
+  }
+  .msg { margin: 0 0 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+  .msg .who { font-size: .75rem; color: var(--muted); margin-bottom: 2px; }
+  .msg .body { padding: 10px 14px; border-radius: 10px; display: inline-block; max-width: 100%; }
+  .msg.user { text-align: right; }
+  .msg.user .body { background: var(--user); border: 1px solid #e3d3b0; text-align: left; }
+  .msg.hayato .body { background: var(--hayato); border-left: 4px solid var(--red); }
+  .msg.system .body { background: transparent; color: var(--muted); font-size: .85rem; padding: 0; }
+  .msg.error .body { background: #f6d6d0; border-left: 4px solid #b3261e; }
+
   dialog {
     border: 2px solid var(--gold); border-radius: 12px; background: var(--panel);
     color: var(--panel-ink); max-width: 480px; width: calc(100% - 32px); padding: 20px;
+    max-height: calc(100dvh - 32px); overflow-y: auto;
   }
   dialog::backdrop { background: rgba(0,0,0,.6); }
   dialog h2 { margin-top: 0; color: var(--red); }
@@ -123,7 +243,7 @@
   .start-overlay {
     position: fixed; inset: 0; z-index: 50;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
-    background: radial-gradient(ellipse at center, #3a2018 0%, var(--bg) 70%);
+    background: rgba(4, 3, 12, .7);
     color: var(--gold-soft); text-align: center; padding: 24px; cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
@@ -138,16 +258,20 @@
   .start-overlay .note { font-size: .8rem; opacity: .8; }
 
   @media (max-width: 480px) {
-    .app { padding: 10px; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
-    header { padding: 8px 10px; gap: 8px; }
-    header h1 { font-size: 1.05rem; white-space: nowrap; }
-    .icon-btn { padding: 6px 7px; font-size: .75rem; white-space: nowrap; }
+    .app { padding: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+    header { padding: 8px 10px; gap: 6px; }
+    header h1 { font-size: 1.05rem; }
+    .icon-btn { padding: 6px 6px; font-size: .72rem; }
     header .row { gap: 4px; }
     .mic { width: 56px; height: 56px; }
+    .bubble { font-size: .95rem; max-height: 38%; }
+    .history { padding: 8px; }
   }
 </style>
 </head>
 <body>
+<canvas id="space" aria-hidden="true"></canvas>
+
 <div class="app">
   <header>
     <div>
@@ -155,13 +279,65 @@
       <div class="status" id="status">待機中</div>
     </div>
     <div class="row">
+      <button class="icon-btn" id="historyBtn" title="会話の履歴">📜 履歴</button>
       <button class="icon-btn" id="stopBtn" title="読み上げを止める">⏹ 停止</button>
       <button class="icon-btn" id="clearBtn" title="会話をリセット">↺ リセット</button>
       <button class="icon-btn" id="settingsBtn" title="設定">⚙ 設定</button>
     </div>
   </header>
 
-  <main class="log" id="log" aria-live="polite"></main>
+  <section class="stage">
+    <div class="bubble" id="bubble" aria-live="polite"></div>
+    <div class="hayato" id="hayato">
+      <div class="aura"></div>
+      <div class="float">
+        <div class="bob">
+          <!-- あなたが用意した絵：images/hayato_close.png（口を閉じた絵）と images/hayato_open.png（口を開けた絵） -->
+          <img class="art mouth-close" id="imgClose" alt="ハヤト" hidden>
+          <img class="art mouth-open" id="imgOpen" alt="" hidden>
+          <!-- 絵がまだないときの仮のキャラ -->
+          <svg class="art" id="hayatoSvg" viewBox="0 0 300 400" role="img" aria-label="ハヤト（仮の絵）">
+            <!-- マント -->
+            <path d="M92 232 Q60 330 78 372 L222 372 Q240 330 208 232 Z" fill="#5c0f12"/>
+            <!-- 体（コート） -->
+            <path d="M104 236 Q96 300 106 352 L194 352 Q204 300 196 236 Q150 220 104 236 Z" fill="#8e1c1c" stroke="#d4a64a" stroke-width="4"/>
+            <path d="M150 236 L150 352" stroke="#d4a64a" stroke-width="3"/>
+            <circle cx="150" cy="268" r="5" fill="#d4a64a"/><circle cx="150" cy="296" r="5" fill="#d4a64a"/>
+            <!-- 腕 -->
+            <path d="M106 246 Q82 280 92 312" stroke="#8e1c1c" stroke-width="20" stroke-linecap="round" fill="none"/>
+            <path d="M194 246 Q218 280 208 312" stroke="#8e1c1c" stroke-width="20" stroke-linecap="round" fill="none"/>
+            <circle cx="92" cy="314" r="11" fill="#f6d9bf"/><circle cx="208" cy="314" r="11" fill="#f6d9bf"/>
+            <!-- 足 -->
+            <rect x="116" y="350" width="26" height="30" rx="10" fill="#2a2140"/>
+            <rect x="158" y="350" width="26" height="30" rx="10" fill="#2a2140"/>
+            <!-- 首・顔 -->
+            <rect x="138" y="214" width="24" height="24" rx="6" fill="#f0cfb1"/>
+            <circle cx="150" cy="142" r="96" fill="#f6d9bf"/>
+            <!-- 髪 -->
+            <path d="M54 140 Q52 52 150 42 Q248 52 246 140 Q232 98 206 92 Q214 112 196 118 Q190 92 170 86 Q170 108 150 112 Q140 88 122 86 Q118 110 100 114 Q96 96 82 98 Q64 112 54 140 Z" fill="#1d1b3a"/>
+            <path d="M150 42 L162 14 L172 46 Z" fill="#1d1b3a"/>
+            <!-- 目（まばたきする） -->
+            <g class="eyes">
+              <ellipse cx="114" cy="150" rx="13" ry="17" fill="#1d1b3a"/>
+              <ellipse cx="186" cy="150" rx="13" ry="17" fill="#1d1b3a"/>
+              <circle cx="118" cy="144" r="5" fill="#fff"/><circle cx="190" cy="144" r="5" fill="#fff"/>
+            </g>
+            <!-- 眉（きりっと） -->
+            <path d="M96 122 L130 128" stroke="#1d1b3a" stroke-width="5" stroke-linecap="round"/>
+            <path d="M204 122 L170 128" stroke="#1d1b3a" stroke-width="5" stroke-linecap="round"/>
+            <!-- ほお -->
+            <ellipse cx="96" cy="182" rx="12" ry="7" fill="#f2a7a0" opacity=".55"/>
+            <ellipse cx="204" cy="182" rx="12" ry="7" fill="#f2a7a0" opacity=".55"/>
+            <!-- 口（閉じ・開き） -->
+            <path class="m-close" d="M138 194 Q150 200 162 194" stroke="#7a2a2a" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <ellipse class="m-open" cx="150" cy="197" rx="12" ry="10" fill="#7a2a2a"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="you" id="youLine" hidden></div>
+    <div class="toast" id="toast" hidden></div>
+  </section>
 
   <div class="controls">
     <button class="mic" id="micBtn" title="押して話す">🎙</button>
@@ -169,6 +345,16 @@
       <input id="textInput" type="text" placeholder="話しかけるか、ここに入力…" autocomplete="off">
       <button class="send" id="sendBtn">送信</button>
     </div>
+  </div>
+</div>
+
+<div class="history" id="history" hidden>
+  <div class="history-panel">
+    <div class="history-head">
+      <span>📜 会話の履歴</span>
+      <button class="icon-btn" id="historyClose">✕ 閉じる</button>
+    </div>
+    <main class="log" id="log"></main>
   </div>
 </div>
 
@@ -313,8 +499,192 @@ function addMsg(role, text) {
   div.querySelector(".body").textContent = text;
   logEl.appendChild(div);
   logEl.scrollTop = logEl.scrollHeight;
+  // エラーやお知らせは、履歴だけでなく画面にも出す
+  if (role === "error" || role === "system") showToast(text, role === "error" ? "error" : "info");
   return div.querySelector(".body");
 }
+
+// ============================================================
+//  ステージ（吹き出し・あなたの言葉・お知らせ）
+// ============================================================
+const bubbleEl = $("bubble"), youEl = $("youLine"), toastEl = $("toast"), hayatoEl = $("hayato");
+function showBubble(text, { thinking = false, more = false } = {}) {
+  bubbleEl.hidden = false;
+  bubbleEl.classList.toggle("thinking", thinking);
+  bubbleEl.textContent = text;
+  if (more) {
+    const s = document.createElement("span");
+    s.className = "more";
+    s.textContent = "（詳しい説明は 📜履歴 で読めます）";
+    bubbleEl.appendChild(s);
+  }
+  bubbleEl.scrollTop = bubbleEl.scrollHeight;
+}
+function showYou(text) {
+  youEl.hidden = !text;
+  youEl.textContent = text ? `${settings.userName || "あなた"}：${text}` : "";
+}
+let toastTimer = null;
+function showToast(text, kind = "info") {
+  toastEl.hidden = false;
+  toastEl.className = "toast" + (kind === "info" ? " info" : "");
+  toastEl.textContent = text;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toastEl.hidden = true; }, kind === "error" ? 12000 : 6000);
+}
+
+// ============================================================
+//  ハヤトの絵（あなたの絵があれば使い、なければ仮の絵）
+// ============================================================
+const IMG_CLOSE = "images/hayato_close.png";
+const IMG_OPEN = "images/hayato_open.png";
+(function loadArt() {
+  const c = $("imgClose"), o = $("imgOpen"), svg = $("hayatoSvg");
+  c.onload = () => { c.hidden = false; svg.style.display = "none"; };
+  c.onerror = () => { c.hidden = true; };           // 絵がないときは仮の絵のまま
+  o.onload = () => { o.hidden = false; };
+  o.onerror = () => { o.hidden = true; };           // 口を開けた絵がなければ、口パクなしで動く
+  c.src = IMG_CLOSE;
+  o.src = IMG_OPEN;
+})();
+
+// 口パクと状態（話している・考えている）の切り替え
+(function animateHayato() {
+  let open = false, flip = 0;
+  setInterval(() => {
+    const talking = speakQueue > 0 || (synth && synth.speaking);
+    hayatoEl.classList.toggle("talking", !!talking);
+    hayatoEl.classList.toggle("thinking", busy && !talking);
+    if (talking) {
+      // 話している間は、少し不規則に口を開け閉めする
+      if (--flip <= 0) { open = !open; flip = open ? 1 + Math.floor(Math.random() * 2) : 1 + Math.floor(Math.random() * 3); }
+    } else {
+      open = false; flip = 0;
+    }
+    hayatoEl.classList.toggle("open", open);
+  }, 90);
+})();
+
+// ============================================================
+//  宇宙・銀河の背景（canvas に描いて動かす）
+// ============================================================
+(function space() {
+  const cv = $("space"), ctx = cv.getContext("2d");
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W = 0, H = 0, DPR = 1, stars = [], nebula = null, shooting = null, last = 0;
+
+  function makeNebula(size) {
+    // 星雲と銀河の帯は、一度だけ別の画用紙に描いておき、毎回はそれを少し回して貼る（軽くするため）
+    const n = document.createElement("canvas");
+    n.width = n.height = size;
+    const g = n.getContext("2d");
+    const blobs = [
+      [0.30, 0.35, 0.42, "rgba(110, 60, 200, .38)"],
+      [0.70, 0.30, 0.36, "rgba(40, 90, 210, .32)"],
+      [0.62, 0.70, 0.40, "rgba(200, 60, 140, .26)"],
+      [0.32, 0.72, 0.30, "rgba(60, 160, 220, .22)"],
+      [0.50, 0.50, 0.22, "rgba(255, 210, 160, .16)"],
+    ];
+    g.globalCompositeOperation = "lighter";
+    for (const [x, y, r, col] of blobs) {
+      const rg = g.createRadialGradient(x * size, y * size, 0, x * size, y * size, r * size);
+      rg.addColorStop(0, col); rg.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = rg; g.fillRect(0, 0, size, size);
+    }
+    // 銀河の帯（斜めの淡い光の帯＋細かい星）
+    g.save();
+    g.translate(size / 2, size / 2); g.rotate(-0.5); g.scale(1, 0.22);
+    const band = g.createRadialGradient(0, 0, 0, 0, 0, size * 0.55);
+    band.addColorStop(0, "rgba(255, 235, 210, .30)");
+    band.addColorStop(0.4, "rgba(170, 150, 255, .14)");
+    band.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = band; g.beginPath(); g.arc(0, 0, size * 0.55, 0, Math.PI * 2); g.fill();
+    g.restore();
+    g.save();
+    g.translate(size / 2, size / 2); g.rotate(-0.5);
+    for (let i = 0; i < 1400; i++) {
+      const x = (Math.random() - 0.5) * size * 1.05;
+      const y = (Math.random() + Math.random() + Math.random() - 1.5) * size * 0.05;
+      g.fillStyle = `rgba(255,255,255,${0.15 + Math.random() * 0.45})`;
+      g.fillRect(x, y, 1.2, 1.2);
+    }
+    g.restore();
+    return n;
+  }
+
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    const count = Math.min(420, Math.round((W * H) / 3500));
+    stars = Array.from({ length: count }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() < 0.9 ? Math.random() * 1.1 + 0.3 : Math.random() * 1.6 + 1.2,
+      tw: Math.random() * Math.PI * 2, sp: 0.6 + Math.random() * 1.8,
+      layer: Math.random() < 0.7 ? 0.25 : 0.6,  // 奥の星はゆっくり、手前の星は少し速く流れる
+      hue: Math.random() < 0.15 ? "200,215,255" : (Math.random() < 0.1 ? "255,225,190" : "255,255,255"),
+    }));
+    nebula = makeNebula(Math.ceil(Math.hypot(W, H) * 1.1));
+  }
+
+  function draw(t) {
+    ctx.fillStyle = "#04030c";
+    ctx.fillRect(0, 0, W, H);
+    // 星雲・銀河をとてもゆっくり回す
+    ctx.save();
+    ctx.translate(W / 2, H * 0.42);
+    ctx.rotate(t * 0.0000065);
+    ctx.drawImage(nebula, -nebula.width / 2, -nebula.height / 2);
+    ctx.restore();
+    // 星（またたき＋ゆっくり流れる）
+    for (const s of stars) {
+      const x = (s.x - t * 0.004 * s.layer) % W;
+      const px = x < 0 ? x + W : x;
+      const a = 0.45 + 0.55 * Math.abs(Math.sin(s.tw + t * 0.001 * s.sp));
+      ctx.fillStyle = `rgba(${s.hue},${a})`;
+      if (s.r > 1.3) {
+        ctx.beginPath(); ctx.arc(px, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(${s.hue},${a * 0.18})`;
+        ctx.beginPath(); ctx.arc(px, s.y, s.r * 3.2, 0, Math.PI * 2); ctx.fill();
+      } else {
+        ctx.fillRect(px, s.y, s.r, s.r);
+      }
+    }
+    // ときどき流れ星
+    if (!shooting && Math.random() < 0.0025) {
+      shooting = { x: Math.random() * W * 0.8 + W * 0.2, y: Math.random() * H * 0.4, life: 0 };
+    }
+    if (shooting) {
+      shooting.life += 1;
+      const p = shooting.life / 45;
+      const sx = shooting.x - p * 260, sy = shooting.y + p * 120;
+      const grad = ctx.createLinearGradient(sx, sy, sx + 90, sy - 42);
+      grad.addColorStop(0, `rgba(255,255,255,${0.9 * (1 - p)})`);
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.strokeStyle = grad; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + 90, sy - 42); ctx.stroke();
+      if (p >= 1) shooting = null;
+    }
+  }
+
+  function loop(t) {
+    // 30コマ/秒程度に抑えてスマホの電池を節約。画面が裏にあるときは止まる
+    if (t - last > 33) { draw(t); last = t; }
+    requestAnimationFrame(loop);
+  }
+  resize();
+  window.addEventListener("resize", () => { resize(); draw(performance.now()); });
+  if (reduce) draw(0); else requestAnimationFrame(loop);
+})();
+
+// 履歴（折りたたみ）
+$("historyBtn").addEventListener("click", () => {
+  $("history").hidden = false;
+  logEl.scrollTop = logEl.scrollHeight;
+});
+$("historyClose").addEventListener("click", () => { $("history").hidden = true; });
+$("history").addEventListener("click", (e) => { if (e.target.id === "history") $("history").hidden = true; });
 
 // ============================================================
 //  音声合成（読み上げ）
@@ -698,6 +1068,8 @@ async function send(text) {
   }
   textInput.value = "";
   addMsg("user", text);
+  showYou(text);
+  toastEl.hidden = true;
 
   // 履歴が長くなりすぎたら、古いものを削るのではなく会話の記憶を新しくする
   // （途中を削ると署名が合わなくなるため）
@@ -718,6 +1090,7 @@ async function send(text) {
   sendBtn.disabled = true;
   setStatus(mode.deep ? "じっくり考えています…" : "考えています…");
   const bodyEl = addMsg("hayato", "…");
+  showBubble(mode.deep ? "……（じっくり考えています）" : "……", { thinking: true });
   const whoEl = bodyEl.parentElement.querySelector(".who");
   const tags = [MODELS[mode.model].label];
   if (mode.deep) tags.push("じっくり");
@@ -730,6 +1103,7 @@ async function send(text) {
     if (kind === "search") {
       if (!tags.includes("Web検索")) { tags.push("Web検索"); setWho(); }
       setStatus("ネットで調べています…");
+      if (!shown) showBubble("……（ネットで調べています）", { thinking: true });
     }
   };
   const onText = (delta) => {
@@ -737,6 +1111,13 @@ async function send(text) {
     shown += delta;
     bodyEl.textContent = shown;
     logEl.scrollTop = logEl.scrollHeight;
+    // 吹き出しには、詳しく答えるときは要点だけ、ふだんは全文を出す
+    if (mode.detail) {
+      const i = shown.indexOf("【詳細】");
+      showBubble((i >= 0 ? shown.slice(0, i) : shown).replace("【要点】", "").trim(), { more: i >= 0 });
+    } else {
+      showBubble(shown);
+    }
     if (cut) return; // 詳しく答えるときは【詳細】以降は読み上げない
     pending += delta;
     if (mode.detail) {
@@ -769,6 +1150,7 @@ async function send(text) {
 
     if (final.stop_reason === "refusal") {
       bodyEl.textContent = "申し訳ありません、その件にはお答えできません。";
+      showBubble(bodyEl.textContent);
       speak(bodyEl.textContent);
       dropTurn(userTurn);   // 断られたやり取りは履歴に残さない
     } else {
@@ -777,7 +1159,10 @@ async function send(text) {
     }
   } catch (err) {
     dropTurn(userTurn);
-    if (!shown) bodyEl.parentElement.remove();
+    if (!shown) {
+      bodyEl.parentElement.remove();
+      showBubble("……うまくお答えできませんでした。下のお知らせを確認してください。");
+    }
     addMsg("error", errorMessage(err));
   } finally {
     busy = false;
@@ -868,7 +1253,10 @@ if (isIOS && synth) {
 
 function greet() {
   const name = settings.userName || "ボス";
-  addMsg("hayato", `お待ちしていました、${name}。ハヤトです。マイクを押すか、文字で話しかけてください。`);
+  const hello = `お待ちしていました、${name}。ハヤトです。マイクを押すか、文字で話しかけてください。`;
+  addMsg("hayato", hello);
+  showBubble(hello);
+  showYou("");
   if (!settings.apiKey) addMsg("system", "はじめに「⚙ 設定」で Claude の APIキーを入力してください。");
 }
 try { localStorage.removeItem("hayato.passcode"); } catch {}
