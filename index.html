@@ -425,7 +425,7 @@
       <div class="status" id="status">待機中</div>
     </div>
     <div class="row">
-      <button class="icon-btn mobile-only" id="historyBtn" title="会話の履歴">📜 履歴</button>
+      <button class="icon-btn" id="historyBtn" title="会話の履歴">📜 履歴</button>
       <button class="icon-btn mobile-only" id="stopBtn" title="読み上げを止める">⏹ 停止</button>
       <button class="icon-btn desktop-only" id="handsFreeBtn" title="話しかけ続けられるモード（オンのときは、ハヤトが話し終えると自動で聞き取ります）">🎙 常時会話 ON</button>
       <button class="icon-btn" id="clearBtn" title="新しい会話を始める">↺ 新しい会話</button>
@@ -510,6 +510,10 @@
 
   <label for="rate">話す速さ（<span id="rateVal">1.1</span>）</label>
   <input id="rate" type="range" min="0.7" max="1.6" step="0.1" value="1.1">
+
+  <label for="pause">話し終わりを待つ時間（<span id="pauseVal">2.5</span>秒）</label>
+  <input id="pause" type="range" min="1.5" max="5" step="0.5" value="2.5">
+  <div class="hint">黙ってからこの秒数がたつと、話し終わったと判断して送ります。途中で遮られるときは長くしてください。</div>
 
   <button type="button" class="secondary" id="testVoice" style="margin-top:12px;padding:8px 14px;border-radius:8px;border:1px solid var(--red);font:inherit;cursor:pointer">🔊 声のテスト</button>
   <div class="hint">押すと、選んだ声と速さで読み上げます。声が出ない場合は、マナーモードと音量を確認してください。</div>
@@ -672,6 +676,7 @@ const settings = {
   userName: store.get("userName", ""),
   voice: store.get("voice", ""),
   rate: parseFloat(store.get("rate", "1.1")),
+  pause: parseFloat(store.get("pause", "2.5")), // 話し終わりを待つ秒数
   autoListen: store.get("autoListen", "false") === "true",
   readAloud: store.get("readAloud", "true") !== "false", // 返答を読み上げるか
   model: store.get("model", "auto"),
@@ -1158,22 +1163,22 @@ function createRecognizer() {
   const r = new SR();
   r.lang = "ja-JP";
   r.interimResults = true;
-  r.continuous = false;
+  // 途中で少し間が空いても聞き取りを終わらせない（考えながら話せるように）
+  r.continuous = true;
   r.onstart = () => { clearTimeout(startTimer); setStatus(handsFree() ? "聞いています…（話しかけてください）" : "聞いています…（もう一度押すと送信）"); };
-  // iPhone の Safari は「確定(isFinal)」を返さずに終わることがあるので、
-  // 聞き取れた文章を毎回まるごと保持し、話が途切れたら（または終了時に）送る。
+  // ブラウザが「確定」と判断しても、すぐには送らない。
+  // 聞き取れた文章を毎回まるごと保持し、設定の秒数だけ黙ったら（または聞き取りが終わったら）送る。
   r.onresult = (e) => {
     gotSomething = true;
-    let text = "", allFinal = true;
-    for (let i = 0; i < e.results.length; i++) {
-      text += e.results[i][0].transcript;
-      if (!e.results[i].isFinal) allFinal = false;
-    }
+    let text = "";
+    for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
     heard = text;
     textInput.value = text;
     clearTimeout(silenceTimer);
-    if (allFinal && text.trim()) finishListening();
-    else silenceTimer = setTimeout(finishListening, 1500); // 1.5秒黙ったら送信
+    if (text.trim()) {
+      setStatus("聞いています…（話し終えて" + settings.pause + "秒で送信）");
+      silenceTimer = setTimeout(finishListening, settings.pause * 1000);
+    }
   };
   r.onerror = (e) => {
     gotSomething = true;
@@ -1273,7 +1278,7 @@ function startDictation() {
   setStatus("キーボードのマイク🎤で話してください");
   if (!dictationHintShown) {
     dictationHintShown = true;
-    addMsg("system", "iPhone では、キーボードの右下（または左下）にあるマイクのマークを押して話してください。話し終えて2秒たつと、自動で送信します。");
+    addMsg("system", "iPhone では、キーボードの右下（または左下）にあるマイクのマークを押して話してください。話し終えて少し（設定の秒数）たつと、自動で送信します。");
   }
 }
 function endDictation() {
@@ -1285,12 +1290,12 @@ textInput.addEventListener("input", () => {
   if (!dictationMode) return;
   clearTimeout(dictationTimer);
   if (!textInput.value.trim()) return;
-  setStatus("聞き取り中…（話し終えて2秒で送信）");
+  setStatus("聞き取り中…（話し終えて" + settings.pause + "秒で送信）");
   dictationTimer = setTimeout(() => {
     const text = textInput.value.trim();
     endDictation();
     if (text) { textInput.blur(); send(text); }
-  }, 2000);
+  }, settings.pause * 1000);
 });
 textInput.addEventListener("blur", () => {
   // キーボードを閉じたら、文字が入っていればすぐ送る
@@ -1647,6 +1652,7 @@ function openSettings() {
   $("userName").value = settings.userName;
   $("modelSelect").value = settings.model;
   $("rate").value = settings.rate; $("rateVal").textContent = settings.rate;
+  $("pause").value = settings.pause; $("pauseVal").textContent = settings.pause;
   $("autoListen").checked = settings.autoListen;
   if (settings.voice) $("voiceSelect").value = settings.voice;
   dlg.showModal();
@@ -1654,6 +1660,7 @@ function openSettings() {
 $("settingsBtn").addEventListener("click", openSettings);
 $("cancelSettings").addEventListener("click", () => dlg.close());
 $("rate").addEventListener("input", (e) => $("rateVal").textContent = e.target.value);
+$("pause").addEventListener("input", (e) => $("pauseVal").textContent = e.target.value);
 $("testVoice").addEventListener("click", () => {
   if (!synth) { alert("このブラウザは読み上げに対応していません。"); return; }
   synth.cancel();
@@ -1677,6 +1684,8 @@ $("saveSettings").addEventListener("click", () => {
   store.set("model", settings.model);
   settings.voice = $("voiceSelect").value;
   settings.rate = parseFloat($("rate").value);
+  settings.pause = parseFloat($("pause").value);
+  store.set("pause", String(settings.pause));
   settings.autoListen = $("autoListen").checked;
   store.set("apiKey", settings.apiKey);
   store.set("userName", settings.userName);
