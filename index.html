@@ -319,6 +319,27 @@ function loadVoices() {
 if (synth) { loadVoices(); synth.onvoiceschanged = loadVoices; }
 
 let speakQueue = 0;
+// iPhone では、読み上げ中のデータがメモリから消されると「読み終わった」知らせ(onend)が届かない。
+// 読み上げ中のデータを手元に持っておき、さらに定期的に「本当にまだ話しているか」を確認する。
+const activeUtterances = new Set();
+let speakWatch = null;
+let lastSpeechEnd = 0;
+function speakingDone() {
+  clearInterval(speakWatch); speakWatch = null;
+  activeUtterances.clear();
+  speakQueue = 0;
+  lastSpeechEnd = Date.now();
+  if (!busy) {
+    setStatus("待機中");
+    if (settings.autoListen) startListening();
+  }
+}
+function watchSpeaking() {
+  if (speakWatch) return;
+  speakWatch = setInterval(() => {
+    if (!busy && !synth.speaking && !synth.pending) speakingDone();
+  }, 400);
+}
 function cleanForSpeech(t) {
   return t.replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク").trim();
 }
@@ -335,14 +356,14 @@ function speak(text) {
   if (v) u.voice = v;
   speakQueue++;
   setStatus("話しています…");
+  activeUtterances.add(u);
   u.onend = u.onerror = () => {
+    activeUtterances.delete(u);
     speakQueue = Math.max(0, speakQueue - 1);
-    if (speakQueue === 0 && !busy) {
-      setStatus("待機中");
-      if (settings.autoListen) startListening();
-    }
+    if (speakQueue === 0) speakingDone();
   };
   synth.speak(u);
+  watchSpeaking();
 }
 // iPhone の Safari は、ユーザーがボタンを押した「その瞬間」に読み上げを始めないと、
 // 以後の読み上げをすべて黙って無視する。空白や無音では合図にならないので、
@@ -359,7 +380,14 @@ function unlockAudio() {
   if (v) u.voice = v;
   synth.speak(u);
 }
-function stopSpeaking() { if (synth) synth.cancel(); speakQueue = 0; if (!busy) setStatus("待機中"); }
+function stopSpeaking() {
+  if (synth && (synth.speaking || synth.pending)) synth.cancel();
+  clearInterval(speakWatch); speakWatch = null;
+  activeUtterances.clear();
+  speakQueue = 0;
+  lastSpeechEnd = Date.now();
+  if (!busy) setStatus("待機中");
+}
 
 // ============================================================
 //  音声認識（聞き取り）
@@ -428,7 +456,15 @@ function startListening() {
       : "このブラウザは音声入力に対応していません。iPhone は Safari、PC は Chrome で開いてください。");
     return;
   }
-  if (synth) synth.cancel();
+  // iPhone では、読み上げ中や止めた直後にマイクを始めると、マイクが音を拾えない。
+  // 話している途中に押されたら、まず読み上げだけ止めて、もう一度押してもらう。
+  if (synth && (synth.speaking || synth.pending)) {
+    stopSpeaking();
+    if (isIOS) {
+      setStatus("読み上げを止めました。もう一度マイクを押してください");
+      return;
+    }
+  }
   speakQueue = 0;
   heard = "";
   gotSomething = false;
