@@ -148,15 +148,11 @@
   .avatar.talking .bob { animation: bob .36s ease-in-out infinite; }
   .avatar .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .avatar .art[hidden] { display: none; }
-  /* 口パク：絵（画像）を使うときは2枚を重ねて、見せる方を切り替える */
-  .avatar .art.mouth-open { visibility: hidden; }
-  .avatar.open .art.mouth-open { visibility: visible; }
-  .avatar.open .art.mouth-close { visibility: hidden; }
-  /* 仮のキャラ（SVG）の口 */
-  #hayatoSvg .m-open { display: none; }
-  .avatar.open #hayatoSvg .m-open { display: inline; }
-  .avatar.open #hayatoSvg .m-close { display: none; }
-  #hayatoSvg .eyes { animation: blink 4.5s infinite; transform-origin: 50% 37%; transform-box: view-box; }
+  /* キャラは、動画の準備ができたらふわっと現れる */
+  #charCanvas { opacity: 0; transition: opacity .9s ease; }
+  #charCanvas.shown { opacity: 1; }
+  /* 動画の準備ができるまでは、足もとの光の輪も出さない */
+  .avatar:not(.video) .aura { display: none; }
   /* 考え中は淡く光る */
   .avatar.thinking .float { filter: drop-shadow(0 0 14px rgba(150,170,255,.55)); }
 
@@ -447,43 +443,6 @@
           <!-- キャラの動画（緑の背景を透明にして canvas に描く） -->
           <video id="charVideo" src="media/hayato_talk.mp4" muted loop playsinline preload="auto" aria-hidden="true" style="display:none"></video>
           <canvas class="art" id="charCanvas" aria-label="ハヤト" hidden></canvas>
-          <!-- 動画が使えないときの仮のキャラ -->
-          <svg class="art" id="hayatoSvg" viewBox="0 0 300 400" role="img" aria-label="ハヤト（仮の絵）">
-            <!-- マント -->
-            <path d="M92 232 Q60 330 78 372 L222 372 Q240 330 208 232 Z" fill="#5c0f12"/>
-            <!-- 体（コート） -->
-            <path d="M104 236 Q96 300 106 352 L194 352 Q204 300 196 236 Q150 220 104 236 Z" fill="#8e1c1c" stroke="#d4a64a" stroke-width="4"/>
-            <path d="M150 236 L150 352" stroke="#d4a64a" stroke-width="3"/>
-            <circle cx="150" cy="268" r="5" fill="#d4a64a"/><circle cx="150" cy="296" r="5" fill="#d4a64a"/>
-            <!-- 腕 -->
-            <path d="M106 246 Q82 280 92 312" stroke="#8e1c1c" stroke-width="20" stroke-linecap="round" fill="none"/>
-            <path d="M194 246 Q218 280 208 312" stroke="#8e1c1c" stroke-width="20" stroke-linecap="round" fill="none"/>
-            <circle cx="92" cy="314" r="11" fill="#f6d9bf"/><circle cx="208" cy="314" r="11" fill="#f6d9bf"/>
-            <!-- 足 -->
-            <rect x="116" y="350" width="26" height="30" rx="10" fill="#2a2140"/>
-            <rect x="158" y="350" width="26" height="30" rx="10" fill="#2a2140"/>
-            <!-- 首・顔 -->
-            <rect x="138" y="214" width="24" height="24" rx="6" fill="#f0cfb1"/>
-            <circle cx="150" cy="142" r="96" fill="#f6d9bf"/>
-            <!-- 髪 -->
-            <path d="M54 140 Q52 52 150 42 Q248 52 246 140 Q232 98 206 92 Q214 112 196 118 Q190 92 170 86 Q170 108 150 112 Q140 88 122 86 Q118 110 100 114 Q96 96 82 98 Q64 112 54 140 Z" fill="#1d1b3a"/>
-            <path d="M150 42 L162 14 L172 46 Z" fill="#1d1b3a"/>
-            <!-- 目（まばたきする） -->
-            <g class="eyes">
-              <ellipse cx="114" cy="150" rx="13" ry="17" fill="#1d1b3a"/>
-              <ellipse cx="186" cy="150" rx="13" ry="17" fill="#1d1b3a"/>
-              <circle cx="118" cy="144" r="5" fill="#fff"/><circle cx="190" cy="144" r="5" fill="#fff"/>
-            </g>
-            <!-- 眉（きりっと） -->
-            <path d="M96 122 L130 128" stroke="#1d1b3a" stroke-width="5" stroke-linecap="round"/>
-            <path d="M204 122 L170 128" stroke="#1d1b3a" stroke-width="5" stroke-linecap="round"/>
-            <!-- ほお -->
-            <ellipse cx="96" cy="182" rx="12" ry="7" fill="#f2a7a0" opacity=".55"/>
-            <ellipse cx="204" cy="182" rx="12" ry="7" fill="#f2a7a0" opacity=".55"/>
-            <!-- 口（閉じ・開き） -->
-            <path class="m-close" d="M138 194 Q150 200 162 194" stroke="#7a2a2a" stroke-width="4" stroke-linecap="round" fill="none"/>
-            <ellipse class="m-open" cx="150" cy="197" rx="12" ry="10" fill="#7a2a2a"/>
-          </svg>
         </div>
       </div>
     </div>
@@ -678,9 +637,16 @@ function addMsg(role, text) {
 //  ステージ（吹き出し・あなたの言葉・お知らせ）
 // ============================================================
 const threadEl = $("thread"), toastEl = $("toast"), hayatoEl = $("hayato");
-const MAX_LINES = 8;      // セリフ欄に並べておく数（それより古いものは 📜履歴 で読める）
+const KEEP_LINES = 2;     // セリフ欄に残す数（ハヤト・あなたそれぞれ「今のセリフと1つ前」まで。全部は 📜履歴 で読める）
 let curHayatoLine = null; // 今ハヤトが話しているセリフ
 
+// 古いセリフを消して、ハヤト・あなたそれぞれ直近 KEEP_LINES 個だけ残す
+function trimThread() {
+  for (const role of ["hayato", "user"]) {
+    const lines = [...threadEl.querySelectorAll(".line." + role)];
+    lines.slice(0, Math.max(0, lines.length - KEEP_LINES)).forEach((l) => l.remove());
+  }
+}
 // セリフ欄に1行足す（role: "hayato" は左、"user" は右）
 function threadLine(role, text) {
   const div = document.createElement("div");
@@ -693,7 +659,7 @@ function threadLine(role, text) {
   body.textContent = text;
   div.append(name, body);
   threadEl.appendChild(div);
-  while (threadEl.children.length > MAX_LINES) threadEl.firstChild.remove();
+  trimThread();
   threadEl.scrollTop = threadEl.scrollHeight;
   return div;
 }
@@ -705,7 +671,7 @@ function showYou(text) {
   const right = $("threadUser");
   const copy = threadEl.lastElementChild.cloneNode(true);
   right.appendChild(copy);
-  while (right.children.length > MAX_LINES) right.firstChild.remove();
+  while (right.children.length > KEEP_LINES) right.firstChild.remove();
   right.scrollTop = right.scrollHeight;
   curHayatoLine = null; // 次のハヤトの返事は新しい行にする
 }
@@ -759,7 +725,7 @@ const charVideo = $("charVideo"), charCanvas = $("charCanvas");
 let charReady = false;
 const setCharTalking = (function setupCharacter() {
   const gl = charCanvas.getContext("webgl", { premultipliedAlpha: true, alpha: true });
-  if (!gl) return () => {}; // WebGL が使えない端末は、仮の絵のまま
+  if (!gl) return () => {}; // WebGL が使えない端末では、キャラは表示しない
   const vs = `attribute vec2 p; varying vec2 v;
     void main(){ v = vec2((p.x+1.0)*0.5, (1.0-p.y)*0.5); gl_Position = vec4(p,0.0,1.0); }`;
   // 緑っぽさ（G が R・B よりどれだけ強いか）で透明度を決め、ふちに残る緑も抑える
@@ -818,12 +784,14 @@ const setCharTalking = (function setupCharacter() {
     if (!charReady) {
       charReady = true;
       charCanvas.hidden = false;
-      $("hayatoSvg").style.display = "none";
       hayatoEl.classList.add("video");
+      draw();
+      requestAnimationFrame(() => charCanvas.classList.add("shown"));
+      return;
     }
     draw();
   });
-  charVideo.addEventListener("error", () => { /* 読み込めなければ仮の絵のまま */ });
+  charVideo.addEventListener("error", () => { /* 読み込めなければ、キャラは表示しない */ });
   window.addEventListener("resize", () => { if (!talkingNow) draw(); });
   charVideo.load();
   requestAnimationFrame(loop);
@@ -1649,11 +1617,8 @@ if (isIOS && synth) {
   }, { once: true });
 }
 
+// 起動時：画面にはセリフを出さない（APIキーがまだのときだけ案内する）
 function greet() {
-  const name = settings.userName || "ボス";
-  const hello = `お待ちしていました、${name}。ハヤトです。マイクを押すか、文字で話しかけてください。`;
-  addMsg("hayato", hello);
-  showBubble(hello);
   if (!settings.apiKey) addMsg("system", "はじめに「⚙ 設定」で Claude の APIキーを入力してください。");
 }
 try { localStorage.removeItem("hayato.passcode"); } catch {}
