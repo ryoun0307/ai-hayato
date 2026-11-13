@@ -264,6 +264,19 @@ function speak(text) {
   };
   synth.speak(u);
 }
+// iPhone の Safari は、ユーザーが触れた瞬間でないと音声を出させない。
+// 最初の操作で無音の読み上げを一度行い、以後は自由に読み上げられるようにする。
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked || !synth) return;
+  audioUnlocked = true;
+  const u = new SpeechSynthesisUtterance(" ");
+  u.volume = 0;
+  synth.speak(u);
+}
+["pointerdown", "keydown", "touchend"].forEach((ev) =>
+  window.addEventListener(ev, unlockAudio, { once: false, passive: true })
+);
 function stopSpeaking() { if (synth) synth.cancel(); speakQueue = 0; if (!busy) setStatus("待機中"); }
 
 // ============================================================
