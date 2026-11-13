@@ -92,17 +92,40 @@ export default async (req) => {
     async start(controller) {
       const send = (obj) => controller.enqueue(encoder.encode(JSON.stringify(obj) + "\n"));
       try {
-        const claude = client.beta.messages.stream({
-          model: MODEL,
-          max_tokens: 4096,
-          system: buildSystemPrompt(String(userName || "").slice(0, 30)) + `\n\n# 現在日時\n${now}`,
-          messages,
-          output_config: { effort: "low" }, // 音声会話なので応答速度を優先
-          betas: ["server-side-fallback-2026-07-01"],
-          fallbacks: "default", // 安全判定で断られた場合は自動で別モデルに切り替え
-        });
-        claude.on("text", (delta) => send({ type: "text", text: delta }));
-        const final = await claude.finalMessage();
+        const run = async () => {
+          let sentText = false;
+          const claude = client.beta.messages.stream({
+            model: MODEL,
+            max_tokens: 4096,
+            system: buildSystemPrompt(String(userName || "").slice(0, 30)) + `\n\n# 現在日時\n${now}`,
+            messages,
+            output_config: { effort: "low" }, // 音声会話なので応答速度を優先
+            betas: ["server-side-fallback-2026-07-01"],
+            fallbacks: "default", // 安全判定で断られた場合は自動で別モデルに切り替え
+          });
+          claude.on("text", (delta) => { sentText = true; send({ type: "text", text: delta }); });
+          try {
+            return await claude.finalMessage();
+          } catch (e) {
+            e.sentText = sentText;
+            throw e;
+          }
+        };
+
+        let final;
+        try {
+          final = await run();
+        } catch (e) {
+          // 一時的なエラー（混雑・通信の途切れなど）で、まだ何も話していなければ1回だけやり直す
+          const retryable =
+            !e.sentText &&
+            (e instanceof Anthropic.APIConnectionError ||
+              /overloaded|api_error|timeout/i.test(String(e?.message)) ||
+              !e?.status || e.status >= 500);
+          if (!retryable) throw e;
+          console.warn("[hayato] retry after:", e?.status, e?.message);
+          final = await run();
+        }
         send({ type: "done", stop_reason: final.stop_reason, content: final.content });
       } catch (err) {
         let message = "Claude との通信でエラーが起きました。";
@@ -119,8 +142,11 @@ export default async (req) => {
           message = "リクエストが多すぎるか、月の上限額に達しました。少し待つか、コンソールの「Limits」を確認してください。";
         } else if (err instanceof Anthropic.APIConnectionError) {
           message = "Claude に接続できませんでした。少し待ってからもう一度話しかけてください。";
-        } else if (err?.status === 529 || err?.status >= 500) {
+        } else if (err?.status === 529 || err?.status >= 500 || /overloaded/i.test(raw)) {
           message = "Claude 側が混み合っています。少し待ってからもう一度話しかけてください。";
+        } else {
+          // 想定外のエラーは、原因を調べられるように短い詳細を付ける（APIキーなどは含まれない）
+          message += `（詳細: ${err?.status ?? "-"} ${raw.replace(/\s+/g, " ").slice(0, 120)}）`;
         }
         if (err instanceof Anthropic.APIError && err.status) status = err.status;
         console.error("[hayato]", status, err?.message);
