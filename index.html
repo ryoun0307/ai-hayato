@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AIハヤト</title>
 <style>
   :root {
@@ -27,9 +27,12 @@
     display: flex; justify-content: center;
   }
   .app {
-    width: 100%; max-width: 760px; height: 100vh;
+    width: 100%; max-width: 760px;
+    height: 100vh; height: 100dvh; /* iPhone のアドレスバーを考慮した高さ */
     display: flex; flex-direction: column;
     padding: 16px;
+    /* 右下に Netlify が表示するバッジと重ならないよう、下に余白を取る */
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
   }
   header {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -117,8 +120,11 @@
   .secondary { background: transparent; color: var(--red); }
 
   @media (max-width: 480px) {
-    .app { padding: 10px; }
-    header h1 { font-size: 1.15rem; }
+    .app { padding: 10px; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+    header { padding: 8px 10px; gap: 8px; }
+    header h1 { font-size: 1.05rem; white-space: nowrap; }
+    .icon-btn { padding: 6px 7px; font-size: .75rem; white-space: nowrap; }
+    header .row { gap: 4px; }
     .mic { width: 56px; height: 56px; }
   }
 </style>
