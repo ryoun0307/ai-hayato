@@ -498,6 +498,7 @@
 
   <label for="modelSelect">いつも使うモデル</label>
   <select id="modelSelect">
+    <option value="auto">おまかせ（質問に合わせて自動で選ぶ）</option>
     <option value="opus">Opus 5.5（一番賢い・料金は基準）</option>
     <option value="sonnet">Sonnet 5.5（賢くて速い・約1/2）</option>
     <option value="haiku">Haiku 5.5（とても速い・約1/40）</option>
@@ -538,16 +539,87 @@ const MODELS = {
   haiku:  { id: "claude-haiku-5-5",  label: "Haiku",  search: "web_search_20250305", fallback: false },
 };
 
-// 話しかけた言葉から「どのモデルで」「じっくり考えるか」「詳しく答えるか」を読み取る
+// 話しかけた言葉から「モデルの指定」「じっくり考えるか」「詳しく答えるか」「競馬か」を読み取る
 function detectMode(text) {
-  let model = null;
+  let model = null; // 言葉でモデルを指定されたときだけ入る
   if (/(オーパス|opus)/i.test(text)) model = "opus";
   else if (/(ソネット|sonnet)/i.test(text)) model = "sonnet";
   else if (/(ハイク|haiku|俳句)\s*で/i.test(text)) model = "haiku";
   const racing = /(競馬|馬券|重賞|出走|レース.*予想|予想.*レース)/.test(text);
-  const deep = racing || /(じっくり|深く考え|よく考え|しっかり考え|熟考)/.test(text);
+  const deep = /(じっくり|深く考え|よく考え|しっかり考え|熟考)/.test(text);
   const detail = racing || /(詳しく|くわしく|詳細|しっかり説明|丁寧に説明)/.test(text);
-  return { model: model || settings.model, deep, detail, racing };
+  return { model, deep, detail, racing, auto: false, effort: "low" };
+}
+
+// エフォート（考える深さ）の決め方
+//   「じっくり」→ high ／ 競馬 → medium ／ Opus → medium ／ Sonnet・Haiku → low（速さ優先）
+function effortFor(mode) {
+  if (mode.deep) return "high";
+  if (mode.racing) return "medium";
+  return mode.model === "opus" ? "medium" : "low";
+}
+
+// 会話の記憶に、Web検索などの道具を使った跡があるか（Haiku は別の型の検索を使うので、そのときは Haiku に渡さない）
+function historyHasServerTools() {
+  return history.some((m) => Array.isArray(m.content) &&
+    m.content.some((b) => b.type && !["text", "thinking", "redacted_thinking"].includes(b.type)));
+}
+
+// 「おまかせ」：まず Haiku に質問を読ませて、簡単／普通／難しい を判断させる
+async function classifyQuestion(text) {
+  const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true, maxRetries: 0, timeout: 4000 });
+  // 「それについて詳しく」のような続きの質問も判断できるよう、直前のハヤトの返事も少し見せる
+  let lastBot = "";
+  for (let i = history.length - 1; i >= 0; i--) {
+    const m = history[i];
+    if (m.role === "assistant" && Array.isArray(m.content)) {
+      lastBot = m.content.filter((b) => b.type === "text").map((b) => b.text).join("").slice(0, 200);
+      break;
+    }
+  }
+  const res = await client.messages.create({
+    model: MODELS.haiku.id,
+    max_tokens: 20,
+    thinking: { type: "disabled" },
+    output_config: { effort: "low" },
+    system:
+      "あなたは、音声アシスタントへの質問を振り分ける係。答えるのに必要な力を3段階で判定する。\n" +
+      "easy: 挨拶、雑談、相づち、一言で答えられる簡単な質問、短い言い換え。小さなモデルでも十分に良い答えができるもの。\n" +
+      "normal: 普通の質問、説明、ニュースや天気などの調べもの、文章づくり、予定の整理。\n" +
+      "hard: 込み入った相談、いくつもの条件を考える判断や計画、分析、専門的な内容、人生や仕事の大事な判断。\n" +
+      "迷ったら normal。答えは easy / normal / hard のどれか1語だけを書く。",
+    messages: [{ role: "user", content: `直前のアシスタントの返事: ${lastBot || "なし"}\n今回の質問: ${text}` }],
+  });
+  const out = (res.content.find((b) => b.type === "text")?.text || "").toLowerCase();
+  const level = (out.match(/easy|normal|hard/) || ["normal"])[0];
+  return level;
+}
+
+// どのモデルで、どのくらいのエフォートで答えるかを決める
+async function chooseModel(mode, text) {
+  if (mode.model) {
+    // 言葉で指定されたとき
+  } else if (settings.model !== "auto") {
+    mode.model = settings.model;  // 設定で固定しているとき
+  } else {
+    mode.auto = true;
+    if (mode.deep || mode.racing) {
+      mode.model = "opus";         // 「じっくり」や競馬は、判断なしで Opus
+    } else {
+      let level = "normal";
+      try {
+        // 判断に3秒以上かかったら、待たずに Sonnet にする
+        level = await Promise.race([
+          classifyQuestion(text),
+          new Promise((resolve) => setTimeout(() => resolve("normal"), 3000)),
+        ]);
+      } catch { level = "normal"; }
+      mode.model = level === "easy" ? "haiku" : level === "hard" ? "opus" : "sonnet";
+      if (mode.model === "haiku" && historyHasServerTools()) mode.model = "sonnet";
+    }
+  }
+  mode.effort = effortFor(mode);
+  return mode;
 }
 
 // ============================================================
@@ -602,9 +674,15 @@ const settings = {
   rate: parseFloat(store.get("rate", "1.1")),
   autoListen: store.get("autoListen", "false") === "true",
   readAloud: store.get("readAloud", "true") !== "false", // 返答を読み上げるか
-  model: store.get("model", "opus"),
+  model: store.get("model", "auto"),
 };
-if (!MODELS[settings.model]) settings.model = "opus";
+// 「おまかせ」を最初の設定にする（以前の版で保存されたモデルがあっても、一度だけ「おまかせ」に直す）
+if (store.get("modelAutoDefault", "") !== "done") {
+  settings.model = "auto";
+  store.set("model", "auto");
+  store.set("modelAutoDefault", "done");
+}
+if (settings.model !== "auto" && !MODELS[settings.model]) settings.model = "auto";
 
 // ============================================================
 //  DOM
@@ -1341,8 +1419,8 @@ async function askClaude(onText, mode, onEvent = () => {}) {
     max_tokens: (mode.deep || mode.detail) ? 16000 : 4096,
     system: systemPrompt,
     messages: history,
-    // ふだんは速さ優先（low）、じっくり考えるときは high
-    output_config: { effort: mode.deep ? "high" : "low" },
+    // 考える深さ（effortFor で決めたもの）
+    output_config: { effort: mode.effort || "low" },
     // Web検索：最新の情報が必要なときだけ Claude が自分で使う
     tools: [{
       type: m.search, name: "web_search",
@@ -1411,7 +1489,9 @@ async function send(text) {
   const bodyEl = addMsg("hayato", "…");
   showBubble(mode.deep ? "……（じっくり考えています）" : "……", { thinking: true });
   const whoEl = bodyEl.parentElement.querySelector(".who");
-  const tags = [MODELS[mode.model].label];
+  // どのモデル・どのくらいの深さで答えるかを決める（「おまかせ」のときは Haiku が判断）
+  await chooseModel(mode, text);
+  const tags = [MODELS[mode.model].label + (mode.auto ? "（自動）" : "")];
   if (mode.deep) tags.push("じっくり");
   if (mode.detail) tags.push("詳しく");
   const setWho = () => { whoEl.textContent = `ハヤト（${tags.join("・")}）`; };
@@ -1453,12 +1533,21 @@ async function send(text) {
     try {
       final = await askClaude(onText, mode, onEvent);
     } catch (e) {
-      // 万一、署名のエラーが出たら、会話の記憶を新しくして同じ質問をもう一度送る
-      if (shown || !/signature/i.test(String(e?.message))) throw e;
-      resetConversation();
-      history.push(userTurn);
-      addMsg("system", "ハヤトの記憶を新しくして、もう一度聞き直しています。");
-      final = await askClaude(onText, mode, onEvent);
+      if (!shown && mode.model === "haiku" && e?.status === 400) {
+        // 「おまかせ」で Haiku が答えられない形の会話だったときは、Sonnet で答え直す
+        mode.model = "sonnet";
+        mode.effort = effortFor(mode);
+        tags[0] = MODELS.sonnet.label + (mode.auto ? "（自動）" : "");
+        setWho();
+        final = await askClaude(onText, mode, onEvent);
+      } else {
+        // 万一、署名のエラーが出たら、会話の記憶を新しくして同じ質問をもう一度送る
+        if (shown || !/signature/i.test(String(e?.message))) throw e;
+        resetConversation();
+        history.push(userTurn);
+        addMsg("system", "ハヤトの記憶を新しくして、もう一度聞き直しています。");
+        final = await askClaude(onText, mode, onEvent);
+      }
     }
     // Web検索が長引くと途中で一度区切られる（pause_turn）ので、続きを頼む
     for (let i = 0; i < 4 && final.stop_reason === "pause_turn"; i++) {
