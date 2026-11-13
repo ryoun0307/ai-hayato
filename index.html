@@ -169,6 +169,9 @@
   <label for="rate">話す速さ（<span id="rateVal">1.1</span>）</label>
   <input id="rate" type="range" min="0.7" max="1.6" step="0.1" value="1.1">
 
+  <button type="button" class="secondary" id="testVoice" style="margin-top:12px;padding:8px 14px;border-radius:8px;border:1px solid var(--red);font:inherit;cursor:pointer">🔊 声のテスト</button>
+  <div class="hint">押すと、選んだ声と速さで読み上げます。声が出ない場合は、マナーモードと音量を確認してください。</div>
+
   <div class="row" style="margin-top:12px">
     <input id="autoListen" type="checkbox">
     <label for="autoListen" style="margin:0">ハヤトが話し終えたら自動で聞き取りを再開する</label>
@@ -252,22 +255,42 @@ function addMsg(role, text) {
 // ============================================================
 const synth = window.speechSynthesis;
 let voices = [];
+const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+// 読みの正確さで声に順位を付ける（数字が小さいほど優先）
+function voiceRank(v) {
+  const n = v.name;
+  if (/Natural|Online/i.test(n)) return /Keita|Daichi|Naoki|Male/i.test(n) ? 0 : 1; // Edge の高品質な声
+  if (/Google/i.test(n)) return 2;                                                   // Chrome の Google 日本語
+  if (/Haruka|Ichiro|Ayumi|Sayaka/i.test(n)) return 9;                               // Windows の古い声（読み間違いが多い）
+  return 5;
+}
 function loadVoices() {
-  voices = synth ? synth.getVoices().filter(v => v.lang && v.lang.startsWith("ja")) : [];
+  voices = synth ? synth.getVoices().filter(v => v.lang && v.lang.replace("_", "-").startsWith("ja")) : [];
+  voices.sort((a, b) => voiceRank(a) - voiceRank(b));
   const sel = $("voiceSelect");
   sel.innerHTML = "";
-  if (!voices.length) {
-    sel.innerHTML = `<option value="">（日本語の音声が見つかりません）</option>`;
-    return;
-  }
+  // 「端末の標準の声」は必ず鳴る。iPhone ではこれをおすすめにする
+  const def = document.createElement("option");
+  def.value = ""; def.textContent = isIOS ? "端末の標準の声（おすすめ）" : "端末の標準の声";
+  sel.appendChild(def);
   for (const v of voices) {
     const o = document.createElement("option");
-    o.value = v.name; o.textContent = v.name;
+    o.value = v.name;
+    o.textContent = v.name + (voiceRank(v) <= 2 && !isIOS ? "（読みが正確）" : "");
     sel.appendChild(o);
   }
-  // 男性っぽい声を優先（Keita / Ichiro など）
-  const preferred = settings.voice || (voices.find(v => /Keita|Ichiro|Otoya|Daichi|Male|男性/i.test(v.name)) || voices[0]).name;
-  sel.value = preferred;
+  let preferred = settings.voice;
+  if (preferred && !voices.some(v => v.name === preferred)) preferred = "";
+  // 以前の版が自動で選んだ古い声（読み間違いが多い）や iPhone の声は、一度だけ選び直す
+  if (store.get("voiceV2", "") !== "done" && voices.length) {
+    const old = voices.find(v => v.name === preferred);
+    if (isIOS || (old && voiceRank(old) >= 9)) { preferred = ""; settings.voice = ""; store.set("voice", ""); }
+    store.set("voiceV2", "done");
+  }
+  if (!settings.voice && !isIOS && voices.length) preferred = voices[0].name; // PC は一番正確な声
+  sel.value = preferred || "";
 }
 if (synth) { loadVoices(); synth.onvoiceschanged = loadVoices; }
 
@@ -283,7 +306,8 @@ function speak(text) {
   u.lang = "ja-JP";
   u.rate = settings.rate;
   u.pitch = 0.9;
-  const v = voices.find(v => v.name === ($("voiceSelect").value || settings.voice));
+  const chosen = $("voiceSelect").value;
+  const v = chosen && voices.find(v => v.name === chosen);
   if (v) u.voice = v;
   speakQueue++;
   setStatus("話しています…");
@@ -296,19 +320,21 @@ function speak(text) {
   };
   synth.speak(u);
 }
-// iPhone の Safari は、ユーザーが触れた瞬間でないと音声を出させない。
-// 最初の操作で無音の読み上げを一度行い、以後は自由に読み上げられるようにする。
-let audioUnlocked = false;
+// iPhone の Safari は、ユーザーがボタンを押した「その瞬間」に読み上げを始めないと、
+// 以後の読み上げをすべて黙って無視する。空白や無音では合図にならないので、
+// 最初に送信ボタンかマイクを押したとき、短く「はい」と実際に読み上げて合図にする。
+let audioUnlocked = !isIOS; // PC はこの合図が不要
 function unlockAudio() {
   if (audioUnlocked || !synth) return;
   audioUnlocked = true;
-  const u = new SpeechSynthesisUtterance(" ");
-  u.volume = 0;
+  const u = new SpeechSynthesisUtterance("はい");
+  u.lang = "ja-JP";
+  u.rate = settings.rate;
+  const chosen = $("voiceSelect").value;
+  const v = chosen && voices.find(v => v.name === chosen);
+  if (v) u.voice = v;
   synth.speak(u);
 }
-["pointerdown", "keydown", "touchend"].forEach((ev) =>
-  window.addEventListener(ev, unlockAudio, { once: false, passive: true })
-);
 function stopSpeaking() { if (synth) synth.cancel(); speakQueue = 0; if (!busy) setStatus("待機中"); }
 
 // ============================================================
@@ -523,10 +549,13 @@ async function send(text) {
 // ============================================================
 //  UI イベント
 // ============================================================
-micBtn.addEventListener("click", () => listening ? finishListening() : startListening());
-sendBtn.addEventListener("click", () => send(textInput.value));
+micBtn.addEventListener("click", () => {
+  unlockAudio();
+  listening ? finishListening() : startListening();
+});
+sendBtn.addEventListener("click", () => { unlockAudio(); send(textInput.value); });
 textInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); send(textInput.value); }
+  if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); unlockAudio(); send(textInput.value); }
 });
 $("stopBtn").addEventListener("click", stopSpeaking);
 $("clearBtn").addEventListener("click", () => {
@@ -544,6 +573,19 @@ function openSettings() {
 $("settingsBtn").addEventListener("click", openSettings);
 $("cancelSettings").addEventListener("click", () => dlg.close());
 $("rate").addEventListener("input", (e) => $("rateVal").textContent = e.target.value);
+$("testVoice").addEventListener("click", () => {
+  if (!synth) { alert("このブラウザは読み上げに対応していません。"); return; }
+  synth.cancel();
+  audioUnlocked = true; // ボタンを押した瞬間の読み上げなので、iPhone の合図にもなる
+  const u = new SpeechSynthesisUtterance("お待ちしていました。ハヤトです。本日の予定と、明日の天気を確認しましょう。");
+  u.lang = "ja-JP";
+  u.rate = parseFloat($("rate").value);
+  u.pitch = 0.9;
+  const chosen = $("voiceSelect").value;
+  const v = chosen && voices.find(v => v.name === chosen);
+  if (v) u.voice = v;
+  synth.speak(u);
+});
 $("saveSettings").addEventListener("click", () => {
   settings.apiKey = $("apiKey").value.trim();
   const newName = $("userName").value.trim();
