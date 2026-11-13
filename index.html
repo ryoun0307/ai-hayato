@@ -331,7 +331,8 @@ function speakingDone() {
   lastSpeechEnd = Date.now();
   if (!busy) {
     setStatus("待機中");
-    if (settings.autoListen) startListening();
+    // iPhone はボタンを押さないとキーボードが開けないので、自動の聞き取り再開はしない
+    if (settings.autoListen && !isIOS) startListening();
   }
 }
 function watchSpeaking() {
@@ -448,8 +449,54 @@ function createRecognizer() {
 if (!SR) {
   micBtn.title = "このブラウザは音声入力に対応していません";
 }
+
+// ------------------------------------------------------------
+//  iPhone 用：キーボードの音声入力（iPhone 標準）を使う方式
+//  iPhone の Safari は、一度読み上げをするとブラウザの音声認識が使えなくなる不具合があるため、
+//  iPhone では入力欄を開いて、キーボードのマイクで話してもらう。話し終えて2秒で自動送信。
+// ------------------------------------------------------------
+let dictationMode = false, dictationTimer = null, dictationHintShown = false;
+function startDictation() {
+  if (busy) return;
+  stopSpeaking();
+  dictationMode = true;
+  textInput.value = "";
+  textInput.focus(); // ボタンを押した瞬間でないとキーボードが開かない
+  micBtn.classList.add("listening");
+  setStatus("キーボードのマイク🎤で話してください");
+  if (!dictationHintShown) {
+    dictationHintShown = true;
+    addMsg("system", "iPhone では、キーボードの右下（または左下）にあるマイクのマークを押して話してください。話し終えて2秒たつと、自動で送信します。");
+  }
+}
+function endDictation() {
+  dictationMode = false;
+  clearTimeout(dictationTimer);
+  micBtn.classList.remove("listening");
+}
+textInput.addEventListener("input", () => {
+  if (!dictationMode) return;
+  clearTimeout(dictationTimer);
+  if (!textInput.value.trim()) return;
+  setStatus("聞き取り中…（話し終えて2秒で送信）");
+  dictationTimer = setTimeout(() => {
+    const text = textInput.value.trim();
+    endDictation();
+    if (text) { textInput.blur(); send(text); }
+  }, 2000);
+});
+textInput.addEventListener("blur", () => {
+  // キーボードを閉じたら、文字が入っていればすぐ送る
+  if (!dictationMode) return;
+  const text = textInput.value.trim();
+  endDictation();
+  if (text) send(text);
+  else if (!busy && speakQueue === 0) setStatus("待機中");
+});
+
 function startListening() {
   if (listening || busy) return;
+  if (isIOS) { startDictation(); return; }
   if (!SR) {
     addMsg("error", isStandalone
       ? "ホーム画面のアイコンから開くと、音声入力が使えません。Safari で直接開いてください。"
@@ -575,6 +622,7 @@ async function askClaude(onText) {
 
 async function send(text) {
   text = (text || "").trim();
+  if (dictationMode) endDictation();
   if (!text || busy) return;
   if (!settings.apiKey) {
     addMsg("system", "最初に「⚙ 設定」で Claude の APIキーを入力してください。");
@@ -728,6 +776,31 @@ function greet() {
 }
 try { localStorage.removeItem("hayato.passcode"); } catch {}
 greet();
+
+// 設定（APIキーなど）を保存できる環境か調べ、できなければ原因を案内する
+(function checkEnvironment() {
+  const ua = navigator.userAgent;
+  let inApp = "";
+  if (/\bLine\//i.test(ua)) inApp = "LINE";
+  else if (/GSA\//.test(ua)) inApp = "Google アプリ";
+  else if (/FBAN|FBAV|Instagram/i.test(ua)) inApp = "SNS アプリ";
+  else if (/CriOS/.test(ua)) inApp = "Chrome（iPhone 版）";
+  if (inApp) {
+    addMsg("error", `今は「${inApp}」の中でハヤトを開いています。この状態だと、APIキーが保存されなかったり、マイクが使えなかったりします。` +
+      "右下などにある「Safari で開く」を選ぶか、Safari のアドレスバーに直接URLを入力して開いてください。");
+    return;
+  }
+  let canSave = false;
+  try {
+    localStorage.setItem("hayato.__test", "1");
+    canSave = localStorage.getItem("hayato.__test") === "1";
+    localStorage.removeItem("hayato.__test");
+  } catch {}
+  if (!canSave) {
+    addMsg("error", "このブラウザでは設定を保存できません。プライベートブラウズを使っている場合は、通常のタブで開いてください。" +
+      "iPhone の場合は「設定」→「アプリ」→「Safari」で「すべてのCookieをブロック」をオフにしてください。");
+  }
+})();
 </script>
 </body>
 </html>
