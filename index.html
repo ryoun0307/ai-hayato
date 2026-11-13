@@ -95,10 +95,13 @@
   .line { display: flex; flex-direction: column; max-width: 84%; }
   .line.hayato { align-self: flex-start; align-items: flex-start; }
   .line.user   { align-self: flex-end;   align-items: flex-end; }
-  /* 名前は出さない（見本に合わせる） */
-  .line .name { display: none; }
-  /* セリフ：濃い紺の半透明の四角い枠に、白いゴシック体 */
-  .line .text, .user-now {
+  /* セリフ：濃い紺の半透明の四角い枠に、白いゴシック体。枠の中に小さく「HAYATO」「YOU」 */
+  .line .name {
+    display: block; font-size: .66rem; letter-spacing: .16em;
+    color: rgba(190, 205, 240, .72); margin-bottom: 5px;
+  }
+  .line .text { white-space: pre-wrap; word-break: break-word; }
+  .line, .user-now {
     position: relative;
     padding: 12px 18px; border-radius: 12px;
     background: rgba(14, 22, 42, .82); color: #eef2fb;
@@ -111,7 +114,10 @@
   }
   /* ハヤトのセリフは列の幅いっぱい、あなたのセリフは右に寄せて短く */
   .line.hayato { align-self: stretch; align-items: stretch; max-width: 100%; }
+  .line.user { align-items: stretch; }
   .line.thinking .text { color: rgba(238, 242, 251, .6); }
+  /* PC 用の部品は、iPhone では出さない */
+  .brand, .panel-status, .panel-tools { display: none; }
   .line .more { display: block; margin-top: 6px; font-size: .78rem; color: rgba(238, 242, 251, .6); }
   /* 右上の「あなたの最新の一言」（PC の画面だけで出す） */
   .user-now { display: none; }
@@ -290,54 +296,107 @@
   /* ---------- PC など横に広い画面：キャラを中央に大きく、セリフは左右に ---------- */
   @media (min-width: 900px) {
     .app { max-width: none; padding: 0; }
-    /* ヘッダーは、画面の上の中央に細く小さく浮かせる */
-    header {
-      position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5;
-      padding: 5px 8px 5px 16px; gap: 14px; border-radius: 999px;
-      background: rgba(10, 14, 30, .55); border-color: rgba(212,166,74,.35);
-    }
-    header > div:first-child { display: flex; align-items: baseline; gap: 10px; }
-    header h1 { font-size: .95rem; }
-    .icon-btn { font-size: .75rem; padding: 4px 10px; border-radius: 999px; }
 
-    /* ステージは画面全体。キャラを画面の高さいっぱいに、中央に大きく */
+    /* ---- 上部：左に「HAYATO / PERSONAL AI」、中央に状態、右にボタン ---- */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 5;
+      padding: 22px 40px; border: none; border-radius: 0;
+      background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none;
+      pointer-events: none;
+    }
+    header > * { pointer-events: auto; }
+    header h1 { display: none; }
+    .brand {
+      display: block; font-size: .9rem; letter-spacing: .28em; color: #d9e2f6;
+      text-shadow: 0 1px 6px rgba(0,0,0,.7);
+    }
+    header .status {
+      position: absolute; left: 50%; top: 30px; transform: translateX(-50%);
+      font-size: .8rem; color: #cfd9f0; opacity: .9; text-shadow: 0 1px 6px rgba(0,0,0,.7);
+    }
+    .mobile-only { display: none; }
+    .icon-btn {
+      font-size: .92rem; padding: 9px 16px; border-radius: 10px;
+      background: rgba(10, 16, 30, .72); color: #e8eefc;
+      border: 1px solid rgba(170, 190, 230, .35);
+    }
+    .icon-btn:hover { background: rgba(30, 44, 80, .85); }
+
+    /* ---- ステージは画面全体。キャラを画面の高さいっぱいに、中央に大きく ---- */
     .stage { position: fixed; inset: 0; padding: 0; z-index: 1; }
     .avatar {
-      position: absolute; left: 0; right: 0; top: 7vh; bottom: 92px;
+      position: absolute; left: 0; right: 0; top: 7vh; bottom: 2vh;
       max-height: none; min-height: 0;
     }
     .avatar .float, .avatar.video .float { height: 100%; max-width: none; }
 
-    /* 左上：会話（ハヤトのセリフは列いっぱい、あなたのセリフは列の中で右寄せ） */
+    /* ---- 左：会話（ハヤトのセリフは列いっぱい、あなたのセリフは列の中で右寄せ） ---- */
     .thread {
-      position: absolute; top: 28px; left: 10px; z-index: 3;
-      width: min(25vw, 460px); max-height: calc(100dvh - 140px);
-      margin: 0; padding: 0;
+      position: absolute; top: 84px; left: 40px; z-index: 3;
+      width: min(26vw, 460px); max-height: calc(100dvh - 120px);
+      margin: 0; padding: 0 6px 0 0;
       -webkit-mask-image: none; mask-image: none;
+      scrollbar-width: thin; scrollbar-color: rgba(170,190,230,.4) transparent;
     }
+    .thread::-webkit-scrollbar { display: block; width: 6px; }
+    .thread::-webkit-scrollbar-thumb { background: rgba(170,190,230,.4); border-radius: 3px; }
     .line { max-width: 100%; }
     .line.user { max-width: 85%; }
+    /* 操作パネルが開いているときは、会話欄がパネルに隠れないよう短くする */
+    body.panel-open .thread { max-height: calc(100dvh - 84px - var(--panel-h, 280px) - 20px); }
 
-    /* 右上：あなたの最新の一言 */
+    /* ---- 右上：あなたの最新の一言（ボタンの下） ---- */
     .user-now {
-      display: block; position: absolute; top: 28px; right: 10px; z-index: 3;
-      width: min(25vw, 460px);
+      display: block; position: absolute; top: 84px; right: 40px; z-index: 3;
+      width: min(26vw, 460px);
     }
     .user-now[hidden] { display: none; }
 
-    /* お知らせは入力欄のすぐ上の中央に */
+    /* ---- お知らせ ---- */
     .toast {
-      position: absolute; bottom: 92px; left: 50%; transform: translateX(-50%); z-index: 4;
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 7;
       width: min(640px, 60vw);
     }
+    body.panel-open .toast { bottom: calc(var(--panel-h, 280px) + 24px); }
 
-    /* 入力欄：下の中央に小さくまとめる */
-    .controls {
-      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 5;
-      width: min(720px, 50vw);
+    /* ---- 操作パネル：画面をクリックすると下から出る ---- */
+    .panel {
+      position: fixed; left: 40px; right: 40px; bottom: 16px; z-index: 6;
+      max-width: 1500px; margin: 0 auto;
+      padding: 16px 20px 14px;
+      background: rgba(8, 12, 24, .9);
+      border: 1px solid rgba(170, 190, 230, .18); border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.5);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      transform: translateY(calc(100% + 30px)); opacity: 0; pointer-events: none;
+      transition: transform .28s ease, opacity .28s ease;
     }
-    .mic { width: 52px; height: 52px; font-size: 1.3rem; }
-    #textInput { padding: 10px 14px; background: rgba(10, 14, 30, .65); }
+    body.panel-open .panel { transform: none; opacity: 1; pointer-events: auto; }
+    .panel-status { display: block; font-size: .9rem; color: #dbe3f5; margin-bottom: 10px; }
+    .panel .controls { gap: 12px; }
+    .mic { width: 56px; height: 56px; font-size: 1.4rem; }
+    #textInput {
+      padding: 16px 18px; border-radius: 10px;
+      background: rgba(4, 8, 18, .8); color: #eef2fb;
+      border: 1px solid rgba(170, 190, 230, .3);
+    }
+    .send {
+      padding: 0 26px; border-radius: 12px; border: none;
+      background: #c8d6f2; color: #0d1830; font-weight: 600;
+    }
+    .panel-tools {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+      margin-top: 12px; color: #dbe3f5; font-size: .9rem;
+    }
+    .tool-btn {
+      padding: 8px 16px; border-radius: 10px; cursor: pointer; font: inherit;
+      background: rgba(10, 16, 30, .7); color: #e8eefc;
+      border: 1px solid rgba(170, 190, 230, .35);
+    }
+    .tool-btn:hover { background: rgba(30, 44, 80, .85); }
+    .tool-check { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: .9rem; cursor: pointer; }
+    .tool-check input { width: 16px; height: 16px; accent-color: #9fb6ea; }
+    .panel-hint { flex-basis: 100%; font-size: .75rem; color: rgba(219,227,245,.55); }
   }
 
   @media (max-width: 480px) {
@@ -361,14 +420,15 @@
 
 <div class="app">
   <header>
-    <div>
+    <div class="title-box">
       <h1>✦ <span>AI</span>ハヤト ✦</h1>
+      <div class="brand">HAYATO / PERSONAL AI</div>
       <div class="status" id="status">待機中</div>
     </div>
     <div class="row">
-      <button class="icon-btn" id="historyBtn" title="会話の履歴">📜 履歴</button>
-      <button class="icon-btn" id="stopBtn" title="読み上げを止める">⏹ 停止</button>
-      <button class="icon-btn" id="clearBtn" title="会話をリセット">↺ リセット</button>
+      <button class="icon-btn mobile-only" id="historyBtn" title="会話の履歴">📜 履歴</button>
+      <button class="icon-btn mobile-only" id="stopBtn" title="読み上げを止める">⏹ 停止</button>
+      <button class="icon-btn" id="clearBtn" title="新しい会話を始める">↺ 新しい会話</button>
       <button class="icon-btn" id="settingsBtn" title="設定">⚙ 設定</button>
     </div>
   </header>
@@ -428,11 +488,22 @@
     <div class="toast" id="toast" hidden></div>
   </section>
 
-  <div class="controls">
-    <button class="mic" id="micBtn" title="押して話す">🎙</button>
-    <div class="input-wrap">
-      <input id="textInput" type="text" placeholder="話しかけるか、ここに入力…" autocomplete="off">
-      <button class="send" id="sendBtn">送信</button>
+  <!-- 操作パネル（PC では画面をクリックすると開く。iPhone ではいつも入力欄だけ見える） -->
+  <div class="panel" id="panel">
+    <div class="panel-status" id="panelStatus">待機中</div>
+    <div class="controls">
+      <button class="mic" id="micBtn" title="押して話す">🎙</button>
+      <div class="input-wrap">
+        <input id="textInput" type="text" placeholder="話したいことを、ここに。" autocomplete="off">
+        <button class="send" id="sendBtn">送信</button>
+      </div>
+    </div>
+    <div class="panel-tools">
+      <button class="tool-btn" id="historyBtn2">📜 履歴</button>
+      <label class="tool-check"><input type="checkbox" id="readAloud"> 返答を読み上げる</label>
+      <button class="tool-btn" id="stopBtn2">読み上げ停止</button>
+      <label class="tool-check"><input type="checkbox" id="autoListen2"> 常時会話モード（返答後に自動で聞き取り）</label>
+      <span class="panel-hint">画面のどこかをクリックすると、このパネルを閉じます</span>
     </div>
   </div>
 </div>
@@ -566,6 +637,7 @@ const settings = {
   voice: store.get("voice", ""),
   rate: parseFloat(store.get("rate", "1.1")),
   autoListen: store.get("autoListen", "false") === "true",
+  readAloud: store.get("readAloud", "true") !== "false", // 返答を読み上げるか
   model: store.get("model", "opus"),
 };
 if (!MODELS[settings.model]) settings.model = "opus";
@@ -578,7 +650,11 @@ const logEl = $("log"), statusEl = $("status"), micBtn = $("micBtn");
 const textInput = $("textInput"), sendBtn = $("sendBtn");
 const dlg = $("settings");
 
-function setStatus(t) { statusEl.textContent = t; }
+function setStatus(t) {
+  statusEl.textContent = t;
+  const p = document.getElementById("panelStatus");
+  if (p) p.textContent = (settings.autoListen ? "常時会話中：" : "") + t;
+}
 function addMsg(role, text) {
   const div = document.createElement("div");
   div.className = "msg " + role;
@@ -606,7 +682,7 @@ function threadLine(role, text) {
   div.className = "line " + role;
   const name = document.createElement("div");
   name.className = "name";
-  name.textContent = role === "hayato" ? "ハヤト" : (settings.userName || "あなた");
+  name.textContent = role === "hayato" ? "HAYATO" : (settings.userName || "YOU");
   const body = document.createElement("div");
   body.className = "text";
   body.textContent = text;
@@ -969,7 +1045,7 @@ function cleanForSpeech(t) {
   return t.replace(/【要点】/g, "").replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク").trim();
 }
 function speak(text) {
-  if (!synth) return;
+  if (!synth || !settings.readAloud) return; // 「返答を読み上げる」がオフなら読まない
   const t = cleanForSpeech(text);
   if (!t) return;
   const u = new SpeechSynthesisUtterance(t);
@@ -1396,9 +1472,55 @@ textInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); unlockAudio(); send(textInput.value); }
 });
 $("stopBtn").addEventListener("click", stopSpeaking);
+$("stopBtn2").addEventListener("click", stopSpeaking);
+$("historyBtn2").addEventListener("click", () => $("historyBtn").click());
 $("clearBtn").addEventListener("click", () => {
   stopSpeaking(); resetConversation(); logEl.innerHTML = ""; clearThread(); greet();
 });
+
+// ---- 操作パネルのチェック（返答を読み上げる・常時会話モード） ----
+$("readAloud").checked = settings.readAloud;
+$("readAloud").addEventListener("change", (e) => {
+  settings.readAloud = e.target.checked;
+  store.set("readAloud", String(settings.readAloud));
+  if (!settings.readAloud) stopSpeaking();
+});
+$("autoListen2").checked = settings.autoListen;
+$("autoListen2").addEventListener("change", (e) => {
+  settings.autoListen = e.target.checked;
+  store.set("autoListen", String(settings.autoListen));
+  setStatus(statusEl.textContent);
+});
+
+// ---- 操作パネルの開け閉め（PC の画面だけ。画面をクリックすると開く／閉じる） ----
+const wideMQ = window.matchMedia("(min-width: 900px)");
+const panelEl = $("panel");
+function updatePanelHeight() {
+  document.documentElement.style.setProperty("--panel-h", panelEl.offsetHeight + "px");
+}
+function setPanel(open) {
+  document.body.classList.toggle("panel-open", open);
+  updatePanelHeight();
+  if (open) setTimeout(() => textInput.focus(), 50);
+}
+$("thread").parentElement.addEventListener("click", (e) => {
+  if (!wideMQ.matches) return;
+  // 会話の文字を選んだり、お知らせを読んだりするときは開け閉めしない
+  if (e.target.closest(".thread, .user-now, .toast")) return;
+  setPanel(!document.body.classList.contains("panel-open"));
+});
+// 文字を打ち始めたら、自動でパネルを開いて入力欄に入れる
+window.addEventListener("keydown", (e) => {
+  if (!wideMQ.matches || document.body.classList.contains("panel-open")) return;
+  if (dlg.open || !$("history").hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key.length === 1 || e.key === "Process") setPanel(true);
+});
+window.addEventListener("resize", updatePanelHeight);
+// PC で初めて開いたときは、パネルの開き方を一度だけ案内する
+if (wideMQ.matches && store.get("panelHint", "") !== "done") {
+  setTimeout(() => showToast("画面をクリックすると、下に操作パネル（入力欄・マイク・読み上げ設定など）が開きます。", "info"), 1200);
+  store.set("panelHint", "done");
+}
 
 function openSettings() {
   $("apiKey").value = settings.apiKey;
@@ -1441,6 +1563,7 @@ $("saveSettings").addEventListener("click", () => {
   store.set("voice", settings.voice);
   store.set("rate", String(settings.rate));
   store.set("autoListen", String(settings.autoListen));
+  $("autoListen2").checked = settings.autoListen;
   dlg.close();
   addMsg("system", "設定を保存しました。");
 });
