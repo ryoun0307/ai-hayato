@@ -101,7 +101,7 @@
     color: rgba(190, 205, 240, .72); margin-bottom: 5px;
   }
   .line .text { white-space: pre-wrap; word-break: break-word; }
-  .line, .user-now {
+  .line {
     position: relative;
     padding: 12px 18px; border-radius: 12px;
     background: rgba(14, 22, 42, .82); color: #eef2fb;
@@ -117,10 +117,10 @@
   .line.user { align-items: stretch; }
   .line.thinking .text { color: rgba(238, 242, 251, .6); }
   /* PC 用の部品は、iPhone では出さない */
-  .brand, .panel-status, .panel-tools { display: none; }
+  .brand, .panel-status, .panel-tools, .desktop-only { display: none; }
   .line .more { display: block; margin-top: 6px; font-size: .78rem; color: rgba(238, 242, 251, .6); }
-  /* 右上の「あなたの最新の一言」（PC の画面だけで出す） */
-  .user-now { display: none; }
+  /* 右側の「あなたのセリフ」欄は PC の画面だけで使う（iPhone では左の会話欄にまとめて出す） */
+  #threadUser { display: none; }
 
   .avatar {
     position: relative; flex: 1 1 0; min-height: 110px; max-height: 460px;
@@ -315,6 +315,9 @@
       font-size: .8rem; color: #cfd9f0; opacity: .9; text-shadow: 0 1px 6px rgba(0,0,0,.7);
     }
     .mobile-only { display: none; }
+    .desktop-only { display: inline-block; }
+    /* 常時会話がオンのときは、ボタンを緑っぽく光らせる */
+    .icon-btn.on { border-color: rgba(120, 220, 170, .75); color: #c9f5dd; box-shadow: 0 0 10px rgba(120,220,170,.25); }
     .icon-btn {
       font-size: .92rem; padding: 9px 16px; border-radius: 10px;
       background: rgba(10, 16, 30, .72); color: #e8eefc;
@@ -345,12 +348,12 @@
     /* 操作パネルが開いているときは、会話欄がパネルに隠れないよう短くする */
     body.panel-open .thread { max-height: calc(100dvh - 84px - var(--panel-h, 280px) - 20px); }
 
-    /* ---- 右上：あなたの最新の一言（ボタンの下） ---- */
-    .user-now {
-      display: block; position: absolute; top: 84px; right: 40px; z-index: 3;
-      width: min(26vw, 460px);
+    /* ---- 左はハヤトのセリフだけ、右はあなたのセリフだけ ---- */
+    #thread .line.user { display: none; }
+    #threadUser {
+      display: flex; left: auto; right: 40px;
     }
-    .user-now[hidden] { display: none; }
+    #threadUser .line.user { max-width: 100%; align-self: flex-end; }
 
     /* ---- お知らせ ---- */
     .toast {
@@ -428,6 +431,7 @@
     <div class="row">
       <button class="icon-btn mobile-only" id="historyBtn" title="会話の履歴">📜 履歴</button>
       <button class="icon-btn mobile-only" id="stopBtn" title="読み上げを止める">⏹ 停止</button>
+      <button class="icon-btn desktop-only" id="handsFreeBtn" title="話しかけ続けられるモード（オンのときは、ハヤトが話し終えると自動で聞き取ります）">🎙 常時会話 ON</button>
       <button class="icon-btn" id="clearBtn" title="新しい会話を始める">↺ 新しい会話</button>
       <button class="icon-btn" id="settingsBtn" title="設定">⚙ 設定</button>
     </div>
@@ -483,8 +487,8 @@
         </div>
       </div>
     </div>
-    <!-- PC の画面で、右上に出す「あなたの最新の一言」 -->
-    <div class="user-now" id="userNow" hidden></div>
+    <!-- PC の画面で、右側に並べる「あなたのセリフ」 -->
+    <div class="thread thread-user" id="threadUser" aria-live="polite"></div>
     <div class="toast" id="toast" hidden></div>
   </section>
 
@@ -599,7 +603,7 @@ function buildSystemPrompt(userName) {
 - 自分の仕事にプライドを持っている。いい加減な答えはしないし、知らないことは知らないと言う。媚びない。お世辞も言わない。
 - ${name}に忠実だが、従順ではない。${name}の判断に穴やリスクがあると思えば、遠慮せずはっきり意見する。
 - ただし最終的に決めるのは${name}。意見を述べたうえで${name}が決めたなら、その決定を尊重し、全力で支える。蒸し返さない。
-- 先回りして動く。聞かれたことに答えるだけで終わらず、次に必要になりそうなこと、見落としていそうな点、準備しておくべきことを一言添える。
+- 先回りして動く。聞かれたことに答えるだけで終わらず、次に必要になりそうなこと、見落としていそうな点、準備しておくべきことを一言添える。ただし添えるのは、今の話題に関係することだけ。関係のない話題（競馬など）を自分から持ち出さない。
 
 # 話し方
 - 一人称は「私」。${name}のことは「${name}」と呼ぶ。
@@ -615,7 +619,8 @@ function buildSystemPrompt(userName) {
 - 調べた結果を答えるときは、どこで調べたか（サイト名）を短く添える。URLは読み上げない。
 - 調べても分からなかったことは、分からないと言う。推測で埋めない。
 
-# 競馬予想
+# 競馬予想（${name}から競馬について聞かれたときだけ）
+- ${name}は普段から競馬の話をしたいわけではない。挨拶、雑談、予定の確認など、競馬と関係ない会話では、競馬の話題に一切触れない。
 - 競馬の予想を頼まれたら、出走表、過去の成績、コースや距離の適性、馬場状態、調教の様子、騎手や調教師などを、必要に応じて調べたうえで判断する。
 - 本命・対抗・単穴・注目馬と、それぞれの根拠を示す。買い目の例を出す場合は、点数を絞った現実的なものにする。
 - 情報が足りない点や不確実な点は、はっきり伝える。予想は参考意見であり、的中を保証しないことを最後に一言添える。
@@ -695,10 +700,13 @@ function threadLine(role, text) {
 // あなたのセリフ（右）
 function showYou(text) {
   if (!text) return;
-  threadLine("user", text);
-  const now = $("userNow");
-  now.textContent = text;
-  now.hidden = false;
+  threadLine("user", text); // iPhone 用（左の会話欄にまとめて出す。PC では隠す）
+  // PC 用：右側の欄に、あなたのセリフだけを並べる
+  const right = $("threadUser");
+  const copy = threadEl.lastElementChild.cloneNode(true);
+  right.appendChild(copy);
+  while (right.children.length > MAX_LINES) right.firstChild.remove();
+  right.scrollTop = right.scrollHeight;
   curHayatoLine = null; // 次のハヤトの返事は新しい行にする
 }
 // ハヤトのセリフ（左）。返事が届くたびに同じ行を書き換える
@@ -718,7 +726,7 @@ function showBubble(text, { thinking = false, more = false } = {}) {
 function clearThread() {
   threadEl.innerHTML = "";
   curHayatoLine = null;
-  $("userNow").hidden = true;
+  $("threadUser").innerHTML = "";
 }
 let toastTimer = null;
 function showToast(text, kind = "info") {
@@ -1032,7 +1040,7 @@ function speakingDone() {
   if (!busy) {
     setStatus("待機中");
     // iPhone はボタンを押さないとキーボードが開けないので、自動の聞き取り再開はしない
-    if (settings.autoListen && !isIOS) startListening();
+    scheduleRelisten(600); // 常時会話モードなら、少し待ってから聞き取りを始める（読み上げの余韻を拾わないため）
   }
 }
 function watchSpeaking() {
@@ -1105,7 +1113,7 @@ function createRecognizer() {
   r.lang = "ja-JP";
   r.interimResults = true;
   r.continuous = false;
-  r.onstart = () => { clearTimeout(startTimer); setStatus("聞いています…（もう一度押すと送信）"); };
+  r.onstart = () => { clearTimeout(startTimer); setStatus(handsFree() ? "聞いています…（話しかけてください）" : "聞いています…（もう一度押すと送信）"); };
   // iPhone の Safari は「確定(isFinal)」を返さずに終わることがあるので、
   // 聞き取れた文章を毎回まるごと保持し、話が途切れたら（または終了時に）送る。
   r.onresult = (e) => {
@@ -1131,16 +1139,27 @@ function createRecognizer() {
     } else if (err === "audio-capture") {
       addMsg("error", "マイクが使えません（audio-capture）。ほかのアプリがマイクを使っていないか確認してください。");
     } else if (err === "no-speech") {
-      addMsg("system", "声が聞き取れませんでした。マイクを押してから、はっきり話しかけてください。");
+      // 常時会話モードでは、黙っていただけなので何も出さずに聞き取りを続ける
+      if (!handsFree()) addMsg("system", "声が聞き取れませんでした。マイクを押してから、はっきり話しかけてください。");
     } else if (err !== "aborted") {
       addMsg("error", "音声認識エラー: " + err);
     }
+    // マイクが使えない状態では、今だけ自動の聞き取りを止める（エラーがくり返し出ないように）。
+    // 設定としては保存しないので、次に開いたとき（マイクを許可したあと）は、また常時会話で始まる。
+    if (["not-allowed", "service-not-allowed", "audio-capture"].includes(err) && handsFree()) {
+      setHandsFree(false, false);
+      addMsg("system", "常時会話を一時停止しました。マイクを許可してから、右上の「🎙 常時会話」ボタンで再開してください。");
+    }
     stopListening(false);
+    if (err === "no-speech") scheduleRelisten();
   };
   r.onend = () => {
     clearTimeout(startTimer);
     if (!listening) return;
-    if (!gotSomething && !heard.trim()) addMsg("system", "声が聞き取れませんでした。もう一度マイクを押して話しかけてください。");
+    if (!gotSomething && !heard.trim()) {
+      if (handsFree()) { stopListening(false); scheduleRelisten(); return; }
+      addMsg("system", "声が聞き取れませんでした。もう一度マイクを押して話しかけてください。");
+    }
     finishListening();
   };
   return r;
@@ -1149,6 +1168,48 @@ function createRecognizer() {
 if (!SR) {
   micBtn.title = "このブラウザは音声入力に対応していません";
 }
+
+// ------------------------------------------------------------
+//  常時会話モード（PC）：クリックしなくても、話しかけ続けられる
+//  ・ハヤトが話し終えたら、自動で聞き取りを始める
+//  ・黙っていて聞き取りが途切れても、自動で再開する
+//  ・ハヤトが話している／考えている間は聞かない（自分の声を拾わないため）
+// ------------------------------------------------------------
+function handsFree() { return settings.autoListen && !isIOS && !!SR; }
+// PC では、常時会話モードを最初からオンにする（以前の版でオフが保存されていても、一度だけオンに直す）
+if (store.get("handsFreeDefault", "") !== "done") {
+  if (!isIOS) { settings.autoListen = true; store.set("autoListen", "true"); }
+  store.set("handsFreeDefault", "done");
+}
+let relistenTimer = null;
+function scheduleRelisten(delay = 400) {
+  clearTimeout(relistenTimer);
+  if (!handsFree()) return;
+  relistenTimer = setTimeout(() => {
+    if (handsFree() && !busy && !listening && speakQueue === 0 && !(synth && synth.speaking)
+        && !document.hidden && !dlg.open && settings.apiKey) {
+      startListening();
+    }
+  }, delay);
+}
+function setHandsFree(on, persist = true) {
+  settings.autoListen = on;
+  if (persist) store.set("autoListen", String(on));
+  const cb = document.getElementById("autoListen2");
+  if (cb) cb.checked = on;
+  const btn = document.getElementById("handsFreeBtn");
+  if (btn) {
+    btn.textContent = on ? "🎙 常時会話 ON" : "🎙 常時会話 OFF";
+    btn.classList.toggle("on", on);
+  }
+  if (on) scheduleRelisten(200);
+  else if (listening) stopListening(true);
+  setStatus(on && listening ? "聞いています…" : statusEl.textContent);
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { if (listening) stopListening(true); }
+  else scheduleRelisten(300);
+});
 
 // ------------------------------------------------------------
 //  iPhone 用：キーボードの音声入力（iPhone 標準）を使う方式
@@ -1226,16 +1287,18 @@ function startListening() {
   listening = true;
   micBtn.classList.add("listening");
   setStatus("マイクを準備中…");
-  // 4秒たっても聞き取りが始まらなければ、原因を表示する
+  // 6秒たっても聞き取りが始まらなければ、原因を表示する
   clearTimeout(startTimer);
   startTimer = setTimeout(() => {
     if (listening && !gotSomething && statusEl.textContent.startsWith("マイクを準備中")) {
-      addMsg("error", "マイクが反応しません。" + (isStandalone
-        ? "ホーム画面のアイコンからではなく、Safari で直接開いてみてください。"
-        : "iPhoneの「設定」→「一般」→「キーボード」→「音声入力」がオンか確認してください。"));
+      addMsg("error", "マイクが反応しません。" + (isIOS
+        ? (isStandalone
+            ? "ホーム画面のアイコンからではなく、Safari で直接開いてみてください。"
+            : "iPhoneの「設定」→「一般」→「キーボード」→「音声入力」がオンか確認してください。")
+        : "ブラウザのアドレスバーの左にあるマークから、マイクが許可されているか確認してください。"));
       stopListening(true);
     }
-  }, 4000);
+  }, 6000);
 }
 // 聞き取りを終えて、聞こえた文章があれば送る
 function finishListening() {
@@ -1457,7 +1520,7 @@ async function send(text) {
     sendBtn.disabled = false;
     if (speakQueue === 0) {
       setStatus("待機中");
-      if (settings.autoListen && !synth) startListening();
+      scheduleRelisten(400); // 読み上げなしのときも、常時会話モードなら聞き取りを再開
     }
   }
 }
@@ -1486,10 +1549,10 @@ $("readAloud").addEventListener("change", (e) => {
   if (!settings.readAloud) stopSpeaking();
 });
 $("autoListen2").checked = settings.autoListen;
-$("autoListen2").addEventListener("change", (e) => {
-  settings.autoListen = e.target.checked;
-  store.set("autoListen", String(settings.autoListen));
-  setStatus(statusEl.textContent);
+$("autoListen2").addEventListener("change", (e) => setHandsFree(e.target.checked));
+$("handsFreeBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  setHandsFree(!settings.autoListen);
 });
 
 // ---- 操作パネルの開け閉め（PC の画面だけ。画面をクリックすると開く／閉じる） ----
@@ -1506,7 +1569,7 @@ function setPanel(open) {
 $("thread").parentElement.addEventListener("click", (e) => {
   if (!wideMQ.matches) return;
   // 会話の文字を選んだり、お知らせを読んだりするときは開け閉めしない
-  if (e.target.closest(".thread, .user-now, .toast")) return;
+  if (e.target.closest(".thread, .toast")) return;
   setPanel(!document.body.classList.contains("panel-open"));
 });
 // 文字を打ち始めたら、自動でパネルを開いて入力欄に入れる
@@ -1563,8 +1626,8 @@ $("saveSettings").addEventListener("click", () => {
   store.set("voice", settings.voice);
   store.set("rate", String(settings.rate));
   store.set("autoListen", String(settings.autoListen));
-  $("autoListen2").checked = settings.autoListen;
   dlg.close();
+  setHandsFree(settings.autoListen);
   addMsg("system", "設定を保存しました。");
 });
 
@@ -1595,6 +1658,12 @@ function greet() {
 }
 try { localStorage.removeItem("hayato.passcode"); } catch {}
 greet();
+
+// 常時会話モード：ボタンの表示をそろえ、開いたらすぐ聞き取りを始める（PC）
+setHandsFree(settings.autoListen);
+scheduleRelisten(1500);
+// ブラウザが自動開始を止めた場合に備えて、最初にクリックしたときにも始める
+window.addEventListener("pointerdown", () => scheduleRelisten(150), { once: true });
 
 // 設定（APIキーなど）を保存できる環境か調べ、できなければ原因を案内する
 (function checkEnvironment() {
