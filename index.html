@@ -288,6 +288,33 @@
   }
   .start-overlay .note { font-size: .8rem; opacity: .8; }
 
+  /* ---------- PC など横に広い画面：キャラを中央に大きく、セリフは左右に ---------- */
+  @media (min-width: 900px) {
+    .app { max-width: 1400px; }
+    .stage { position: relative; padding: 8px 0 4px; }
+    /* キャラは、ステージの高さいっぱいまで大きくする */
+    .hayato { flex: 1 1 0; max-height: none; min-height: 0; }
+    .hayato.video .float { height: 100%; max-width: none; }
+    .hayato .float { height: 100%; }
+    /* セリフ欄はキャラの上に重ねて、左右に分けて並べる */
+    .thread {
+      position: absolute; inset: 8px 0 4px 0; z-index: 2;
+      width: 100%; max-height: none; margin: 0;
+      padding: 0 8px;
+      pointer-events: none;           /* キャラの上をさわっても邪魔しない */
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 40px);
+              mask-image: linear-gradient(to bottom, transparent 0, #000 40px);
+    }
+    .thread > :first-child { margin-top: auto; } /* 新しいセリフが下にたまっていく */
+    .line { pointer-events: auto; }
+    /* キャラの幅（≒ 画面の高さから上下の部品を引いた高さ × 9/16 × 絵の中の人物の割合）を避けて、
+       左右の空いた場所いっぱいにセリフを出す */
+    .line {
+      max-width: max(240px, calc((100% - (100dvh - 190px) * 0.5625 * 0.72) / 2 - 24px));
+    }
+    .line .text { font-size: 1.02rem; }
+  }
+
   @media (max-width: 480px) {
     .app { padding: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
     header { padding: 8px 10px; gap: 6px; }
