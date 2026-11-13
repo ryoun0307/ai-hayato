@@ -2,6 +2,10 @@
   # ビルド処理は不要。index.html をそのまま公開する
   publish = "."
   command = ""
+  # 本番（main）以外のブランチ（dev など）やプレビューは公開しない。
+  # Netlify のクレジットを、本番公開のときだけ使うため。
+  # このコマンドが成功（終了コード0）すると、Netlify は公開処理をスキップする。
+  ignore = "test \"$CONTEXT\" != \"production\""
 
 [functions]
   directory = "netlify/functions"
@@ -28,6 +32,12 @@
 
 [[redirects]]
   from = "/netlify.toml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/CLAUDE.md"
   to = "/404"
   status = 404
   force = true
