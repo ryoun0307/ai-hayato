@@ -563,8 +563,8 @@
     <label for="fishOn" style="margin:0">Fish Audio の声を使う</label>
   </div>
   <div id="fishBox">
-    <label for="fishUrl">声の中継（GAS）のURL</label>
-    <input id="fishUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <label for="fishUrl">声の中継のURL（Cloudflare か GAS）</label>
+    <input id="fishUrl" type="url" placeholder="https://hayato-voice.〇〇.workers.dev" autocomplete="off" autocapitalize="off" spellcheck="false">
     <label for="fishVoice">Fish Audio の声（モデルID か 声のページのURL）</label>
     <input id="fishVoice" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
     <label for="fishModel">Fish Audio の種類</label>
@@ -982,7 +982,7 @@ const setCharTalking = (function setupCharacter() {
   let open = false, flip = 0;
   setInterval(() => {
     // Fish Audio のときは、声が実際に鳴っている間だけ口を動かす（声を作っている間は止める）
-    const talking = fishPlaying || (synth && synth.speaking) || (speakQueue > 0 && !fishActive());
+    const talking = fishPlaying || streamPlaying() || (synth && synth.speaking) || (speakQueue > 0 && !fishActive());
     hayatoEl.classList.toggle("talking", !!talking);
     hayatoEl.classList.toggle("thinking", busy && !talking);
     setCharTalking(!!talking);
@@ -1187,32 +1187,38 @@ function watchSpeaking() {
 }
 
 // ------------------------------------------------------------
-//  Fish Audio の声（中継の GAS から mp3 をもらって再生する）
+//  Fish Audio の声
+//  ・中継が Cloudflare のとき：声のデータを作りながら少しずつ受け取り、届いた分から再生する（速い）
+//  ・中継が GAS のとき：声のデータ（mp3）を全部受け取ってから再生する
 //  文ごとにすぐ声を作り始め、届いた順ではなく文の順に再生する。
 // ------------------------------------------------------------
 const fishAudio = new Audio();
 fishAudio.preload = "auto";
 let fishGen = 0;            // 止めたら数字を変えて、古い再生を捨てる
 let fishChain = Promise.resolve();
-let fishPlaying = false;    // 今、声が鳴っているか（口パク用）
+let fishPlaying = false;    // GAS の声が鳴っているか（口パク用）
 let fishCount = 0;          // 作成中・再生待ちの数
 let fishWarned = false;
+const fishCtrls = new Set(); // 作成中の声（止めるときに取り消す）
 function useFish() { return settings.fishOn && !!settings.fishUrl; }
-function fishActive() { return fishCount > 0 || fishPlaying; }
+function fishActive() { return fishCount > 0 || fishPlaying || streamPlaying(); }
 function fishVoiceId(v) {
   const m = String(v || "").match(/[0-9a-f]{32}/i);
   return m ? m[0].toLowerCase() : "";
 }
+function isGasUrl(url) { return /script\.google(usercontent)?\.com/.test(url || ""); }
+function fishBody(text, rate, latency, extra = {}) {
+  return JSON.stringify({ text, voice: fishVoiceId(settings.fishVoice), model: settings.fishModel, speed: rate, latency, ...extra });
+}
+
+// ---- GAS：mp3 を全部受け取ってから再生 ----
 async function fishFetch(text, rate = settings.rate, latency = "balanced") {
   const ctrl = new AbortController();
+  fishCtrls.add(ctrl);
   const timer = setTimeout(() => ctrl.abort(), 20000);
   try {
     // Content-Type を付けない（付けると GAS が受け付けない事前確認が走るため）
-    const r = await fetch(settings.fishUrl, {
-      method: "POST",
-      body: JSON.stringify({ text, voice: fishVoiceId(settings.fishVoice), model: settings.fishModel, speed: rate, latency }),
-      signal: ctrl.signal,
-    });
+    const r = await fetch(settings.fishUrl, { method: "POST", body: fishBody(text, rate, latency), signal: ctrl.signal });
     const j = await r.json();
     if (!j.audio) throw new Error(j.error || "声のデータが届きませんでした");
     const bin = atob(j.audio);
@@ -1221,18 +1227,156 @@ async function fishFetch(text, rate = settings.rate, latency = "balanced") {
     return URL.createObjectURL(new Blob([bytes], { type: "audio/mpeg" }));
   } finally {
     clearTimeout(timer);
+    fishCtrls.delete(ctrl);
   }
 }
 function fishPlay(url, gen) {
   return new Promise((resolve) => {
     if (gen !== fishGen) return resolve(true);
-    const done = (ok) => { fishAudio.onended = fishAudio.onerror = null; URL.revokeObjectURL(url); resolve(ok); };
+    const done = (ok) => { fishAudio.onended = fishAudio.onerror = null; fishPlaying = false; URL.revokeObjectURL(url); resolve(ok); };
     fishAudio.onended = () => done(true);
     fishAudio.onerror = () => done(false);
     fishAudio.src = url;
     fishAudio.play().then(() => { fishPlaying = true; }).catch(() => done(false));
   });
 }
+
+// ---- Cloudflare：作りながら届く声（24kHz・16bit の生データ）を、届いた分から鳴らす ----
+const PCM_RATE = 24000;
+let audioCtx = null;
+let playEnd = 0;                 // 予約した声が鳴り終わる時刻
+const liveSources = new Set();   // 予約済みの音（止めるときに使う）
+function getAudioCtx() {
+  if (!audioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    audioCtx = new AC();
+  }
+  return audioCtx;
+}
+function streamPlaying() { return !!audioCtx && liveSources.size > 0 && audioCtx.currentTime < playEnd; }
+function fishStreamStart(text, rate, latency) {
+  const item = { chunks: [], bytes: 0, done: false, error: null, wake: null };
+  const ctrl = new AbortController();
+  fishCtrls.add(ctrl);
+  const timer = setTimeout(() => ctrl.abort(), 20000); // 20秒たっても届き始めなければあきらめる
+  const poke = () => { const w = item.wake; item.wake = null; if (w) w(); };
+  item.ready = (async () => {
+    try {
+      const r = await fetch(settings.fishUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: fishBody(text, rate, latency, { format: "pcm" }),
+        signal: ctrl.signal,
+      });
+      if (!r.ok) {
+        let msg = "";
+        try { msg = (await r.json()).error; } catch {}
+        throw new Error(msg || "声の中継のエラー（" + r.status + "）");
+      }
+      clearTimeout(timer);
+      const reader = r.body.getReader();
+      let left = null; // 2バイトで1つの音なので、半端な1バイトは次に回す
+      (async () => {
+        try {
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            let b = value;
+            if (left) { const m = new Uint8Array(left.length + b.length); m.set(left); m.set(b, left.length); b = m; left = null; }
+            if (b.length % 2) { left = b.slice(b.length - 1); b = b.slice(0, b.length - 1); }
+            if (b.length) { item.chunks.push(b); item.bytes += b.length; poke(); }
+          }
+        } catch (e) { item.error = e; }
+        item.done = true;
+        fishCtrls.delete(ctrl);
+        poke();
+      })();
+    } catch (e) {
+      clearTimeout(timer);
+      fishCtrls.delete(ctrl);
+      throw e;
+    }
+  })();
+  item.ready.catch(() => {});
+  return item;
+}
+function schedulePcm(ctx, b) {
+  const n = b.length / 2;
+  const dv = new DataView(b.buffer, b.byteOffset, b.length);
+  const buf = ctx.createBuffer(1, n, PCM_RATE);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < n; i++) d[i] = dv.getInt16(i * 2, true) / 32768;
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  src.connect(ctx.destination);
+  const at = Math.max(playEnd, ctx.currentTime + 0.03);
+  src.start(at);
+  playEnd = at + buf.duration;
+  liveSources.add(src);
+  src.onended = () => liveSources.delete(src);
+}
+async function fishStreamPlay(item, gen) {
+  const ctx = getAudioCtx();
+  if (!ctx) throw new Error("このブラウザでは声を再生できません");
+  if (ctx.state !== "running") { try { await ctx.resume(); } catch {} }
+  if (ctx.state !== "running") throw new Error("音の再生が許可されていません。画面を一度クリック（タップ）してください");
+  await item.ready; // 中継のエラーならここで止まり、いつもの声に切り替わる
+  const wait = (ms) => new Promise((res) => { item.wake = res; setTimeout(res, ms); });
+  // 途切れないように、最初だけ少し（0.25秒分）ためてから鳴らし始める
+  while (gen === fishGen && !item.done && item.bytes < PCM_RATE * 2 * 0.25) await wait(100);
+  let any = false;
+  for (;;) {
+    if (gen !== fishGen) return true;
+    if (item.chunks.length) {
+      // 細かく届いた分はまとめて予約する
+      const parts = item.chunks.splice(0);
+      const total = parts.reduce((s, p) => s + p.length, 0);
+      const all = new Uint8Array(total);
+      let o = 0;
+      for (const p of parts) { all.set(p, o); o += p.length; }
+      schedulePcm(ctx, all);
+      any = true;
+      continue;
+    }
+    if (item.done) break;
+    await wait(150);
+  }
+  if (!any) throw item.error || new Error("声のデータが届きませんでした");
+  // 鳴り終わるのは待たない（次の文をすき間なく続けて予約するため）
+  return true;
+}
+// 予約した声が鳴り終わるまで待つ
+async function waitStreamEnd(gen) {
+  while (gen === fishGen && streamPlaying()) await new Promise((r) => setTimeout(r, 50));
+}
+
+// 声を作り始めて、「再生する」準備を返す（作るのは今すぐ、鳴らすのは順番が来てから）
+function fishStart(text, rate, latency) {
+  if (isGasUrl(settings.fishUrl)) {
+    const p = fishFetch(text, rate, latency);
+    p.catch(() => {});
+    return {
+      play: async (gen) => {
+        const url = await p;
+        if (gen !== fishGen) { URL.revokeObjectURL(url); return true; }
+        return fishPlay(url, gen);
+      },
+    };
+  }
+  const item = fishStreamStart(text, rate, latency);
+  return { play: (gen) => fishStreamPlay(item, gen) };
+}
+function fishStopAll() {
+  fishCtrls.forEach((c) => { try { c.abort(); } catch {} });
+  fishCtrls.clear();
+  liveSources.forEach((s) => { try { s.stop(); } catch {} });
+  liveSources.clear();
+  playEnd = 0;
+  fishPlaying = false;
+  try { fishAudio.pause(); } catch {}
+}
+
 function fishFailed(err) {
   if (fishWarned) return;
   fishWarned = true;
@@ -1257,25 +1401,29 @@ function speakFish(t, first = false) {
   fishCount++;
   speakQueue++;
   setStatus("話しています…");
-  const audioP = fishFetch(t, settings.rate, first ? "low" : "balanced").catch((e) => (e instanceof Error ? e : new Error(String(e))));
+  const job = fishStart(t, settings.rate, first ? "low" : "balanced");
   fishChain = fishChain.then(async () => {
     if (gen !== fishGen) return;
-    const a = await audioP;
-    if (gen !== fishGen) { if (!(a instanceof Error)) URL.revokeObjectURL(a); return; }
     let ok = false;
-    if (!(a instanceof Error)) {
-      ok = await fishPlay(a, gen);
-      fishPlaying = false;
-      if (!ok && gen === fishGen) fishFailed(new Error("音を再生できませんでした"));
-    } else {
-      fishFailed(a);
+    try {
+      ok = await job.play(gen);
+      if (!ok) throw new Error("音を再生できませんでした");
+    } catch (e) {
+      ok = false;
+      if (gen === fishGen) fishFailed(e);
     }
-    if (!ok && gen === fishGen) await synthAndWait(t);
-  }).catch(() => {}).then(() => {
+    if (!ok && gen === fishGen) {
+      await waitStreamEnd(gen); // 前の文の声と重ならないように
+      await synthAndWait(t);
+    }
+  }).catch(() => {}).then(async () => {
     if (gen !== fishGen) return;
     fishCount = Math.max(0, fishCount - 1);
     speakQueue = Math.max(0, speakQueue - 1);
-    if (fishCount === 0 && speakQueue === 0) speakingDone();
+    if (fishCount === 0 && speakQueue === 0) {
+      await waitStreamEnd(gen); // 最後の声が鳴り終わってから「話し終わった」にする
+      if (gen === fishGen && fishCount === 0 && speakQueue === 0) speakingDone();
+    }
   });
 }
 // iPhone は、ボタンを押した瞬間に一度音を鳴らしておかないと、後から声を再生できない。
@@ -1284,6 +1432,20 @@ let fishPrimed = false;
 function primeFishAudio() {
   if (fishPrimed || !useFish()) return;
   fishPrimed = true;
+  // iPhone のマナーモードでも声が出るよう、「音楽の再生」として扱ってもらう
+  try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch {}
+  // Cloudflare 用（作りながら鳴らす仕組み）
+  const ctx = getAudioCtx();
+  if (ctx) {
+    try {
+      ctx.resume();
+      const s = ctx.createBufferSource();
+      s.buffer = ctx.createBuffer(1, 1, 22050);
+      s.connect(ctx.destination);
+      s.start(0);
+    } catch {}
+  }
+  // GAS 用（mp3 を鳴らす仕組み）
   const rate = 8000, n = 800, buf = new ArrayBuffer(44 + n), v = new DataView(buf);
   const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
   w(0, "RIFF"); v.setUint32(4, 36 + n, true); w(8, "WAVEfmt "); v.setUint32(16, 16, true);
@@ -1346,8 +1508,7 @@ function stopSpeaking() {
   fishGen++;
   fishChain = Promise.resolve();
   fishCount = 0;
-  fishPlaying = false;
-  try { fishAudio.pause(); } catch {}
+  fishStopAll();
   if (synth && (synth.speaking || synth.pending)) synth.cancel();
   clearInterval(speakWatch); speakWatch = null;
   activeUtterances.clear();
@@ -1920,7 +2081,7 @@ $("testVoice").addEventListener("click", async () => {
   // Fish Audio にチェックが入っていれば、入力中の内容で Fish Audio の声を試す
   if ($("fishOn").checked) {
     const url = $("fishUrl").value.trim();
-    if (!url) { alert("声の中継（GAS）のURLを入れてください。"); return; }
+    if (!url) { alert("声の中継のURLを入れてください。"); return; }
     stopSpeaking();
     // ボタンを押した瞬間に再生を始めておく（iPhone の再生許可のため）
     fishPrimed = false;
@@ -1930,14 +2091,13 @@ $("testVoice").addEventListener("click", async () => {
     const btn = $("testVoice");
     btn.disabled = true; btn.textContent = "🔊 声を作っています…";
     try {
-      const a = await fishFetch(sample, rate);
-      fishPlaying = true;
-      const ok = await fishPlay(a, fishGen);
+      const t0 = performance.now();
+      const ok = await fishStart(sample, rate, "low").play(fishGen);
       if (!ok) alert("声のデータは届きましたが、再生できませんでした。");
+      else console.log("Fish Audio テスト：" + Math.round(performance.now() - t0) + "ms");
     } catch (e) {
       alert("Fish Audio の声を作れませんでした。\n" + (e?.message || e));
     } finally {
-      fishPlaying = false;
       Object.assign(settings, { fishOn: saved.on, fishUrl: saved.url, fishVoice: saved.voice, fishModel: saved.model });
       btn.disabled = false; btn.textContent = "🔊 声のテスト";
     }
@@ -2011,6 +2171,9 @@ setHandsFree(settings.autoListen);
 scheduleRelisten(1500);
 // ブラウザが自動開始を止めた場合に備えて、最初にクリックしたときにも始める
 window.addEventListener("pointerdown", () => scheduleRelisten(150), { once: true });
+// 画面を最初にクリック／キーを押したときに、Fish Audio の声を鳴らせるようにしておく
+window.addEventListener("pointerdown", primeFishAudio, { once: true });
+window.addEventListener("keydown", primeFishAudio, { once: true });
 
 // 設定（APIキーなど）を保存できる環境か調べ、できなければ原因を案内する
 (function checkEnvironment() {
