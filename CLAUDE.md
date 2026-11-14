@@ -9,6 +9,9 @@
   - Web検索（server tool）は常に渡し、使うかは Claude が判断（人格設定で「最新情報が必要なときだけ」と指示）。
   - 見た目：背景は media/space.mp4（くり返し再生）、キャラは media/hayato_talk.mp4（緑の背景を WebGL で透明化。話す間だけ再生、黙ると0.4秒の場面で停止）。動画が使えないときは描いた宇宙を表示し、キャラは出さない（仮のキャラは削除済み）。セリフ欄は左右それぞれ直近2個だけ残す。
   - iPhone はブラウザの音声認識が読み上げ後に壊れるため、キーボードの音声入力方式（`startDictation`）。
+  - 声：設定で「Fish Audio の声を使う」をオンにすると、文ごとに GAS（`gas/fish-relay.gs`）経由で Fish Audio の mp3 を作って再生（`speakFish`）。
+    Fish Audio の API はブラウザから直接呼べない（CORS なし）ため GAS で中継。Fish のキーは GAS のスクリプトプロパティ `FISH_API_KEY` にだけ置く。
+    失敗したらブラウザの読み上げに自動で戻る。料金：s2.1-pro-free は 2026-11-30 まで無料、s2.1-pro は $15/100万バイト（日本語1文字=3バイト）。
 - ハヤトの人格（システムプロンプト）は `index.html` の `buildSystemPrompt` にある。
 - 公開先：GitHub Pages（リポジトリ `ryoun0307/ai-hayato` の `main`）。公開は無料・回数制限なし。
 - APIキーは各端末のブラウザ（localStorage）にだけ保存する。ユーザーが画面の「⚙ 設定」で自分で入力する。

@@ -557,6 +557,23 @@
   <label for="voiceSelect">ハヤトの声</label>
   <select id="voiceSelect"></select>
 
+  <div class="row" style="margin-top:12px">
+    <input id="fishOn" type="checkbox">
+    <label for="fishOn" style="margin:0">Fish Audio の声を使う</label>
+  </div>
+  <div id="fishBox">
+    <label for="fishUrl">声の中継（GAS）のURL</label>
+    <input id="fishUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <label for="fishVoice">Fish Audio の声（モデルID か 声のページのURL）</label>
+    <input id="fishVoice" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <label for="fishModel">Fish Audio の種類</label>
+    <select id="fishModel">
+      <option value="s2.1-pro-free">S2.1 Pro Free（無料・2026年11月30日まで）</option>
+      <option value="s2.1-pro">S2.1 Pro（有料・返事1回で1円未満）</option>
+    </select>
+    <div class="hint">うまく声が作れないときは、自動でいつもの声（上で選んだ声）で読み上げます。</div>
+  </div>
+
   <label for="rate">話す速さ（<span id="rateVal">1.1</span>）</label>
   <input id="rate" type="range" min="0.7" max="1.6" step="0.1" value="1.1">
 
@@ -729,6 +746,10 @@ const settings = {
   autoListen: store.get("autoListen", "false") === "true",
   readAloud: store.get("readAloud", "true") !== "false", // 返答を読み上げるか
   model: store.get("model", "auto"),
+  fishOn: store.get("fishOn", "false") === "true",           // Fish Audio の声を使うか
+  fishUrl: store.get("fishUrl", ""),                          // 中継（GAS）のURL
+  fishVoice: store.get("fishVoice", "0b5f5d693bf84621aea50e0f39e36c97"),
+  fishModel: store.get("fishModel", "s2.1-pro-free"),
 };
 // 「おまかせ」を最初の設定にする（以前の版で保存されたモデルがあっても、一度だけ「おまかせ」に直す）
 if (store.get("modelAutoDefault", "") !== "done") {
@@ -949,7 +970,8 @@ const setCharTalking = (function setupCharacter() {
 (function animateHayato() {
   let open = false, flip = 0;
   setInterval(() => {
-    const talking = speakQueue > 0 || (synth && synth.speaking);
+    // Fish Audio のときは、声が実際に鳴っている間だけ口を動かす（声を作っている間は止める）
+    const talking = fishPlaying || (synth && synth.speaking) || (speakQueue > 0 && !fishActive());
     hayatoEl.classList.toggle("talking", !!talking);
     hayatoEl.classList.toggle("thinking", busy && !talking);
     setCharTalking(!!talking);
@@ -1148,23 +1170,139 @@ function speakingDone() {
 function watchSpeaking() {
   if (speakWatch) return;
   speakWatch = setInterval(() => {
+    if (fishActive()) return; // Fish Audio の声は、自分で終わりを知らせる
     if (!busy && !synth.speaking && !synth.pending) speakingDone();
   }, 400);
+}
+
+// ------------------------------------------------------------
+//  Fish Audio の声（中継の GAS から mp3 をもらって再生する）
+//  文ごとにすぐ声を作り始め、届いた順ではなく文の順に再生する。
+// ------------------------------------------------------------
+const fishAudio = new Audio();
+fishAudio.preload = "auto";
+let fishGen = 0;            // 止めたら数字を変えて、古い再生を捨てる
+let fishChain = Promise.resolve();
+let fishPlaying = false;    // 今、声が鳴っているか（口パク用）
+let fishCount = 0;          // 作成中・再生待ちの数
+let fishWarned = false;
+function useFish() { return settings.fishOn && !!settings.fishUrl; }
+function fishActive() { return fishCount > 0 || fishPlaying; }
+function fishVoiceId(v) {
+  const m = String(v || "").match(/[0-9a-f]{32}/i);
+  return m ? m[0].toLowerCase() : "";
+}
+async function fishFetch(text, rate = settings.rate) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 20000);
+  try {
+    // Content-Type を付けない（付けると GAS が受け付けない事前確認が走るため）
+    const r = await fetch(settings.fishUrl, {
+      method: "POST",
+      body: JSON.stringify({ text, voice: fishVoiceId(settings.fishVoice), model: settings.fishModel, speed: rate }),
+      signal: ctrl.signal,
+    });
+    const j = await r.json();
+    if (!j.audio) throw new Error(j.error || "声のデータが届きませんでした");
+    const bin = atob(j.audio);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return URL.createObjectURL(new Blob([bytes], { type: "audio/mpeg" }));
+  } finally {
+    clearTimeout(timer);
+  }
+}
+function fishPlay(url, gen) {
+  return new Promise((resolve) => {
+    if (gen !== fishGen) return resolve(true);
+    const done = (ok) => { fishAudio.onended = fishAudio.onerror = null; URL.revokeObjectURL(url); resolve(ok); };
+    fishAudio.onended = () => done(true);
+    fishAudio.onerror = () => done(false);
+    fishAudio.src = url;
+    fishAudio.play().then(() => { fishPlaying = true; }).catch(() => done(false));
+  });
+}
+function fishFailed(err) {
+  if (fishWarned) return;
+  fishWarned = true;
+  addMsg("error", "Fish Audio の声が使えなかったので、いつもの声で読み上げます。（" + (err?.message || err) + "）");
+}
+// いつもの声で読み、読み終わるまで待つ（Fish Audio が失敗したときの代わり）
+function synthAndWait(text) {
+  return new Promise((resolve) => {
+    if (!synth) return resolve();
+    const u = makeUtterance(text, settings.rate);
+    activeUtterances.add(u);
+    let finished = false;
+    const end = () => { if (finished) return; finished = true; clearInterval(iv); activeUtterances.delete(u); resolve(); };
+    u.onend = u.onerror = end;
+    synth.speak(u);
+    const started = Date.now();
+    const iv = setInterval(() => { if (Date.now() - started > 1500 && !synth.speaking && !synth.pending) end(); }, 400);
+  });
+}
+function speakFish(t) {
+  const gen = fishGen;
+  fishCount++;
+  speakQueue++;
+  setStatus("話しています…");
+  const audioP = fishFetch(t).catch((e) => (e instanceof Error ? e : new Error(String(e))));
+  fishChain = fishChain.then(async () => {
+    if (gen !== fishGen) return;
+    const a = await audioP;
+    if (gen !== fishGen) { if (!(a instanceof Error)) URL.revokeObjectURL(a); return; }
+    let ok = false;
+    if (!(a instanceof Error)) {
+      ok = await fishPlay(a, gen);
+      fishPlaying = false;
+      if (!ok && gen === fishGen) fishFailed(new Error("音を再生できませんでした"));
+    } else {
+      fishFailed(a);
+    }
+    if (!ok && gen === fishGen) await synthAndWait(t);
+  }).catch(() => {}).then(() => {
+    if (gen !== fishGen) return;
+    fishCount = Math.max(0, fishCount - 1);
+    speakQueue = Math.max(0, speakQueue - 1);
+    if (fishCount === 0 && speakQueue === 0) speakingDone();
+  });
+}
+// iPhone は、ボタンを押した瞬間に一度音を鳴らしておかないと、後から声を再生できない。
+// 無音の短い音を鳴らして、再生の許可をもらう。
+let fishPrimed = false;
+function primeFishAudio() {
+  if (fishPrimed || !useFish()) return;
+  fishPrimed = true;
+  const rate = 8000, n = 800, buf = new ArrayBuffer(44 + n), v = new DataView(buf);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, "RIFF"); v.setUint32(4, 36 + n, true); w(8, "WAVEfmt "); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true); v.setUint32(28, rate, true);
+  v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, "data"); v.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
+  const url = URL.createObjectURL(new Blob([buf], { type: "audio/wav" }));
+  fishAudio.src = url;
+  fishAudio.play().catch(() => { fishPrimed = false; });
+}
+function makeUtterance(text, rate) {
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ja-JP";
+  u.rate = rate;
+  u.pitch = 0.9;
+  const chosen = $("voiceSelect").value;
+  const v = chosen && voices.find(v => v.name === chosen);
+  if (v) u.voice = v;
+  return u;
 }
 function cleanForSpeech(t) {
   return t.replace(/【要点】/g, "").replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク").trim();
 }
 function speak(text) {
-  if (!synth || !settings.readAloud) return; // 「返答を読み上げる」がオフなら読まない
+  if (!settings.readAloud) return; // 「返答を読み上げる」がオフなら読まない
   const t = cleanForSpeech(text);
   if (!t) return;
-  const u = new SpeechSynthesisUtterance(t);
-  u.lang = "ja-JP";
-  u.rate = settings.rate;
-  u.pitch = 0.9;
-  const chosen = $("voiceSelect").value;
-  const v = chosen && voices.find(v => v.name === chosen);
-  if (v) u.voice = v;
+  if (useFish()) { speakFish(t); return; }
+  if (!synth) return;
+  const u = makeUtterance(t, settings.rate);
   speakQueue++;
   setStatus("話しています…");
   activeUtterances.add(u);
@@ -1181,6 +1319,7 @@ function speak(text) {
 // 最初に送信ボタンかマイクを押したとき、短く「はい」と実際に読み上げて合図にする。
 let audioUnlocked = !isIOS; // PC はこの合図が不要
 function unlockAudio() {
+  primeFishAudio();
   if (audioUnlocked || !synth) return;
   audioUnlocked = true;
   const u = new SpeechSynthesisUtterance("はい");
@@ -1192,6 +1331,11 @@ function unlockAudio() {
   synth.speak(u);
 }
 function stopSpeaking() {
+  fishGen++;
+  fishChain = Promise.resolve();
+  fishCount = 0;
+  fishPlaying = false;
+  try { fishAudio.pause(); } catch {}
   if (synth && (synth.speaking || synth.pending)) synth.cancel();
   clearInterval(speakWatch); speakWatch = null;
   activeUtterances.clear();
@@ -1368,6 +1512,7 @@ function startListening() {
   }
   // iPhone では、読み上げ中や止めた直後にマイクを始めると、マイクが音を拾えない。
   // 話している途中に押されたら、まず読み上げだけ止めて、もう一度押してもらう。
+  if (fishActive()) stopSpeaking(); // Fish Audio の声が鳴っていたら止めてから聞く
   if (synth && (synth.speaking || synth.pending)) {
     stopSpeaking();
     if (isIOS) {
@@ -1712,24 +1857,51 @@ function openSettings() {
   $("pause").value = settings.pause; $("pauseVal").textContent = settings.pause;
   $("autoListen").checked = settings.autoListen;
   if (settings.voice) $("voiceSelect").value = settings.voice;
+  $("fishOn").checked = settings.fishOn;
+  $("fishUrl").value = settings.fishUrl;
+  $("fishVoice").value = settings.fishVoice;
+  $("fishModel").value = settings.fishModel;
+  $("fishBox").hidden = !settings.fishOn;
   dlg.showModal();
 }
+$("fishOn").addEventListener("change", (e) => { $("fishBox").hidden = !e.target.checked; });
 $("settingsBtn").addEventListener("click", openSettings);
 $("cancelSettings").addEventListener("click", () => dlg.close());
 $("rate").addEventListener("input", (e) => $("rateVal").textContent = e.target.value);
 $("pause").addEventListener("input", (e) => $("pauseVal").textContent = e.target.value);
-$("testVoice").addEventListener("click", () => {
+$("testVoice").addEventListener("click", async () => {
+  const sample = "お待ちしていました。ハヤトです。本日の予定と、明日の天気を確認しましょう。";
+  const rate = parseFloat($("rate").value);
+  // Fish Audio にチェックが入っていれば、入力中の内容で Fish Audio の声を試す
+  if ($("fishOn").checked) {
+    const url = $("fishUrl").value.trim();
+    if (!url) { alert("声の中継（GAS）のURLを入れてください。"); return; }
+    stopSpeaking();
+    // ボタンを押した瞬間に再生を始めておく（iPhone の再生許可のため）
+    fishPrimed = false;
+    const saved = { on: settings.fishOn, url: settings.fishUrl, voice: settings.fishVoice, model: settings.fishModel };
+    Object.assign(settings, { fishOn: true, fishUrl: url, fishVoice: $("fishVoice").value.trim(), fishModel: $("fishModel").value });
+    primeFishAudio();
+    const btn = $("testVoice");
+    btn.disabled = true; btn.textContent = "🔊 声を作っています…";
+    try {
+      const a = await fishFetch(sample, rate);
+      fishPlaying = true;
+      const ok = await fishPlay(a, fishGen);
+      if (!ok) alert("声のデータは届きましたが、再生できませんでした。");
+    } catch (e) {
+      alert("Fish Audio の声を作れませんでした。\n" + (e?.message || e));
+    } finally {
+      fishPlaying = false;
+      Object.assign(settings, { fishOn: saved.on, fishUrl: saved.url, fishVoice: saved.voice, fishModel: saved.model });
+      btn.disabled = false; btn.textContent = "🔊 声のテスト";
+    }
+    return;
+  }
   if (!synth) { alert("このブラウザは読み上げに対応していません。"); return; }
   synth.cancel();
   audioUnlocked = true; // ボタンを押した瞬間の読み上げなので、iPhone の合図にもなる
-  const u = new SpeechSynthesisUtterance("お待ちしていました。ハヤトです。本日の予定と、明日の天気を確認しましょう。");
-  u.lang = "ja-JP";
-  u.rate = parseFloat($("rate").value);
-  u.pitch = 0.9;
-  const chosen = $("voiceSelect").value;
-  const v = chosen && voices.find(v => v.name === chosen);
-  if (v) u.voice = v;
-  synth.speak(u);
+  synth.speak(makeUtterance(sample, rate));
 });
 $("saveSettings").addEventListener("click", () => {
   settings.apiKey = $("apiKey").value.trim();
@@ -1749,6 +1921,15 @@ $("saveSettings").addEventListener("click", () => {
   store.set("voice", settings.voice);
   store.set("rate", String(settings.rate));
   store.set("autoListen", String(settings.autoListen));
+  settings.fishOn = $("fishOn").checked;
+  settings.fishUrl = $("fishUrl").value.trim();
+  settings.fishVoice = fishVoiceId($("fishVoice").value) || settings.fishVoice;
+  settings.fishModel = $("fishModel").value;
+  store.set("fishOn", String(settings.fishOn));
+  store.set("fishUrl", settings.fishUrl);
+  store.set("fishVoice", settings.fishVoice);
+  store.set("fishModel", settings.fishModel);
+  fishWarned = false;
   dlg.close();
   setHandsFree(settings.autoListen);
   addMsg("system", "設定を保存しました。");
@@ -1759,6 +1940,7 @@ if (isIOS && synth) {
   const ov = $("startOverlay");
   ov.hidden = false;
   ov.addEventListener("click", () => {
+    primeFishAudio(); // Fish Audio の声を後で再生できるようにする
     const name = settings.userName || "ボス";
     const u = new SpeechSynthesisUtterance(`お待ちしていました、${name}。`);
     u.lang = "ja-JP";
