@@ -1352,6 +1352,8 @@ const isStandalone = window.navigator.standalone === true ||
   (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
 let recog = null, listening = false, gotSomething = false, startTimer = null;
 let heard = "", silenceTimer = null;
+let lastRecogEvent = 0;            // 聞き取りから最後に知らせが届いた時刻（止まったままの検出用）
+const recogErrorShown = new Set(); // 一度出したエラーのお知らせ
 
 // iPhone では同じ聞き取りを使い回すと2回目以降に動かないことがあるので、毎回作り直す
 function createRecognizer() {
@@ -1360,10 +1362,12 @@ function createRecognizer() {
   r.interimResults = true;
   // 途中で少し間が空いても聞き取りを終わらせない（考えながら話せるように）
   r.continuous = true;
-  r.onstart = () => { clearTimeout(startTimer); setStatus(handsFree() ? "聞いています…（話しかけてください）" : "聞いています…（もう一度押すと送信）"); };
+  r.onaudiostart = r.onsoundstart = r.onspeechstart = () => { lastRecogEvent = Date.now(); };
+  r.onstart = () => { lastRecogEvent = Date.now(); clearTimeout(startTimer);setStatus(handsFree() ? "聞いています…（話しかけてください）" : "聞いています…（もう一度押すと送信）"); };
   // ブラウザが「確定」と判断しても、すぐには送らない。
   // 聞き取れた文章を毎回まるごと保持し、設定の秒数だけ黙ったら（または聞き取りが終わったら）送る。
   r.onresult = (e) => {
+    lastRecogEvent = Date.now();
     gotSomething = true;
     let text = "";
     for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
@@ -1388,7 +1392,9 @@ function createRecognizer() {
       // 常時会話モードでは、黙っていただけなので何も出さずに聞き取りを続ける
       if (!handsFree()) addMsg("system", "声が聞き取れませんでした。マイクを押してから、はっきり話しかけてください。");
     } else if (err !== "aborted") {
-      addMsg("error", "音声認識エラー: " + err);
+      // 常時会話中は、通信の一時的な失敗などは同じお知らせを何度も出さない
+      if (!handsFree() || !recogErrorShown.has(err)) addMsg("error", "音声認識エラー: " + err);
+      recogErrorShown.add(err);
     }
     // マイクが使えない状態では、今だけ自動の聞き取りを止める（エラーがくり返し出ないように）。
     // 設定としては保存しないので、次に開いたとき（マイクを許可したあと）は、また常時会話で始まる。
@@ -1397,11 +1403,13 @@ function createRecognizer() {
       addMsg("system", "常時会話を一時停止しました。マイクを許可してから、右上の「🎙 常時会話」ボタンで再開してください。");
     }
     stopListening(false);
-    if (err === "no-speech") scheduleRelisten();
+    // マイクの許可以外のエラー（黙っていた・通信の失敗など）なら、少し待って聞き取りを再開する
+    if (err === "no-speech" || err === "aborted") scheduleRelisten();
+    else scheduleRelisten(2000);
   };
   r.onend = () => {
     clearTimeout(startTimer);
-    if (!listening) return;
+    if (!listening) { scheduleRelisten(); return; }
     if (!gotSomething && !heard.trim()) {
       if (handsFree()) { stopListening(false); scheduleRelisten(); return; }
       addMsg("system", "声が聞き取れませんでした。もう一度マイクを押して話しかけてください。");
@@ -1430,14 +1438,31 @@ if (store.get("handsFreeDefault", "") !== "done") {
 let relistenTimer = null;
 function scheduleRelisten(delay = 400) {
   clearTimeout(relistenTimer);
+  relistenTimer = null;
   if (!handsFree()) return;
   relistenTimer = setTimeout(() => {
-    if (handsFree() && !busy && !listening && speakQueue === 0 && !(synth && synth.speaking)
-        && !document.hidden && !dlg.open && settings.apiKey) {
+    relistenTimer = null;
+    if (handsFree() && !busy && !listening && speakQueue === 0 && !(synth && synth.speaking) && !fishActive()
+        && !document.hidden && !dlg.open && settings.apiKey && !typingNow()) {
       startListening();
     }
   }, delay);
 }
+// 入力欄に文字を打っている途中なら、聞き取りで上書きしない
+function typingNow() {
+  return document.activeElement === textInput && textInput.value.trim() !== "";
+}
+// 見張り役：常時会話なのに聞き取りが止まったままになっていたら、自動で立て直す
+setInterval(() => {
+  if (!handsFree() || document.hidden) return;
+  if (listening) {
+    // 長いあいだ何の知らせもなく、聞き取った文章もなければ、止まっているとみなして聞き直す
+    if (!heard.trim() && Date.now() - lastRecogEvent > 45000) { stopListening(true); scheduleRelisten(300); }
+  } else if (!relistenPending()) {
+    scheduleRelisten(0);
+  }
+}, 5000);
+function relistenPending() { return relistenTimer !== null; }
 function setHandsFree(on, persist = true) {
   settings.autoListen = on;
   if (persist) store.set("autoListen", String(on));
@@ -1538,6 +1563,8 @@ function startListening() {
   clearTimeout(startTimer);
   startTimer = setTimeout(() => {
     if (listening && !gotSomething && statusEl.textContent.startsWith("マイクを準備中")) {
+      // マイクが動かない状態で自動の聞き直しをくり返さないよう、常時会話は今だけ止める
+      if (handsFree()) setHandsFree(false, false);
       addMsg("error", "マイクが反応しません。" + (isIOS
         ? (isStandalone
             ? "ホーム画面のアイコンからではなく、Safari で直接開いてみてください。"
@@ -1553,6 +1580,7 @@ function finishListening() {
   stopListening(false);
   heard = "";
   if (text) send(text);
+  else scheduleRelisten(); // 雑音だけで文章がなかったときも、常時会話なら聞き直す
 }
 function stopListening(abort = true) {
   if (!recog) return;
