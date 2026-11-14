@@ -18,6 +18,8 @@
     Fish のキーは中継側（Cloudflare のシークレット／GAS のスクリプトプロパティ）の `FISH_API_KEY` にだけ置く。
     失敗したらブラウザの読み上げに自動で戻る。料金：s2.1-pro-free は 2026-11-30 まで無料、s2.1-pro は $15/100万バイト（日本語1文字=3バイト）。
 - ハヤトの人格（システムプロンプト）は `index.html` の `buildSystemPrompt` にある。
+- 記憶：返事のあと Haiku（`updateMemories`）が会話を読み、覚えることを add/remove（JSON）で返す → localStorage `hayato.memories` に保存（端末ごと・最大80件）。
+  次の会話のシステムプロンプトに `memoryPromptSection` で入れる（会話途中では前提を変えない＝署名の制約）。設定画面で一覧・削除・オンオフ。4文字未満の発言は調べない。
 - 公開先：GitHub Pages（リポジトリ `ryoun0307/ai-hayato` の `main`）。公開は無料・回数制限なし。
 - APIキーは各端末のブラウザ（localStorage）にだけ保存する。ユーザーが画面の「⚙ 設定」で自分で入力する。
   **APIキーをファイルやチャットに書かない。コミットしない。**

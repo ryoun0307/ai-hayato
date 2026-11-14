@@ -262,6 +262,11 @@
     background: #fffaf0; font: inherit; color: inherit;
   }
   .hint { font-size: .75rem; color: var(--muted); margin-top: 4px; }
+  .mem-list { list-style: none; margin: 8px 0 0; padding: 0; max-height: 220px; overflow-y: auto; }
+  .mem-list li { display: flex; align-items: flex-start; gap: 8px; font-size: .82rem; padding: 6px 4px; border-bottom: 1px solid rgba(128,128,128,.25); }
+  .mem-list li span { flex: 1; line-height: 1.45; }
+  .mem-list li button { flex: none; border: none; background: transparent; color: var(--muted); cursor: pointer; font-size: .9rem; padding: 0 4px; }
+  .mem-list .empty { color: var(--muted); border: none; }
   .row { display: flex; gap: 8px; align-items: center; }
   .row input[type=checkbox] { width: auto; }
   .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
@@ -590,6 +595,15 @@
     <label for="autoListen" style="margin:0">ハヤトが話し終えたら自動で聞き取りを再開する</label>
   </div>
 
+  <label style="margin-top:18px">ハヤトの記憶（<span id="memCount">0</span>件）</label>
+  <div class="row">
+    <input id="memoryOn" type="checkbox">
+    <label for="memoryOn" style="margin:0">会話の中から、覚えておくべきことを自動で覚える</label>
+  </div>
+  <div class="hint">覚えたことは、この端末の中に保存され、アプリを閉じても消えません（PCとiPhoneは別々に覚えます）。「〇〇を覚えて」「〇〇は忘れて」と話しかけても覚えたり忘れたりできます。</div>
+  <ul id="memList" class="mem-list"></ul>
+  <button type="button" class="secondary" id="memClear" style="margin-top:6px;padding:6px 12px;border-radius:8px;border:1px solid var(--muted);font:inherit;font-size:.8rem;cursor:pointer;background:transparent;color:inherit">記憶をすべて消す</button>
+
   <div class="dialog-actions">
     <button class="secondary" id="cancelSettings">閉じる</button>
     <button class="primary" id="saveSettings">保存</button>
@@ -755,6 +769,7 @@ const settings = {
   fishUrl: store.get("fishUrl", ""),                          // 中継（GAS）のURL
   fishVoice: store.get("fishVoice", "0b5f5d693bf84621aea50e0f39e36c97"),
   fishModel: store.get("fishModel", "s2.1-pro-free"),
+  memoryOn: store.get("memoryOn", "true") !== "false",        // 会話から自動で覚えるか
 };
 // 「おまかせ」を最初の設定にする（以前の版で保存されたモデルがあっても、一度だけ「おまかせ」に直す）
 if (store.get("modelAutoDefault", "") !== "done") {
@@ -1787,6 +1802,109 @@ function dropTurn(userTurn) {
   if (i >= 0) history.length = i;
 }
 
+// ============================================================
+//  ハヤトの記憶（アプリを閉じても消えない。この端末の localStorage に保存）
+//  ・返事のあとに Haiku が会話を読み、覚えておくべきことを足したり消したりする
+//  ・覚えたことは、次の会話の前提（システムプロンプト）に入れる
+//    （会話の途中で前提は変えられないので、新しく覚えたことは次の会話から反映。
+//      今の会話の中では、話した内容そのものが残っているので困らない）
+// ============================================================
+const MEMORY_MAX = 80;
+let memories = [];
+try { memories = JSON.parse(store.get("memories", "[]")) || []; } catch { memories = []; }
+if (!Array.isArray(memories)) memories = [];
+function saveMemories() {
+  store.set("memories", JSON.stringify(memories));
+  renderMemories();
+}
+function memoryPromptSection() {
+  const name = settings.userName || "ボス";
+  let s = "\n\n# 記憶\n" +
+    "- 会話の中で" + name + "について覚えておくべきこと（好み、家族、仕事、予定、頼まれた約束など）は、この会話のあと自動で記憶される。" +
+    "「覚えて」と言われたら「覚えておきます」と短く答える。「忘れて」と言われたら「忘れます」と答える。記憶できないとは言わない。\n";
+  if (memories.length) {
+    s += "- これまでに覚えていること（関係するときだけ自然に活かす。覚えている内容を毎回わざわざ口にしない）:\n" +
+      memories.map((m) => "  ・" + m.text + (m.at ? "（" + m.at + "）" : "")).join("\n");
+  }
+  return s;
+}
+let memoryBusy = Promise.resolve();
+function rememberFrom(userText, botText) {
+  if (!settings.memoryOn || !settings.apiKey) return;
+  if (String(userText).trim().length < 4) return; // 「はい」などの短い返事は調べない（料金の節約）
+  // 前の記憶の更新が終わってから順番に行う
+  memoryBusy = memoryBusy.then(() => updateMemories(userText, botText)).catch((e) => console.warn("記憶の更新に失敗", e));
+}
+async function updateMemories(userText, botText) {
+  const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true, maxRetries: 1, timeout: 20000 });
+  const today = new Date().toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "long", day: "numeric", weekday: "short" });
+  const list = memories.length ? memories.map((m, i) => `${i + 1}. ${m.text}`).join("\n") : "（まだない）";
+  const res = await client.messages.create({
+    model: MODELS.haiku.id,
+    max_tokens: 500,
+    thinking: { type: "disabled" },
+    output_config: { effort: "low" },
+    system:
+      "あなたは、音声アシスタント「ハヤト」の記憶係。ユーザーとの1回分のやり取りを読み、今後の会話で役立つことだけを記憶に足したり消したりする。\n" +
+      "覚えること: ユーザーの名前・呼ばれ方、家族やペット、仕事、住んでいる地域、好きなもの・苦手なもの、健康上の注意、大事な予定・記念日・締め切り、目標、続けている取り組み、ハヤトへの要望（話し方や答え方の好み）、ユーザーが「覚えて」と頼んだこと。\n" +
+      "覚えないこと: その場限りの質問（今日の天気、雑学、計算など）、雑談の相づち、アシスタントが調べて答えただけの一般情報、推測、すでに覚えていることと同じ内容。\n" +
+      "ユーザーが「忘れて」と言ったこと、内容が変わったこと、終わった予定は remove に番号を入れる。内容が変わった場合は新しい内容を add にも入れる。\n" +
+      "add の1件は「ユーザーは〜」「ユーザーの〜」の形の短い1文（40字以内）。「明日」「来週」などは今日の日付をもとに具体的な日付に直す。\n" +
+      "出力は JSON だけ: {\"add\":[\"…\"],\"remove\":[番号]} 。何もなければ {\"add\":[],\"remove\":[]} 。",
+    messages: [{
+      role: "user",
+      content: `今日の日付: ${today}\n\n# 今覚えていること\n${list}\n\n# 今回のやり取り\nユーザー: ${userText}\nアシスタント: ${String(botText || "").slice(0, 600)}`,
+    }],
+  });
+  const out = res.content.filter((b) => b.type === "text").map((b) => b.text).join("");
+  const m = out.match(/\{[\s\S]*\}/);
+  if (!m) return;
+  let ops;
+  try { ops = JSON.parse(m[0]); } catch { return; }
+  const removeIdx = new Set((Array.isArray(ops.remove) ? ops.remove : []).map(Number).filter((n) => n >= 1 && n <= memories.length));
+  const removed = memories.filter((_, i) => removeIdx.has(i + 1));
+  const kept = memories.filter((_, i) => !removeIdx.has(i + 1));
+  const added = (Array.isArray(ops.add) ? ops.add : [])
+    .map((t) => String(t).trim().slice(0, 80))
+    .filter((t) => t && !kept.some((k) => k.text === t));
+  if (!added.length && !removed.length) return;
+  const at = new Date().toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" });
+  memories = kept.concat(added.map((t) => ({ text: t, at })));
+  if (memories.length > MEMORY_MAX) memories = memories.slice(memories.length - MEMORY_MAX); // 古いものから消す
+  saveMemories();
+  if (added.length) showToast("📝 覚えました：" + added.join("／"), "info");
+  else showToast("🗑 忘れました：" + removed.map((r) => r.text).join("／"), "info");
+}
+function renderMemories() {
+  const ul = document.getElementById("memList");
+  const cnt = document.getElementById("memCount");
+  if (cnt) cnt.textContent = memories.length;
+  if (!ul) return;
+  ul.innerHTML = "";
+  if (!memories.length) {
+    const li = document.createElement("li");
+    li.className = "empty";
+    li.textContent = "まだ何も覚えていません。";
+    ul.appendChild(li);
+    return;
+  }
+  memories.slice().reverse().forEach((mem) => {
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    span.textContent = mem.text + (mem.at ? `（${mem.at}）` : "");
+    const del = document.createElement("button");
+    del.type = "button";
+    del.textContent = "✕";
+    del.title = "この記憶を消す";
+    del.addEventListener("click", () => {
+      memories = memories.filter((x) => x !== mem);
+      saveMemories();
+    });
+    li.append(span, del);
+    ul.appendChild(li);
+  });
+}
+
 function errorMessage(err) {
   const raw = String(err?.message || err || "");
   if (/credit balance|billing|insufficient.*(credit|fund)/i.test(raw) || err?.status === 402)
@@ -1812,7 +1930,8 @@ async function askClaude(onText, mode, onEvent = () => {}) {
   if (!systemPrompt) {
     systemPrompt = buildSystemPrompt(settings.userName) +
       "\n\n# 現在日時\n" + (settings.userName || "ボス") + "のメッセージの末尾にある（送信時刻: …）が、その時点の現在日時。" +
-      "日時を答えるときや予定を考えるときに使う。送信時刻そのものを毎回読み上げたり、繰り返したりしない。";
+      "日時を答えるときや予定を考えるときに使う。送信時刻そのものを毎回読み上げたり、繰り返したりしない。" +
+      memoryPromptSection();
   }
   const m = MODELS[mode.model] || MODELS.opus;
   const params = {
@@ -1971,6 +2090,7 @@ async function send(text) {
     } else {
       history.push({ role: "assistant", content: final.content });
       if (!shown) bodyEl.textContent = "（返答なし）";
+      rememberFrom(text, shown); // 覚えておくべきことがあれば、裏で記憶に残す（返事は待たせない）
     }
   } catch (err) {
     dropTurn(userTurn);
@@ -2068,8 +2188,16 @@ function openSettings() {
   $("fishVoice").value = settings.fishVoice;
   $("fishModel").value = settings.fishModel;
   $("fishBox").hidden = !settings.fishOn;
+  $("memoryOn").checked = settings.memoryOn;
+  renderMemories();
   dlg.showModal();
 }
+$("memClear").addEventListener("click", () => {
+  if (!memories.length) return;
+  if (!confirm("ハヤトが覚えていることを、すべて消します。元に戻せません。よろしいですか？")) return;
+  memories = [];
+  saveMemories();
+});
 $("fishOn").addEventListener("change", (e) => { $("fishBox").hidden = !e.target.checked; });
 $("settingsBtn").addEventListener("click", openSettings);
 $("cancelSettings").addEventListener("click", () => dlg.close());
@@ -2134,6 +2262,8 @@ $("saveSettings").addEventListener("click", () => {
   store.set("fishUrl", settings.fishUrl);
   store.set("fishVoice", settings.fishVoice);
   store.set("fishModel", settings.fishModel);
+  settings.memoryOn = $("memoryOn").checked;
+  store.set("memoryOn", String(settings.memoryOn));
   fishWarned = false;
   dlg.close();
   setHandsFree(settings.autoListen);
