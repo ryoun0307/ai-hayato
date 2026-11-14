@@ -21,6 +21,8 @@ function doPost(e) {
     const model = /^[a-z0-9.\-]+$/.test(p.model || "") ? p.model : "s2.1-pro-free";
     const voice = /^[0-9a-f]{32}$/.test(p.voice || "") ? p.voice : DEFAULT_VOICE;
     const speed = Math.min(1.6, Math.max(0.7, Number(p.speed) || 1));
+    // low = 一番速い（返事の最初の一言）、balanced = 速さと質のバランス
+    const latency = ["low", "balanced", "normal"].indexOf(p.latency) >= 0 ? p.latency : "balanced";
 
     const res = UrlFetchApp.fetch("https://api.fish.audio/v1/tts", {
       method: "post",
@@ -31,7 +33,7 @@ function doPost(e) {
         reference_id: voice,
         format: "mp3",
         mp3_bitrate: 64,
-        latency: "balanced",
+        latency: latency,
         normalize: true,
         language: "ja",
         prosody: { speed: speed },
