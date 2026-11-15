@@ -2361,15 +2361,20 @@ if (isIOS && synth) {
   ov.addEventListener("click", () => {
     primeFishAudio(); // Fish Audio の声を後で再生できるようにする
     const name = settings.userName || "ボス";
-    const u = new SpeechSynthesisUtterance(`お待ちしていました、${name}。`);
-    u.lang = "ja-JP";
-    u.rate = settings.rate;
-    const chosen = $("voiceSelect").value;
-    const v = chosen && voices.find(v => v.name === chosen);
-    if (v) u.voice = v;
-    synth.speak(u);
-    audioUnlocked = true;
-    ov.hidden = true;
+    const greeting = `お待ちしていました、${name}。`;
+    if (useFish()) {
+      // Fish Audio の声を使うときは、いつもの声は音を出さずに許可だけもらい、挨拶は Fish Audio の声で話す
+      const u = makeUtterance("はい", settings.rate);
+      u.volume = 0;
+      synth.speak(u);
+      audioUnlocked = true;
+      ov.hidden = true;
+      speak(greeting, true);
+    } else {
+      synth.speak(makeUtterance(greeting, settings.rate));
+      audioUnlocked = true;
+      ov.hidden = true;
+    }
   }, { once: true });
 }
 
