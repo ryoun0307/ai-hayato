@@ -1339,11 +1339,29 @@ function schedulePcm(ctx, b) {
 }
 async function fishStreamPlay(item, gen) {
   const ctx = getAudioCtx();
-  if (!ctx) throw new Error("このブラウザでは声を再生できません");
-  if (ctx.state !== "running") { try { await ctx.resume(); } catch {} }
-  if (ctx.state !== "running") throw new Error("音の再生が許可されていません。画面を一度クリック（タップ）してください");
+  // iPhone では、音を鳴らす準備（resume）が返事をしないまま止まることがあるので、待つのは0.8秒まで
+  if (ctx && ctx.state !== "running") {
+    try { await Promise.race([ctx.resume(), new Promise((r) => setTimeout(r, 800))]); } catch {}
+  }
   await item.ready; // 中継のエラーならここで止まり、いつもの声に切り替わる
   const wait = (ms) => new Promise((res) => { item.wake = res; setTimeout(res, ms); });
+  // 届いた分から鳴らす仕組みが使えないときは、全部受け取ってから音声ファイルとして鳴らす
+  if (!ctx || ctx.state !== "running") {
+    while (gen === fishGen && !item.done) await wait(150);
+    if (gen !== fishGen) return true;
+    const total = item.chunks.reduce((s, p) => s + p.length, 0);
+    if (!total) throw item.error || new Error("声のデータが届きませんでした");
+    const wav = new Uint8Array(44 + total);
+    const v = new DataView(wav.buffer);
+    const w = (o, s) => { for (let i = 0; i < s.length; i++) wav[o + i] = s.charCodeAt(i); };
+    w(0, "RIFF"); v.setUint32(4, 36 + total, true); w(8, "WAVEfmt "); v.setUint32(16, 16, true);
+    v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, PCM_RATE, true); v.setUint32(28, PCM_RATE * 2, true);
+    v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, "data"); v.setUint32(40, total, true);
+    let o = 44;
+    for (const p of item.chunks) { wav.set(p, o); o += p.length; }
+    item.chunks = [];
+    return fishPlay(URL.createObjectURL(new Blob([wav], { type: "audio/wav" })), gen);
+  }
   // 途切れないように、最初だけ少し（0.25秒分）ためてから鳴らし始める
   while (gen === fishGen && !item.done && item.bytes < PCM_RATE * 2 * 0.25) await wait(100);
   let any = false;
@@ -1427,7 +1445,11 @@ function speakFish(t, first = false) {
     if (gen !== fishGen) return;
     let ok = false;
     try {
-      ok = await job.play(gen);
+      // 万一どこかで止まっても「話しています」のままにならないよう、90秒で打ち切る
+      ok = await Promise.race([
+        job.play(gen),
+        new Promise((_, rej) => setTimeout(() => rej(new Error("声の再生が終わりませんでした")), 90000)),
+      ]);
       if (!ok) throw new Error("音を再生できませんでした");
     } catch (e) {
       ok = false;
@@ -1517,6 +1539,7 @@ function unlockAudio() {
   primeFishAudio();
   if (audioUnlocked || !synth) return;
   audioUnlocked = true;
+  if (useFish()) return; // Fish Audio の声を使うときは「はい」と言わない（iPhone は音量0でも声が出るため）
   const u = new SpeechSynthesisUtterance("はい");
   u.lang = "ja-JP";
   u.rate = settings.rate;
@@ -2363,10 +2386,8 @@ if (isIOS && synth) {
     const name = settings.userName || "ボス";
     const greeting = `お待ちしていました、${name}。`;
     if (useFish()) {
-      // Fish Audio の声を使うときは、いつもの声は音を出さずに許可だけもらい、挨拶は Fish Audio の声で話す
-      const u = makeUtterance("はい", settings.rate);
-      u.volume = 0;
-      synth.speak(u);
+      // Fish Audio の声を使うときは、いつもの声は使わず（iPhone は音量0でも声が出て、Fish Audio の音も止めてしまう）、
+      // 挨拶は Fish Audio の声で話す
       audioUnlocked = true;
       ov.hidden = true;
       speak(greeting, true);
