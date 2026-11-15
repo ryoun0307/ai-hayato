@@ -518,6 +518,7 @@
       <button class="tool-btn" id="stopBtn2">⏹ 読み上げ停止</button>
       <button class="tool-btn mobile-only" id="clearBtn2">↺ 新しい会話</button>
       <button class="tool-btn mobile-only" id="settingsBtn2">⚙ 設定</button>
+      <button class="tool-btn" id="reloadBtn">🔄 更新</button>
       <label class="tool-check"><input type="checkbox" id="readAloud"> 返答を読み上げる</label>
       <label class="tool-check desktop-only"><input type="checkbox" id="autoListen2"> 常時会話モード（返答後に自動で聞き取り）</label>
       <span class="panel-hint">画面のどこかを<span class="desktop-only">クリック</span><span class="mobile-only">タップ</span>すると、閉じます</span>
@@ -601,6 +602,10 @@
     <label for="memoryOn" style="margin:0">会話の中から、覚えておくべきことを自動で覚える</label>
   </div>
   <div class="hint">覚えたことは、この端末の中に保存され、アプリを閉じても消えません（PCとiPhoneは別々に覚えます）。「〇〇を覚えて」「〇〇は忘れて」と話しかけても覚えたり忘れたりできます。</div>
+  <label for="memCode">記憶の合言葉（PC と iPhone で記憶を共有するとき）</label>
+  <input id="memCode" type="text" placeholder="8文字以上・PCとiPhoneで同じものを入れる" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <div class="hint">Cloudflare の中継を使っているときだけ共有できます。他の人に推測されにくい言葉にしてください。空にすると、この端末だけで覚えます。</div>
+  <div class="hint" id="memSyncNote"></div>
   <ul id="memList" class="mem-list"></ul>
   <button type="button" class="secondary" id="memClear" style="margin-top:6px;padding:6px 12px;border-radius:8px;border:1px solid var(--muted);font:inherit;font-size:.8rem;cursor:pointer;background:transparent;color:inherit">記憶をすべて消す</button>
 
@@ -770,6 +775,7 @@ const settings = {
   fishVoice: store.get("fishVoice", "0b5f5d693bf84621aea50e0f39e36c97"),
   fishModel: store.get("fishModel", "s2.1-pro-free"),
   memoryOn: store.get("memoryOn", "true") !== "false",        // 会話から自動で覚えるか
+  memCode: store.get("memCode", ""),                          // 記憶を共有する合言葉
 };
 // 「おまかせ」を最初の設定にする（以前の版で保存されたモデルがあっても、一度だけ「おまかせ」に直す）
 if (store.get("modelAutoDefault", "") !== "done") {
@@ -1667,7 +1673,7 @@ function setHandsFree(on, persist = true) {
 }
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) { if (listening) stopListening(true); }
-  else scheduleRelisten(300);
+  else { scheduleRelisten(300); pullMemories(); } // 戻ってきたら、もう一方の端末で覚えたことも読み込む
 });
 
 // ------------------------------------------------------------
@@ -1869,11 +1875,78 @@ async function updateMemories(userText, botText) {
     .filter((t) => t && !kept.some((k) => k.text === t));
   if (!added.length && !removed.length) return;
   const at = new Date().toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" });
-  memories = kept.concat(added.map((t) => ({ text: t, at })));
-  if (memories.length > MEMORY_MAX) memories = memories.slice(memories.length - MEMORY_MAX); // 古いものから消す
-  saveMemories();
+  await changeMemories(added.map((t) => ({ text: t, at })), removed.map((r) => r.text));
   if (added.length) showToast("📝 覚えました：" + added.join("／"), "info");
   else showToast("🗑 忘れました：" + removed.map((r) => r.text).join("／"), "info");
+}
+
+// ---- 記憶の共有（Cloudflare に置いて、PC と iPhone で同じ記憶を使う）----
+// 合言葉と、中継（Cloudflare）の URL があるときだけ共有する。
+function memSyncUrl() {
+  if (!settings.memCode || !settings.fishUrl || isGasUrl(settings.fishUrl)) return "";
+  try { return new URL("/memory", settings.fishUrl).href; } catch { return ""; }
+}
+async function memoryRemote(body) {
+  const r = await fetch(memSyncUrl(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: settings.memCode, ...body }),
+  });
+  let j = {};
+  try { j = await r.json(); } catch {}
+  if (!r.ok || j.error) throw new Error(j.error || "記憶の共有でエラー（" + r.status + "）");
+  return j;
+}
+let memSyncNote = "";
+function setMemSyncNote(t) {
+  memSyncNote = t;
+  const el = document.getElementById("memSyncNote");
+  if (el) el.textContent = t;
+}
+// 記憶を足す・消す（共有しているときは、共有先の最新の記憶に対して行う）
+async function changeMemories(addList, removeTexts) {
+  const apply = (list) => {
+    let out = list.filter((m) => !removeTexts.includes(m.text));
+    for (const a of addList) if (!out.some((m) => m.text === a.text)) out.push(a);
+    if (out.length > MEMORY_MAX) out = out.slice(out.length - MEMORY_MAX); // 古いものから消す
+    return out;
+  };
+  if (memSyncUrl()) {
+    try {
+      const remote = await memoryRemote({ action: "get" });
+      memories = apply(remote.memories || []);
+      await memoryRemote({ action: "put", memories });
+      setMemSyncNote("共有中（" + new Date().toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" }) + " に保存）");
+    } catch (e) {
+      memories = apply(memories); // 共有できなくても、この端末には残す
+      setMemSyncNote("共有できませんでした：" + (e?.message || e));
+    }
+  } else {
+    memories = apply(memories);
+  }
+  saveMemories();
+}
+// 共有先から最新の記憶を読み込む（開いたとき・画面に戻ったとき）
+async function pullMemories() {
+  if (!memSyncUrl()) { setMemSyncNote(""); return; }
+  try {
+    const remote = await memoryRemote({ action: "get" });
+    const list = remote.memories || [];
+    if (store.get("memSyncedCode", "") !== settings.memCode) {
+      // この合言葉で初めて共有するときは、この端末の記憶と共有先の記憶を合わせる
+      const merged = list.slice();
+      for (const m of memories) if (!merged.some((x) => x.text === m.text)) merged.push(m);
+      memories = merged.slice(-MEMORY_MAX);
+      await memoryRemote({ action: "put", memories });
+      store.set("memSyncedCode", settings.memCode);
+    } else {
+      memories = list;
+    }
+    saveMemories();
+    setMemSyncNote("共有中（PC と iPhone で同じ記憶を使っています）");
+  } catch (e) {
+    setMemSyncNote("共有できませんでした：" + (e?.message || e));
+  }
 }
 function renderMemories() {
   const ul = document.getElementById("memList");
@@ -1896,10 +1969,7 @@ function renderMemories() {
     del.type = "button";
     del.textContent = "✕";
     del.title = "この記憶を消す";
-    del.addEventListener("click", () => {
-      memories = memories.filter((x) => x !== mem);
-      saveMemories();
-    });
+    del.addEventListener("click", () => { changeMemories([], [mem.text]); });
     li.append(span, del);
     ul.appendChild(li);
   });
@@ -2123,6 +2193,11 @@ $("stopBtn2").addEventListener("click", stopSpeaking);
 $("historyBtn2").addEventListener("click", () => $("historyBtn").click());
 $("clearBtn2").addEventListener("click", () => { $("clearBtn").click(); setPanel(false); });
 $("settingsBtn2").addEventListener("click", () => { setPanel(false); openSettings(); });
+// 最新の版を読み込み直す（ホーム画面から開くと、引っ張って更新ができないため）
+$("reloadBtn").addEventListener("click", () => {
+  stopSpeaking();
+  location.replace(location.pathname + "?v=" + Date.now());
+});
 $("clearBtn").addEventListener("click", () => {
   stopSpeaking(); resetConversation(); logEl.innerHTML = ""; clearThread(); greet();
 });
@@ -2189,14 +2264,15 @@ function openSettings() {
   $("fishModel").value = settings.fishModel;
   $("fishBox").hidden = !settings.fishOn;
   $("memoryOn").checked = settings.memoryOn;
+  $("memCode").value = settings.memCode;
+  setMemSyncNote(memSyncNote);
   renderMemories();
   dlg.showModal();
 }
 $("memClear").addEventListener("click", () => {
   if (!memories.length) return;
-  if (!confirm("ハヤトが覚えていることを、すべて消します。元に戻せません。よろしいですか？")) return;
-  memories = [];
-  saveMemories();
+  if (!confirm("ハヤトが覚えていることを、すべて消します（共有しているときは PC と iPhone の両方から消えます）。元に戻せません。よろしいですか？")) return;
+  changeMemories([], memories.map((m) => m.text));
 });
 $("fishOn").addEventListener("change", (e) => { $("fishBox").hidden = !e.target.checked; });
 $("settingsBtn").addEventListener("click", openSettings);
@@ -2264,6 +2340,14 @@ $("saveSettings").addEventListener("click", () => {
   store.set("fishModel", settings.fishModel);
   settings.memoryOn = $("memoryOn").checked;
   store.set("memoryOn", String(settings.memoryOn));
+  const newCode = $("memCode").value.trim();
+  if (newCode && newCode.length < 8) {
+    alert("記憶の合言葉は8文字以上にしてください。");
+    return;
+  }
+  settings.memCode = newCode;
+  store.set("memCode", settings.memCode);
+  pullMemories(); // 合言葉や中継の URL が変わったかもしれないので、共有先の記憶を読み直す
   fishWarned = false;
   dlg.close();
   setHandsFree(settings.autoListen);
@@ -2295,6 +2379,7 @@ function greet() {
 }
 try { localStorage.removeItem("hayato.passcode"); } catch {}
 greet();
+pullMemories(); // 記憶を共有しているときは、共有先の最新の記憶を読み込む
 
 // 常時会話モード：ボタンの表示をそろえ、開いたらすぐ聞き取りを始める（PC）
 setHandsFree(settings.autoListen);

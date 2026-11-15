@@ -6,6 +6,8 @@
 //    種類「シークレット」、名前 FISH_API_KEY で保存してください。
 //  ・ハヤトから文章が届くと、Fish Audio が声を作りながら送ってくるデータを、
 //    そのまま少しずつハヤトへ流します（届いた分から再生できるので速い）。
+//  ・/memory では、ハヤトの記憶を保存・読み出しします（PC と iPhone で共有するため）。
+//    保存先は Cloudflare の KV。「バインディング」で名前 MEMORY としてつないでください。
 // ============================================================
 
 // 声を指定しなかったときに使う声（Fish Audio のモデルID）
@@ -35,10 +37,34 @@ export default {
     if (request.method === "GET") return json({ ok: true, message: "AIハヤトの声の中継は動いています" });
     if (request.method !== "POST") return json({ error: "使えない呼び出し方です" }, 405);
     if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: "このサイトからは使えません" }, 403);
-    if (!env.FISH_API_KEY) return json({ error: "Cloudflare に FISH_API_KEY が設定されていません" }, 500);
-
     let p = {};
     try { p = await request.json(); } catch { /* 空のまま */ }
+
+    // ---- ハヤトの記憶（PC と iPhone で共有）----
+    // 合言葉をそのまま保存せず、変換（ハッシュ）した値を名前にして保存する
+    if (new URL(request.url).pathname === "/memory") {
+      if (!env.MEMORY) return json({ error: "Cloudflare に記憶の保存先（KV・名前 MEMORY）がつながっていません" }, 500);
+      const code = String(p.code || "");
+      if (code.length < 8) return json({ error: "記憶の合言葉は8文字以上にしてください" }, 400);
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("hayato-memory:" + code));
+      const key = "mem:" + [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+      if (p.action === "get") {
+        const saved = await env.MEMORY.get(key, "json");
+        return json({ memories: (saved && saved.memories) || [], exists: !!saved });
+      }
+      if (p.action === "put") {
+        const list = (Array.isArray(p.memories) ? p.memories : []).slice(-100).map((m) => ({
+          text: String((m && m.text) || "").slice(0, 120),
+          at: String((m && m.at) || "").slice(0, 20),
+        })).filter((m) => m.text);
+        await env.MEMORY.put(key, JSON.stringify({ memories: list, updated: Date.now() }));
+        return json({ ok: true, count: list.length });
+      }
+      return json({ error: "使えない呼び出し方です" }, 400);
+    }
+
+    // ---- Fish Audio の声 ----
+    if (!env.FISH_API_KEY) return json({ error: "Cloudflare に FISH_API_KEY が設定されていません" }, 500);
     const text = String(p.text || "").slice(0, 500); // 1回に読む長さの上限（使いすぎ防止）
     if (!text.trim()) return json({ error: "文章が空です" }, 400);
     const model = /^[a-z0-9.\-]+$/.test(p.model || "") ? p.model : "s2.1-pro-free";

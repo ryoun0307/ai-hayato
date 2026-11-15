@@ -20,6 +20,9 @@
 - ハヤトの人格（システムプロンプト）は `index.html` の `buildSystemPrompt` にある。
 - 記憶：返事のあと Haiku（`updateMemories`）が会話を読み、覚えることを add/remove（JSON）で返す → localStorage `hayato.memories` に保存（端末ごと・最大80件）。
   次の会話のシステムプロンプトに `memoryPromptSection` で入れる（会話途中では前提を変えない＝署名の制約）。設定画面で一覧・削除・オンオフ。4文字未満の発言は調べない。
+  共有：設定の「記憶の合言葉」（8文字以上）と Cloudflare の中継 URL があれば、Worker の `/memory`（KV バインディング名 `MEMORY`、
+  キーは合言葉の SHA-256）に置いて PC と iPhone で共有。開いたとき・画面に戻ったときに読み込み（`pullMemories`）、変更は最新を読んでから書く（`changeMemories`）。
+- 下のボタン列に「🔄 更新」（ホーム画面から開いたときは引っ張って更新できないため）。ホーム画面版と Safari は保存場所が別（設定を入れ直す必要あり）。
 - 公開先：GitHub Pages（リポジトリ `ryoun0307/ai-hayato` の `main`）。公開は無料・回数制限なし。
 - APIキーは各端末のブラウザ（localStorage）にだけ保存する。ユーザーが画面の「⚙ 設定」で自分で入力する。
   **APIキーをファイルやチャットに書かない。コミットしない。**
