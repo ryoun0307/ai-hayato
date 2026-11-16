@@ -2337,7 +2337,8 @@ function openSettings() {
   $("modelSelect").value = settings.model;
   $("rate").value = settings.rate; $("rateVal").textContent = settings.rate;
   $("pause").value = settings.pause; $("pauseVal").textContent = settings.pause;
-  $("autoListen").checked = settings.autoListen;
+  // マイクが反応しないときは常時会話を「今だけ」止めるが、設定画面には保存してある設定を出す
+  $("autoListen").checked = store.get("autoListen", "false") === "true";
   if (settings.voice) $("voiceSelect").value = settings.voice;
   $("fishOn").checked = settings.fishOn;
   $("fishUrl").value = settings.fishUrl;
