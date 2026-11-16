@@ -267,6 +267,11 @@
   .mem-list li span { flex: 1; line-height: 1.45; }
   .mem-list li button { flex: none; border: none; background: transparent; color: var(--muted); cursor: pointer; font-size: .9rem; padding: 0 4px; }
   .mem-list .empty { color: var(--muted); border: none; }
+  /* 返事に付く Google マップ */
+  .map-box { margin-top: 8px; }
+  .map-box iframe { display: block; width: 100%; height: 200px; border: 0; border-radius: 8px; background: #1a2238; }
+  .map-box a { display: inline-block; margin-top: 4px; font-size: .78rem; color: #9fc0ff; }
+  .msg .map-box iframe { height: 260px; }
   .row { display: flex; gap: 8px; align-items: center; }
   .row input[type=checkbox] { width: auto; }
   .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
@@ -596,6 +601,10 @@
     <label for="autoListen" style="margin:0">ハヤトが話し終えたら自動で聞き取りを再開する</label>
   </div>
 
+  <label for="mapsKey" style="margin-top:18px">Google マップの APIキー（場所の話で地図を出す）</label>
+  <input id="mapsKey" type="password" placeholder="AIza..." autocomplete="off" autocapitalize="off" spellcheck="false">
+  <div class="hint">入れると、場所の話が出たときに返事の下に地図を出します（Maps Embed API・無料）。この端末の中にだけ保存されます。空にすると地図を出しません。</div>
+
   <label style="margin-top:18px">ハヤトの記憶（<span id="memCount">0</span>件）</label>
   <div class="row">
     <input id="memoryOn" type="checkbox">
@@ -776,6 +785,7 @@ const settings = {
   fishModel: store.get("fishModel", "s2.1-pro-free"),
   memoryOn: store.get("memoryOn", "true") !== "false",        // 会話から自動で覚えるか
   memCode: store.get("memCode", ""),                          // 記憶を共有する合言葉
+  mapsKey: store.get("mapsKey", ""),                          // Google マップ（Maps Embed API）のキー
 };
 // 「おまかせ」を最初の設定にする（以前の版で保存されたモデルがあっても、一度だけ「おまかせ」に直す）
 if (store.get("modelAutoDefault", "") !== "done") {
@@ -1509,8 +1519,51 @@ function makeUtterance(text, rate) {
   if (v) u.voice = v;
   return u;
 }
+// ---- Google マップ ----
+// ハヤトは返事の最後に【地図：検索語】と書く → 画面では地図に変え、読み上げない
+const MAP_TAG = /【地図[:：]\s*([^】\n]{1,80})】/;
+function stripMapTag(t) {
+  // 書き途中の「【地」「【地図：東京」なども隠す
+  return t.replace(/\n?【地図[:：][^】\n]*】/g, "").replace(/【(地(図[:：]?[^】\n]*)?)?$/, "");
+}
+function mapPromptSection() {
+  if (!settings.mapsKey) return "";
+  return "\n\n# 地図\n" +
+    "- 話題に具体的な場所（店、施設、駅、観光地、住所、地域など）が出て、地図があると役立つときは、返答の一番最後に改行して【地図：検索語】と1つだけ書く。" +
+    "画面ではこれが Google マップの地図に変わり、読み上げられない。\n" +
+    "- 検索語は、地図で1か所に絞れるよう具体的に書く（例：【地図：東京駅 丸の内口】【地図：京都市 清水寺】）。読点や句点、記号は入れない。\n" +
+    "- 地図を見せてと頼まれたときも同じ書き方にする。本文では「地図を出しておきます」程度に触れればよく、URLは書かない。\n" +
+    "- 場所と関係のない会話では書かない。";
+}
+function mapBox(query) {
+  const box = document.createElement("div");
+  box.className = "map-box";
+  const f = document.createElement("iframe");
+  f.loading = "lazy";
+  f.referrerPolicy = "strict-origin-when-cross-origin"; // キーの「ウェブサイトの制限」を確かめてもらうため
+  f.allowFullscreen = true;
+  f.title = "地図：" + query;
+  f.src = "https://www.google.com/maps/embed/v1/search?key=" + encodeURIComponent(settings.mapsKey) +
+    "&q=" + encodeURIComponent(query) + "&language=ja&region=JP";
+  const a = document.createElement("a");
+  a.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
+  a.target = "_blank"; a.rel = "noopener";
+  a.textContent = "📍 " + query + "（Google マップで開く）";
+  box.append(f, a);
+  return box;
+}
+// 返事に地図の印があれば、セリフ欄と履歴に地図を付ける
+function attachMap(text, logBody) {
+  const m = settings.mapsKey && text.match(MAP_TAG);
+  if (!m) return;
+  const q = m[1].trim();
+  if (curHayatoLine) curHayatoLine.appendChild(mapBox(q));
+  if (logBody) logBody.parentElement.appendChild(mapBox(q));
+  threadEl.scrollTop = threadEl.scrollHeight;
+  logEl.scrollTop = logEl.scrollHeight;
+}
 function cleanForSpeech(t) {
-  return t.replace(/【要点】/g, "").replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク").trim();
+  return stripMapTag(t).replace(/【要点】/g, "").replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク").trim();
 }
 // first = 返事の最初の一言（Fish Audio では、速さ優先で声を作る）
 function speak(text, first = false) {
@@ -2024,7 +2077,7 @@ async function askClaude(onText, mode, onEvent = () => {}) {
     systemPrompt = buildSystemPrompt(settings.userName) +
       "\n\n# 現在日時\n" + (settings.userName || "ボス") + "のメッセージの末尾にある（送信時刻: …）が、その時点の現在日時。" +
       "日時を答えるときや予定を考えるときに使う。送信時刻そのものを毎回読み上げたり、繰り返したりしない。" +
-      memoryPromptSection();
+      memoryPromptSection() + mapPromptSection();
   }
   const m = MODELS[mode.model] || MODELS.opus;
   const params = {
@@ -2122,14 +2175,15 @@ async function send(text) {
   const onText = (delta) => {
     if (!shown) bodyEl.textContent = "";
     shown += delta;
-    bodyEl.textContent = shown;
+    const view = stripMapTag(shown); // 地図の印は画面の文字には出さない
+    bodyEl.textContent = view;
     logEl.scrollTop = logEl.scrollHeight;
     // 吹き出しには、詳しく答えるときは要点だけ、ふだんは全文を出す
     if (mode.detail) {
-      const i = shown.indexOf("【詳細】");
-      showBubble((i >= 0 ? shown.slice(0, i) : shown).replace("【要点】", "").trim(), { more: i >= 0 });
+      const i = view.indexOf("【詳細】");
+      showBubble((i >= 0 ? view.slice(0, i) : view).replace("【要点】", "").trim(), { more: i >= 0 });
     } else {
-      showBubble(shown);
+      showBubble(view.trim());
     }
     if (cut) return; // 詳しく答えるときは【詳細】以降は読み上げない
     pending += delta;
@@ -2183,7 +2237,8 @@ async function send(text) {
     } else {
       history.push({ role: "assistant", content: final.content });
       if (!shown) bodyEl.textContent = "（返答なし）";
-      rememberFrom(text, shown); // 覚えておくべきことがあれば、裏で記憶に残す（返事は待たせない）
+      attachMap(shown, bodyEl);
+      rememberFrom(text, stripMapTag(shown)); // 覚えておくべきことがあれば、裏で記憶に残す（返事は待たせない）
     }
   } catch (err) {
     dropTurn(userTurn);
@@ -2288,6 +2343,7 @@ function openSettings() {
   $("fishBox").hidden = !settings.fishOn;
   $("memoryOn").checked = settings.memoryOn;
   $("memCode").value = settings.memCode;
+  $("mapsKey").value = settings.mapsKey;
   setMemSyncNote(memSyncNote);
   renderMemories();
   dlg.showModal();
@@ -2370,6 +2426,11 @@ $("saveSettings").addEventListener("click", () => {
   }
   settings.memCode = newCode;
   store.set("memCode", settings.memCode);
+  const newMaps = $("mapsKey").value.trim();
+  // 地図を使う・使わないが変わると前提（地図の書き方の指示）が変わるので、次の会話から新しい前提で始める
+  if (!!newMaps !== !!settings.mapsKey) resetConversation();
+  settings.mapsKey = newMaps;
+  store.set("mapsKey", settings.mapsKey);
   pullMemories(); // 合言葉や中継の URL が変わったかもしれないので、共有先の記憶を読み直す
   fishWarned = false;
   dlg.close();

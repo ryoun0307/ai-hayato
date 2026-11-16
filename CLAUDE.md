@@ -22,6 +22,9 @@
   次の会話のシステムプロンプトに `memoryPromptSection` で入れる（会話途中では前提を変えない＝署名の制約）。設定画面で一覧・削除・オンオフ。4文字未満の発言は調べない。
   共有：設定の「記憶の合言葉」（8文字以上）と Cloudflare の中継 URL があれば、Worker の `/memory`（KV バインディング名 `MEMORY`、
   キーは合言葉の SHA-256）に置いて PC と iPhone で共有。開いたとき・画面に戻ったときに読み込み（`pullMemories`）、変更は最新を読んでから書く（`changeMemories`）。
+- 地図：設定の「Google マップの APIキー」（Maps Embed API・無料、Google Cloud プロジェクト AI-Kaito、
+  ウェブサイト制限 ryoun0307.github.io と 127.0.0.1:8766）を入れると、システムプロンプトに `mapPromptSection` が入り、
+  ハヤトは返事の最後に【地図：検索語】と書く → `stripMapTag` で画面・読み上げから消し、`attachMap` でセリフ欄と履歴に地図（iframe）を付ける。
 - 下のボタン列に「🔄 更新」（ホーム画面から開いたときは引っ張って更新できないため）。ホーム画面版と Safari は保存場所が別（設定を入れ直す必要あり）。
 - 公開先：GitHub Pages（リポジトリ `ryoun0307/ai-hayato` の `main`）。公開は無料・回数制限なし。
 - APIキーは各端末のブラウザ（localStorage）にだけ保存する。ユーザーが画面の「⚙ 設定」で自分で入力する。
