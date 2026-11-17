@@ -3,9 +3,11 @@
 //
 //  ・JRA 公式サイトの出馬表（馬体重・オッズ・過去4走・血統など）を読み取り、
 //    このスプレッドシートの「出馬表」シートに1レース1行で保存します。
-//  ・前日の夕方と当日の朝に自動で集めます（setupTriggers を1回実行すると設定されます）。
-//  ・ハヤトから「このレースのデータをください」と頼まれたら、当日のレースは
-//    その場で JRA から最新の内容（馬体重・オッズ）を取り直して返します。
+//  ・ふだんは何もしません。ハヤトに「〇〇の予想をして」と聞かれたときに、
+//    その日・その競馬場のレースを JRA から集めて保存します（1回目は約30秒かかります）。
+//  ・当日のレースは、聞かれるたびに最新の内容（馬体重・オッズ）を取り直して返します。
+//  ・前もって集めておきたいときは collectAll を手で実行します（今週の出馬表を全部集める）。
+//    毎日自動で集めたくなったら setupTriggers を1回実行します（ふだんは不要）。
 //  ・個人で使う範囲のための仕組みです。JRA のサーバーに負担をかけないよう、
 //    読み取りの間に少し間を空けています。
 // ============================================================
@@ -175,11 +177,11 @@ function collectAll() {
   console.log("集めたレース：" + count + "（開催 " + meetings.length + "）");
   return count;
 }
-// 指定した日のレースだけ集める（シートにまだないとき用）
-function collectDate(date) {
+// 指定した日（と競馬場）のレースだけ集める（ハヤトに聞かれて、シートにまだないとき）
+function collectDate(date, venue) {
   const sh = sheet();
   let count = 0;
-  getMeetings().filter(function (mt) { return mt.date === date; }).forEach(function (mt) {
+  getMeetings().filter(function (mt) { return mt.date === date && (!venue || mt.venue === venue); }).forEach(function (mt) {
     getRaceCnames(mt.cname).forEach(function (cn) {
       try { saveRace(sh, fetchRace(cn), cn); count++; } catch (e) { console.warn(e); }
     });
@@ -210,8 +212,10 @@ function doGet(e) {
     const venue = String(p.venue || "").replace(/競馬場?$/, "");
     const R = Number(p.race || 0);
 
-    let rows = findRows(date, p.action === "race" ? venue : "", 0);
-    if (!rows.length && date >= today) { collectDate(date); rows = findRows(date, "", 0); }
+    // まだ集めていない日（・競馬場）なら、その場で JRA から集める（競馬場1つで約30秒）
+    const want = p.action === "race" ? venue : "";
+    let rows = findRows(date, want, 0);
+    if (!rows.length && date >= today) { collectDate(date, want); rows = findRows(date, want, 0); }
 
     if (p.action === "list") {
       if (!rows.length) return reply({ ok: false, error: date + " の出馬表は見つかりませんでした（JRA の出馬表は開催の前日ごろに出ます）" });
