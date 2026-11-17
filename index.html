@@ -428,7 +428,8 @@
        セリフ欄はキャラの上（画面の上のほう）に重ねて出す */
     .stage { position: relative; padding: 0; }
     /* 上のほうはセリフ欄の場所として空けておき、ふだんの長さのセリフなら顔に重ならないようにする */
-    .avatar { position: absolute; left: 0; right: 0; top: 22%; bottom: 0; max-height: none; min-height: 0; }
+    /* キャラは小さめにして、画面の下のほうに置く（セリフが残っても顔が隠れないように） */
+    .avatar { position: absolute; left: 0; right: 0; top: 40%; bottom: 0; max-height: none; min-height: 0; }
     .avatar .float, .avatar.video .float { height: 100%; max-width: none; }
     .thread {
       position: absolute; top: 4px; left: 0; right: 0; z-index: 3;
