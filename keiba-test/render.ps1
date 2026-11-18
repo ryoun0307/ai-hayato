@@ -9,10 +9,11 @@ $q = [IO.File]::ReadAllText((Join-Path $root "data\question\$Race.json"), $utf8)
 $r = $q.race
 "【{0}{1}R】{2} {3} 発走{4}" -f $r.venue, $r.race_no, $r.day_label, $r.name, $r.start_time
 "{0} {1} {2} {3} {4}" -f $r.category, $r.class, $r.rule, $r.weight_rule, $r.course
-if ($Stage -eq "最終") { "当日：" + $r.track_condition } else { "（仮予想：当日の天候・馬場、馬体重、人気は未発表）" }
+if ($Stage -ne "仮") { "当日：" + $r.track_condition } else { "（仮予想：当日の天候・馬場、馬体重、人気は未発表）" }
 "出走 {0}頭" -f @($q.horses).Count
 ""
 foreach ($h in ($q.horses | Sort-Object number)) {
+  if ($Stage -eq "最終差分") { "{0}番 {1} 馬体重{2}({3}) {4}番人気" -f $h.number, $h.name, $h.final.body_weight, $h.final.body_weight_diff, $h.final.popularity; continue }
   $line = "{0}枠{1}番 {2} {3} {4}kg {5} 調教師{6} 父{7} 母父{8}" -f $h.frame, $h.number, $h.name, $h.sex_age, $h.weight_carried, $h.jockey, $h.trainer, $h.sire, $h.damsire
   if ($Stage -eq "最終") { $line += " 【馬体重{0}({1}) {2}番人気】" -f $h.final.body_weight, $h.final.body_weight_diff, $h.final.popularity }
   $line
