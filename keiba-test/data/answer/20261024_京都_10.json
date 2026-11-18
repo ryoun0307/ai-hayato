@@ -1,0 +1,226 @@
+{
+    "race":  {
+                 "date":  "20261024",
+                 "venue":  "京都",
+                 "race_no":  10,
+                 "name":  "長岡京ステークス"
+             },
+    "results":  [
+                    {
+                        "number":  2,
+                        "name":  "アスミル",
+                        "finish":  "1",
+                        "time":  "1:20.5",
+                        "margin":  "",
+                        "corner":  "3-3",
+                        "last3f":  "34.1",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  8,
+                        "name":  "アンダースコア",
+                        "finish":  "2",
+                        "time":  "1:20.7",
+                        "margin":  "１",
+                        "corner":  "6-6",
+                        "last3f":  "34.1",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  4,
+                        "name":  "サンタンカ",
+                        "finish":  "3",
+                        "time":  "1:20.8",
+                        "margin":  "３／４",
+                        "corner":  "9-10",
+                        "last3f":  "33.9",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  6,
+                        "name":  "マルガイ コスモアディラート",
+                        "finish":  "4",
+                        "time":  "1:21.0",
+                        "margin":  "１ 1/4",
+                        "corner":  "1-1",
+                        "last3f":  "34.9",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  10,
+                        "name":  "スカイハイ",
+                        "finish":  "5",
+                        "time":  "1:21.0",
+                        "margin":  "アタマ",
+                        "corner":  "3-3",
+                        "last3f":  "34.7",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  15,
+                        "name":  "フライングブレード",
+                        "finish":  "6",
+                        "time":  "1:21.1",
+                        "margin":  "１／２",
+                        "corner":  "12-12",
+                        "last3f":  "33.9",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  11,
+                        "name":  "トーホウディアス",
+                        "finish":  "7",
+                        "time":  "1:21.1",
+                        "margin":  "ハナ",
+                        "corner":  "9-8",
+                        "last3f":  "34.2",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ヨウシタンレイ",
+                        "finish":  "8",
+                        "time":  "1:21.2",
+                        "margin":  "１",
+                        "corner":  "7-7",
+                        "last3f":  "34.4",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  13,
+                        "name":  "マルガイ ユハンヌス",
+                        "finish":  "9",
+                        "time":  "1:21.4",
+                        "margin":  "１",
+                        "corner":  "15-14",
+                        "last3f":  "33.9",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  14,
+                        "name":  "ガンマジーティーピ",
+                        "finish":  "10",
+                        "time":  "1:21.5",
+                        "margin":  "３／４",
+                        "corner":  "7-8",
+                        "last3f":  "34.7",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  9,
+                        "name":  "カクチ ハンデンドレイク",
+                        "finish":  "11",
+                        "time":  "1:21.6",
+                        "margin":  "クビ",
+                        "corner":  "2-2",
+                        "last3f":  "35.4",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  1,
+                        "name":  "アンビバレント",
+                        "finish":  "12",
+                        "time":  "1:21.6",
+                        "margin":  "ハナ",
+                        "corner":  "9-10",
+                        "last3f":  "34.6",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  5,
+                        "name":  "マルチ エイムフォーエース",
+                        "finish":  "13",
+                        "time":  "1:21.6",
+                        "margin":  "ハナ",
+                        "corner":  "12-14",
+                        "last3f":  "34.2",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  12,
+                        "name":  "マルチ モーデン ブリンカー着用",
+                        "finish":  "14",
+                        "time":  "1:21.6",
+                        "margin":  "クビ",
+                        "corner":  "3-5",
+                        "last3f":  "35.2",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  7,
+                        "name":  "カクチ ウィルオレオール",
+                        "finish":  "15",
+                        "time":  "1:21.9",
+                        "margin":  "１ 3/4",
+                        "corner":  "12-12",
+                        "last3f":  "34.6",
+                        "popularity":  13
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "2",
+                                       "yen":  380
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "2",
+                                        "yen":  200
+                                    },
+                                    {
+                                        "combo":  "8",
+                                        "yen":  190
+                                    },
+                                    {
+                                        "combo":  "4",
+                                        "yen":  230
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "2-5",
+                                        "yen":  1420
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "2-8",
+                                     "yen":  770
+                                 },
+                                 {
+                                     "combo":  "2-4",
+                                     "yen":  510
+                                 },
+                                 {
+                                     "combo":  "4-8",
+                                     "yen":  770
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "2-8",
+                                       "yen":  2140
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "2-8",
+                                       "yen":  3270
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "2-4-8",
+                                           "yen":  3450
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "2-8-4",
+                                          "yen":  15040
+                                      }
+                                  ]
+                }
+}

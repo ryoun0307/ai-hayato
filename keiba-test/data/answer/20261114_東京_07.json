@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261114",
+                 "venue":  "東京",
+                 "race_no":  7,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  3,
+                        "name":  "マルガイ アルカディアカフェ",
+                        "finish":  "1",
+                        "time":  "1:23.4",
+                        "margin":  "",
+                        "corner":  "1-1",
+                        "last3f":  "36.7",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  14,
+                        "name":  "フクシマブリルハム",
+                        "finish":  "2",
+                        "time":  "1:24.6",
+                        "margin":  "７",
+                        "corner":  "11-8",
+                        "last3f":  "35.6",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  9,
+                        "name":  "ヘインズポイント",
+                        "finish":  "3",
+                        "time":  "1:24.8",
+                        "margin":  "１",
+                        "corner":  "2-2",
+                        "last3f":  "37.7",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ライカ",
+                        "finish":  "4",
+                        "time":  "1:25.0",
+                        "margin":  "１ 1/2",
+                        "corner":  "6-6",
+                        "last3f":  "36.6",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  10,
+                        "name":  "タイセイモノリス",
+                        "finish":  "5",
+                        "time":  "1:25.0",
+                        "margin":  "クビ",
+                        "corner":  "9-8",
+                        "last3f":  "36.0",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  12,
+                        "name":  "グランセレスト",
+                        "finish":  "6",
+                        "time":  "1:25.4",
+                        "margin":  "２ 1/2",
+                        "corner":  "8-7",
+                        "last3f":  "36.7",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  8,
+                        "name":  "ブリックンクリック",
+                        "finish":  "7",
+                        "time":  "1:25.5",
+                        "margin":  "クビ",
+                        "corner":  "2-3",
+                        "last3f":  "38.1",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  13,
+                        "name":  "レイズテンペスト",
+                        "finish":  "8",
+                        "time":  "1:25.8",
+                        "margin":  "１ 3/4",
+                        "corner":  "5-5",
+                        "last3f":  "37.7",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  11,
+                        "name":  "マルチ マナマカナ",
+                        "finish":  "9",
+                        "time":  "1:25.8",
+                        "margin":  "ハナ",
+                        "corner":  "12-13",
+                        "last3f":  "36.2",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  15,
+                        "name":  "トニケンサンバ",
+                        "finish":  "10",
+                        "time":  "1:26.0",
+                        "margin":  "１ 1/4",
+                        "corner":  "9-10",
+                        "last3f":  "36.7",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  6,
+                        "name":  "マルガイ マルチ リドルトリガー",
+                        "finish":  "11",
+                        "time":  "1:26.0",
+                        "margin":  "ハナ",
+                        "corner":  "6-10",
+                        "last3f":  "36.8",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  16,
+                        "name":  "タキノボリ",
+                        "finish":  "12",
+                        "time":  "1:26.0",
+                        "margin":  "アタマ",
+                        "corner":  "13-12",
+                        "last3f":  "36.5",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  5,
+                        "name":  "アルスマグナ",
+                        "finish":  "13",
+                        "time":  "1:26.2",
+                        "margin":  "１ 1/4",
+                        "corner":  "14-14",
+                        "last3f":  "36.3",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  1,
+                        "name":  "マルチ ソリッドベーシス",
+                        "finish":  "14",
+                        "time":  "1:26.3",
+                        "margin":  "クビ",
+                        "corner":  "14-15",
+                        "last3f":  "36.3",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  2,
+                        "name":  "マルチ クラウンヴィラン",
+                        "finish":  "15",
+                        "time":  "1:26.4",
+                        "margin":  "１／２",
+                        "corner":  "16-16",
+                        "last3f":  "35.2",
+                        "popularity":  16
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ヌクレオチド",
+                        "finish":  "16",
+                        "time":  "1:27.0",
+                        "margin":  "３ 1/2",
+                        "corner":  "4-4",
+                        "last3f":  "39.2",
+                        "popularity":  5
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "3",
+                                       "yen":  160
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "3",
+                                        "yen":  110
+                                    },
+                                    {
+                                        "combo":  "14",
+                                        "yen":  180
+                                    },
+                                    {
+                                        "combo":  "9",
+                                        "yen":  300
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "2-7",
+                                        "yen":  190
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "3-14",
+                                     "yen":  320
+                                 },
+                                 {
+                                     "combo":  "3-9",
+                                     "yen":  480
+                                 },
+                                 {
+                                     "combo":  "9-14",
+                                     "yen":  990
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "3-14",
+                                       "yen":  550
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "3-14",
+                                       "yen":  730
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "3-9-14",
+                                           "yen":  1480
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "3-14-9",
+                                          "yen":  4230
+                                      }
+                                  ]
+                }
+}

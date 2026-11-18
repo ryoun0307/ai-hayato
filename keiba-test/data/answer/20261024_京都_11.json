@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261024",
+                 "venue":  "京都",
+                 "race_no":  11,
+                 "name":  "カシオペアステークス リステッド"
+             },
+    "results":  [
+                    {
+                        "number":  12,
+                        "name":  "ディールメーカー",
+                        "finish":  "1",
+                        "time":  "1:45.1",
+                        "margin":  "",
+                        "corner":  "2-2",
+                        "last3f":  "34.1",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ジーティーアダマン",
+                        "finish":  "2",
+                        "time":  "1:45.3",
+                        "margin":  "１",
+                        "corner":  "5-5",
+                        "last3f":  "34.0",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  15,
+                        "name":  "タガノエルピーダ",
+                        "finish":  "3",
+                        "time":  "1:45.3",
+                        "margin":  "クビ",
+                        "corner":  "1-1",
+                        "last3f":  "34.5",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  16,
+                        "name":  "レディーヴァリュー",
+                        "finish":  "4",
+                        "time":  "1:45.5",
+                        "margin":  "１ 1/4",
+                        "corner":  "2-2",
+                        "last3f":  "34.5",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  1,
+                        "name":  "オーロラエックス",
+                        "finish":  "5",
+                        "time":  "1:45.6",
+                        "margin":  "１／２",
+                        "corner":  "7-7",
+                        "last3f":  "34.2",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ガイアメンテ",
+                        "finish":  "6",
+                        "time":  "1:45.6",
+                        "margin":  "クビ",
+                        "corner":  "10-10",
+                        "last3f":  "33.9",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  7,
+                        "name":  "アスクカムオンモア",
+                        "finish":  "7",
+                        "time":  "1:45.8",
+                        "margin":  "１",
+                        "corner":  "8-8",
+                        "last3f":  "34.3",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  6,
+                        "name":  "ゼンダンハヤブサ",
+                        "finish":  "8",
+                        "time":  "1:45.8",
+                        "margin":  "アタマ",
+                        "corner":  "8-8",
+                        "last3f":  "34.4",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  14,
+                        "name":  "サブマリーナ",
+                        "finish":  "9",
+                        "time":  "1:46.0",
+                        "margin":  "３／４",
+                        "corner":  "12-12",
+                        "last3f":  "33.9",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  5,
+                        "name":  "エラトー",
+                        "finish":  "10",
+                        "time":  "1:46.1",
+                        "margin":  "３／４",
+                        "corner":  "2-2",
+                        "last3f":  "35.0",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  2,
+                        "name":  "バレエマスター",
+                        "finish":  "11",
+                        "time":  "1:46.1",
+                        "margin":  "クビ",
+                        "corner":  "13-14",
+                        "last3f":  "33.8",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  3,
+                        "name":  "コルレオニス",
+                        "finish":  "12",
+                        "time":  "1:46.4",
+                        "margin":  "１ 1/2",
+                        "corner":  "16-12",
+                        "last3f":  "34.2",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ナムラエイハブ",
+                        "finish":  "13",
+                        "time":  "1:46.4",
+                        "margin":  "クビ",
+                        "corner":  "5-5",
+                        "last3f":  "35.2",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  9,
+                        "name":  "アンリーロード",
+                        "finish":  "14",
+                        "time":  "1:46.4",
+                        "margin":  "ハナ",
+                        "corner":  "10-10",
+                        "last3f":  "34.8",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  10,
+                        "name":  "オールナット",
+                        "finish":  "15",
+                        "time":  "1:46.4",
+                        "margin":  "ハナ",
+                        "corner":  "14-15",
+                        "last3f":  "33.9",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  8,
+                        "name":  "アスクドゥポルテ",
+                        "finish":  "16",
+                        "time":  "1:46.7",
+                        "margin":  "１ 1/2",
+                        "corner":  "14-15",
+                        "last3f":  "34.2",
+                        "popularity":  16
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "12",
+                                       "yen":  640
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "12",
+                                        "yen":  230
+                                    },
+                                    {
+                                        "combo":  "11",
+                                        "yen":  130
+                                    },
+                                    {
+                                        "combo":  "15",
+                                        "yen":  340
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "6-6",
+                                        "yen":  950
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "11-12",
+                                     "yen":  470
+                                 },
+                                 {
+                                     "combo":  "12-15",
+                                     "yen":  1580
+                                 },
+                                 {
+                                     "combo":  "11-15",
+                                     "yen":  790
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "11-12",
+                                       "yen":  970
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "12-11",
+                                       "yen":  1980
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "11-12-15",
+                                           "yen":  3660
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "12-11-15",
+                                          "yen":  19410
+                                      }
+                                  ]
+                }
+}

@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261012",
+                 "venue":  "京都",
+                 "race_no":  7,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  2,
+                        "name":  "アレンスター",
+                        "finish":  "1",
+                        "time":  "1:58.5",
+                        "margin":  "",
+                        "corner":  "1-1-1-1",
+                        "last3f":  "38.3",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  15,
+                        "name":  "ジーティーアメリカ",
+                        "finish":  "2",
+                        "time":  "1:58.5",
+                        "margin":  "アタマ",
+                        "corner":  "10-10-8-7",
+                        "last3f":  "37.3",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  9,
+                        "name":  "エイユーファイヤー ブリンカー着用",
+                        "finish":  "3",
+                        "time":  "1:58.7",
+                        "margin":  "１ 1/4",
+                        "corner":  "9-9-12-9",
+                        "last3f":  "37.3",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ドメイン",
+                        "finish":  "4",
+                        "time":  "1:59.2",
+                        "margin":  "３",
+                        "corner":  "3-3-2-2",
+                        "last3f":  "38.7",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  12,
+                        "name":  "ダイシンレアレア ブリンカー着用",
+                        "finish":  "5",
+                        "time":  "1:59.4",
+                        "margin":  "１ 1/4",
+                        "corner":  "7-7-6-5",
+                        "last3f":  "38.4",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  16,
+                        "name":  "タニセンゴールド",
+                        "finish":  "6",
+                        "time":  "1:59.5",
+                        "margin":  "３／４",
+                        "corner":  "10-10-8-7",
+                        "last3f":  "38.4",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  3,
+                        "name":  "マジックブルー",
+                        "finish":  "7",
+                        "time":  "1:59.6",
+                        "margin":  "クビ",
+                        "corner":  "3-3-4-4",
+                        "last3f":  "39.1",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  5,
+                        "name":  "ゴールドコット ブリンカー着用",
+                        "finish":  "8",
+                        "time":  "1:59.7",
+                        "margin":  "１／２",
+                        "corner":  "12-13-11-11",
+                        "last3f":  "38.4",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  8,
+                        "name":  "エアフォースワン",
+                        "finish":  "9",
+                        "time":  "1:59.8",
+                        "margin":  "１／２",
+                        "corner":  "16-16-13-12",
+                        "last3f":  "38.1",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  13,
+                        "name":  "リオンサーガ",
+                        "finish":  "10",
+                        "time":  "2:00.2",
+                        "margin":  "２ 1/2",
+                        "corner":  "14-14-15-13",
+                        "last3f":  "38.3",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  4,
+                        "name":  "マルチ ハンドフル ブリンカー着用",
+                        "finish":  "11",
+                        "time":  "2:00.3",
+                        "margin":  "１／２",
+                        "corner":  "5-3-4-5",
+                        "last3f":  "39.6",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  1,
+                        "name":  "ロックウイズユー ブリンカー着用",
+                        "finish":  "12",
+                        "time":  "2:01.1",
+                        "margin":  "５",
+                        "corner":  "14-14-16-15",
+                        "last3f":  "39.0",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  10,
+                        "name":  "エクストラプッシュ ブリンカー着用",
+                        "finish":  "13",
+                        "time":  "2:01.8",
+                        "margin":  "４",
+                        "corner":  "7-7-8-9",
+                        "last3f":  "40.7",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  6,
+                        "name":  "タイセイサーブル ブリンカー着用",
+                        "finish":  "14",
+                        "time":  "2:02.3",
+                        "margin":  "３",
+                        "corner":  "2-2-2-2",
+                        "last3f":  "41.9",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  11,
+                        "name":  "カイラーサ ブリンカー着用",
+                        "finish":  "15",
+                        "time":  "2:03.0",
+                        "margin":  "４",
+                        "corner":  "5-6-6-13",
+                        "last3f":  "41.8",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  14,
+                        "name":  "マルチ セルリアンゲーゲン",
+                        "finish":  "16",
+                        "time":  "2:03.6",
+                        "margin":  "４",
+                        "corner":  "12-12-13-16",
+                        "last3f":  "41.7",
+                        "popularity":  16
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "2",
+                                       "yen":  410
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "2",
+                                        "yen":  200
+                                    },
+                                    {
+                                        "combo":  "15",
+                                        "yen":  170
+                                    },
+                                    {
+                                        "combo":  "9",
+                                        "yen":  280
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "1-8",
+                                        "yen":  970
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "2-15",
+                                     "yen":  490
+                                 },
+                                 {
+                                     "combo":  "2-9",
+                                     "yen":  1160
+                                 },
+                                 {
+                                     "combo":  "9-15",
+                                     "yen":  620
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "2-15",
+                                       "yen":  1270
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "2-15",
+                                       "yen":  2550
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "2-9-15",
+                                           "yen":  3810
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "2-15-9",
+                                          "yen":  17910
+                                      }
+                                  ]
+                }
+}

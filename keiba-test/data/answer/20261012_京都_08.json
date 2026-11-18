@@ -1,0 +1,186 @@
+{
+    "race":  {
+                 "date":  "20261012",
+                 "venue":  "京都",
+                 "race_no":  8,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  9,
+                        "name":  "レゼルフォート",
+                        "finish":  "1",
+                        "time":  "1:57.5",
+                        "margin":  "",
+                        "corner":  "6-6-5-4",
+                        "last3f":  "34.6",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  1,
+                        "name":  "エレガンシア ブリンカー着用",
+                        "finish":  "2",
+                        "time":  "1:57.7",
+                        "margin":  "１ 1/2",
+                        "corner":  "1-1-1-1",
+                        "last3f":  "35.3",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  7,
+                        "name":  "レーヌマロン",
+                        "finish":  "3",
+                        "time":  "1:57.9",
+                        "margin":  "１ 1/4",
+                        "corner":  "11-11-11-9",
+                        "last3f":  "34.5",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  2,
+                        "name":  "ヴィーナスバブル",
+                        "finish":  "4",
+                        "time":  "1:58.0",
+                        "margin":  "３／４",
+                        "corner":  "5-4-3-3",
+                        "last3f":  "35.3",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  8,
+                        "name":  "リトルスカーレット",
+                        "finish":  "5",
+                        "time":  "1:58.1",
+                        "margin":  "クビ",
+                        "corner":  "6-6-5-6",
+                        "last3f":  "35.1",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  5,
+                        "name":  "ウィズクィーン",
+                        "finish":  "6",
+                        "time":  "1:58.4",
+                        "margin":  "２",
+                        "corner":  "8-8-8-8",
+                        "last3f":  "35.2",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ストロベリーツリー",
+                        "finish":  "7",
+                        "time":  "1:58.5",
+                        "margin":  "１／２",
+                        "corner":  "2-2-2-2",
+                        "last3f":  "36.0",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  6,
+                        "name":  "カドーダムール",
+                        "finish":  "8",
+                        "time":  "1:58.6",
+                        "margin":  "１／２",
+                        "corner":  "10-10-9-11",
+                        "last3f":  "35.2",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ベルシュヴァル",
+                        "finish":  "9",
+                        "time":  "1:58.8",
+                        "margin":  "１ 1/4",
+                        "corner":  "3-2-3-4",
+                        "last3f":  "36.0",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  4,
+                        "name":  "テレプシコーラ",
+                        "finish":  "10",
+                        "time":  "1:58.8",
+                        "margin":  "クビ",
+                        "corner":  "9-9-9-9",
+                        "last3f":  "35.5",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  10,
+                        "name":  "スリラーナイト",
+                        "finish":  "11",
+                        "time":  "1:58.9",
+                        "margin":  "１／２",
+                        "corner":  "3-4-5-6",
+                        "last3f":  "36.0",
+                        "popularity":  7
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "9",
+                                       "yen":  490
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "9",
+                                        "yen":  210
+                                    },
+                                    {
+                                        "combo":  "1",
+                                        "yen":  360
+                                    },
+                                    {
+                                        "combo":  "7",
+                                        "yen":  720
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "1-7",
+                                        "yen":  2740
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "1-9",
+                                     "yen":  1020
+                                 },
+                                 {
+                                     "combo":  "7-9",
+                                     "yen":  1810
+                                 },
+                                 {
+                                     "combo":  "1-7",
+                                     "yen":  4930
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "1-9",
+                                       "yen":  3010
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "9-1",
+                                       "yen":  4750
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "1-7-9",
+                                           "yen":  17540
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "9-1-7",
+                                          "yen":  65660
+                                      }
+                                  ]
+                }
+}

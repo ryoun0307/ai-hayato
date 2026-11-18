@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261107",
+                 "venue":  "京都",
+                 "race_no":  11,
+                 "name":  "室町ステークス"
+             },
+    "results":  [
+                    {
+                        "number":  3,
+                        "name":  "マルガイ エコロレーヴ",
+                        "finish":  "1",
+                        "time":  "1:10.4",
+                        "margin":  "",
+                        "corner":  "1-1",
+                        "last3f":  "36.3",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  13,
+                        "name":  "マルガイ ファムエレガンテ",
+                        "finish":  "2",
+                        "time":  "1:10.7",
+                        "margin":  "１ 3/4",
+                        "corner":  "4-5",
+                        "last3f":  "36.0",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  10,
+                        "name":  "ジョーメッドヴィン",
+                        "finish":  "3",
+                        "time":  "1:10.9",
+                        "margin":  "１ 1/4",
+                        "corner":  "7-6",
+                        "last3f":  "36.0",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  14,
+                        "name":  "ルージュラナキラ ブリンカー着用",
+                        "finish":  "4",
+                        "time":  "1:11.2",
+                        "margin":  "１ 3/4",
+                        "corner":  "7-6",
+                        "last3f":  "36.2",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  1,
+                        "name":  "モンドプリューム",
+                        "finish":  "5",
+                        "time":  "1:11.3",
+                        "margin":  "１／２",
+                        "corner":  "15-14",
+                        "last3f":  "35.5",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ジョーローリット",
+                        "finish":  "5",
+                        "time":  "1:11.3",
+                        "margin":  "同着",
+                        "corner":  "3-3",
+                        "last3f":  "36.9",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  12,
+                        "name":  "アブキールベイ",
+                        "finish":  "7",
+                        "time":  "1:11.4",
+                        "margin":  "１／２",
+                        "corner":  "12-8",
+                        "last3f":  "36.0",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  5,
+                        "name":  "ノボリショウリュウ",
+                        "finish":  "8",
+                        "time":  "1:11.5",
+                        "margin":  "３／４",
+                        "corner":  "13-12",
+                        "last3f":  "35.9",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  9,
+                        "name":  "ゼットエール",
+                        "finish":  "9",
+                        "time":  "1:11.6",
+                        "margin":  "クビ",
+                        "corner":  "10-12",
+                        "last3f":  "36.3",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  6,
+                        "name":  "マルガイ アメリカンチケット",
+                        "finish":  "10",
+                        "time":  "1:11.7",
+                        "margin":  "１",
+                        "corner":  "2-2",
+                        "last3f":  "37.5",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  2,
+                        "name":  "マルチ エティエンヌ",
+                        "finish":  "11",
+                        "time":  "1:11.8",
+                        "margin":  "１／２",
+                        "corner":  "16-16",
+                        "last3f":  "35.8",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  8,
+                        "name":  "メイショウホウレン",
+                        "finish":  "12",
+                        "time":  "1:12.5",
+                        "margin":  "４",
+                        "corner":  "7-9",
+                        "last3f":  "37.4",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  15,
+                        "name":  "シークレットヴァウ ブリンカー着用",
+                        "finish":  "13",
+                        "time":  "1:12.5",
+                        "margin":  "クビ",
+                        "corner":  "10-9",
+                        "last3f":  "37.2",
+                        "popularity":  16
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ナムラフランク ブリンカー着用",
+                        "finish":  "14",
+                        "time":  "1:12.6",
+                        "margin":  "１／２",
+                        "corner":  "4-4",
+                        "last3f":  "38.0",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  16,
+                        "name":  "イツモニコニコ ブリンカー着用",
+                        "finish":  "15",
+                        "time":  "1:12.8",
+                        "margin":  "１",
+                        "corner":  "13-14",
+                        "last3f":  "37.2",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  7,
+                        "name":  "マルガイ コウセキ",
+                        "finish":  "16",
+                        "time":  "1:13.1",
+                        "margin":  "１ 3/4",
+                        "corner":  "4-9",
+                        "last3f":  "38.3",
+                        "popularity":  12
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "3",
+                                       "yen":  500
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "3",
+                                        "yen":  220
+                                    },
+                                    {
+                                        "combo":  "13",
+                                        "yen":  470
+                                    },
+                                    {
+                                        "combo":  "10",
+                                        "yen":  710
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "2-7",
+                                        "yen":  1170
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "3-13",
+                                     "yen":  1400
+                                 },
+                                 {
+                                     "combo":  "3-10",
+                                     "yen":  3200
+                                 },
+                                 {
+                                     "combo":  "10-13",
+                                     "yen":  4520
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "3-13",
+                                       "yen":  4810
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "3-13",
+                                       "yen":  7750
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "3-10-13",
+                                           "yen":  40020
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "3-13-10",
+                                          "yen":  182780
+                                      }
+                                  ]
+                }
+}

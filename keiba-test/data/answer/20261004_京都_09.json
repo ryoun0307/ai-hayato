@@ -1,0 +1,256 @@
+{
+    "race":  {
+                 "date":  "20261004",
+                 "venue":  "京都",
+                 "race_no":  9,
+                 "name":  "大原ステークス"
+             },
+    "results":  [
+                    {
+                        "number":  8,
+                        "name":  "ヴィスマール",
+                        "finish":  "1",
+                        "time":  "1:57.9",
+                        "margin":  "",
+                        "corner":  "9-10-7-7",
+                        "last3f":  "34.8",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  14,
+                        "name":  "ミュージシャン",
+                        "finish":  "2",
+                        "time":  "1:58.0",
+                        "margin":  "クビ",
+                        "corner":  "3-3-2-2",
+                        "last3f":  "35.4",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  4,
+                        "name":  "チェルノボーグ",
+                        "finish":  "3",
+                        "time":  "1:58.0",
+                        "margin":  "クビ",
+                        "corner":  "3-4-5-3",
+                        "last3f":  "35.1",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ローベルクランツ",
+                        "finish":  "4",
+                        "time":  "1:58.0",
+                        "margin":  "クビ",
+                        "corner":  "13-13-14-13",
+                        "last3f":  "34.4",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  7,
+                        "name":  "カリーニョ",
+                        "finish":  "5",
+                        "time":  "1:58.1",
+                        "margin":  "クビ",
+                        "corner":  "18-18-10-10",
+                        "last3f":  "34.8",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  3,
+                        "name":  "レディーミコノス",
+                        "finish":  "6",
+                        "time":  "1:58.2",
+                        "margin":  "３／４",
+                        "corner":  "5-5-7-7",
+                        "last3f":  "35.2",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  12,
+                        "name":  "ファームツエンティ",
+                        "finish":  "7",
+                        "time":  "1:58.3",
+                        "margin":  "３／４",
+                        "corner":  "16-16-15-15",
+                        "last3f":  "34.6",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  6,
+                        "name":  "キントリヒ",
+                        "finish":  "8",
+                        "time":  "1:58.3",
+                        "margin":  "アタマ",
+                        "corner":  "9-7-10-10",
+                        "last3f":  "35.1",
+                        "popularity":  16
+                    },
+                    {
+                        "number":  18,
+                        "name":  "ロードフィレール",
+                        "finish":  "9",
+                        "time":  "1:58.4",
+                        "margin":  "３／４",
+                        "corner":  "1-1-1-1",
+                        "last3f":  "35.9",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  9,
+                        "name":  "ホウオウスーペリア",
+                        "finish":  "10",
+                        "time":  "1:58.4",
+                        "margin":  "ハナ",
+                        "corner":  "12-11-13-13",
+                        "last3f":  "34.9",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  15,
+                        "name":  "ミスタージーティー",
+                        "finish":  "11",
+                        "time":  "1:58.5",
+                        "margin":  "クビ",
+                        "corner":  "11-12-12-10",
+                        "last3f":  "35.1",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  17,
+                        "name":  "シンゼンカガ",
+                        "finish":  "12",
+                        "time":  "1:58.6",
+                        "margin":  "３／４",
+                        "corner":  "14-14-17-15",
+                        "last3f":  "34.7",
+                        "popularity":  18
+                    },
+                    {
+                        "number":  10,
+                        "name":  "スズカダブル",
+                        "finish":  "13",
+                        "time":  "1:58.7",
+                        "margin":  "１／２",
+                        "corner":  "2-2-3-3",
+                        "last3f":  "35.9",
+                        "popularity":  17
+                    },
+                    {
+                        "number":  1,
+                        "name":  "ホウオウアートマン",
+                        "finish":  "14",
+                        "time":  "1:58.7",
+                        "margin":  "クビ",
+                        "corner":  "17-16-18-18",
+                        "last3f":  "34.7",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  2,
+                        "name":  "ナムラフッカー",
+                        "finish":  "15",
+                        "time":  "1:58.8",
+                        "margin":  "クビ",
+                        "corner":  "14-14-15-15",
+                        "last3f":  "35.1",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  16,
+                        "name":  "オールセインツ",
+                        "finish":  "16",
+                        "time":  "1:58.8",
+                        "margin":  "クビ",
+                        "corner":  "7-7-5-3",
+                        "last3f":  "35.9",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  13,
+                        "name":  "マルガイ リーティアコナル ブリンカー着用",
+                        "finish":  "17",
+                        "time":  "1:59.1",
+                        "margin":  "１ 3/4",
+                        "corner":  "5-5-3-3",
+                        "last3f":  "36.4",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  5,
+                        "name":  "マルガイ キュクヌス",
+                        "finish":  "18",
+                        "time":  "1:59.4",
+                        "margin":  "１ 3/4",
+                        "corner":  "7-7-7-7",
+                        "last3f":  "36.4",
+                        "popularity":  10
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "8",
+                                       "yen":  3610
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "8",
+                                        "yen":  720
+                                    },
+                                    {
+                                        "combo":  "14",
+                                        "yen":  240
+                                    },
+                                    {
+                                        "combo":  "4",
+                                        "yen":  720
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "4-7",
+                                        "yen":  1520
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "8-14",
+                                     "yen":  1880
+                                 },
+                                 {
+                                     "combo":  "4-8",
+                                     "yen":  5560
+                                 },
+                                 {
+                                     "combo":  "4-14",
+                                     "yen":  2400
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "8-14",
+                                       "yen":  9660
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "8-14",
+                                       "yen":  31520
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "4-8-14",
+                                           "yen":  45060
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "8-14-4",
+                                          "yen":  450280
+                                      }
+                                  ]
+                }
+}

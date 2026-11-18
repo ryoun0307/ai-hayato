@@ -1,0 +1,206 @@
+{
+    "race":  {
+                 "date":  "20261018",
+                 "venue":  "東京",
+                 "race_no":  11,
+                 "name":  "ブラジルカップ リステッド"
+             },
+    "results":  [
+                    {
+                        "number":  9,
+                        "name":  "クールミラボー",
+                        "finish":  "1",
+                        "time":  "2:10.0",
+                        "margin":  "",
+                        "corner":  "5-4-4-4",
+                        "last3f":  "37.6",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  11,
+                        "name":  "レッドプロフェシー",
+                        "finish":  "2",
+                        "time":  "2:10.2",
+                        "margin":  "１ 1/4",
+                        "corner":  "10-10-10-10",
+                        "last3f":  "36.8",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  6,
+                        "name":  "ハピ",
+                        "finish":  "3",
+                        "time":  "2:10.2",
+                        "margin":  "アタマ",
+                        "corner":  "8-8-9-8",
+                        "last3f":  "36.9",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  10,
+                        "name":  "ハグ",
+                        "finish":  "4",
+                        "time":  "2:10.4",
+                        "margin":  "１",
+                        "corner":  "4-3-3-3",
+                        "last3f":  "38.1",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  7,
+                        "name":  "リアレスト ブリンカー着用",
+                        "finish":  "5",
+                        "time":  "2:10.5",
+                        "margin":  "１／２",
+                        "corner":  "7-6-6-6",
+                        "last3f":  "37.7",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  13,
+                        "name":  "カズタンジャー ブリンカー着用",
+                        "finish":  "6",
+                        "time":  "2:10.6",
+                        "margin":  "１／２",
+                        "corner":  "12-12-12-12",
+                        "last3f":  "36.5",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ロードプレジール",
+                        "finish":  "7",
+                        "time":  "2:10.7",
+                        "margin":  "１／２",
+                        "corner":  "11-10-10-11",
+                        "last3f":  "37.0",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  8,
+                        "name":  "ピュアキアン",
+                        "finish":  "8",
+                        "time":  "2:10.9",
+                        "margin":  "１ 1/2",
+                        "corner":  "2-2-2-2",
+                        "last3f":  "38.7",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  12,
+                        "name":  "マルチ リチュアル ブリンカー着用",
+                        "finish":  "9",
+                        "time":  "2:11.1",
+                        "margin":  "３／４",
+                        "corner":  "3-4-4-4",
+                        "last3f":  "38.6",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ルシュヴァルドール ブリンカー着用",
+                        "finish":  "10",
+                        "time":  "2:11.3",
+                        "margin":  "１ 1/2",
+                        "corner":  "8-8-8-8",
+                        "last3f":  "38.1",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  2,
+                        "name":  "メイプルリッジ",
+                        "finish":  "11",
+                        "time":  "2:11.7",
+                        "margin":  "２ 1/2",
+                        "corner":  "6-6-6-7",
+                        "last3f":  "38.8",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  5,
+                        "name":  "ピカピカサンダー",
+                        "finish":  "12",
+                        "time":  "2:11.7",
+                        "margin":  "ハナ",
+                        "corner":  "1-1-1-1",
+                        "last3f":  "39.6",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  1,
+                        "name":  "マルガイ ダブルジョーク",
+                        "finish":  "13",
+                        "time":  "2:13.2",
+                        "margin":  "９",
+                        "corner":  "13-13-12-12",
+                        "last3f":  "39.1",
+                        "popularity":  13
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "9",
+                                       "yen":  460
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "9",
+                                        "yen":  160
+                                    },
+                                    {
+                                        "combo":  "11",
+                                        "yen":  210
+                                    },
+                                    {
+                                        "combo":  "6",
+                                        "yen":  160
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "6-7",
+                                        "yen":  1360
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "9-11",
+                                     "yen":  620
+                                 },
+                                 {
+                                     "combo":  "6-9",
+                                     "yen":  450
+                                 },
+                                 {
+                                     "combo":  "6-11",
+                                     "yen":  790
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "9-11",
+                                       "yen":  1770
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "9-11",
+                                       "yen":  3430
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "6-9-11",
+                                           "yen":  3240
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "9-11-6",
+                                          "yen":  15570
+                                      }
+                                  ]
+                }
+}

@@ -35,8 +35,8 @@ foreach ($qf in Get-ChildItem (Join-Path $root "data\question") -Filter *.json) 
 
   # 予想用データに、このレースの結果（着順・タイム・払戻）が入っていないか
   $raw = [IO.File]::ReadAllText($qf.FullName, $utf8)
-  foreach ($bad in @('"finish":  "1"', 'payouts', 'last3f', 'corner')) {
-    if ($raw -match [regex]::Escape($bad) -and $bad -ne '"finish":  "1"') { $problems += "予想用データに '$bad' が入っている" }
+  foreach ($bad in @('"finish":  "1"', '"payouts"', '"last3f"', '"corner"')) {
+    if ($raw -cmatch [regex]::Escape($bad) -and $bad -ne '"finish":  "1"') { $problems += "予想用データに '$bad' が入っている" }
   }
   # 答えとの整合
   $qn = @($q.horses | ForEach-Object { $_.number } | Sort-Object)

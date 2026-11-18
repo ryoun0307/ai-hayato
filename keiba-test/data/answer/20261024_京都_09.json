@@ -1,0 +1,166 @@
+{
+    "race":  {
+                 "date":  "20261024",
+                 "venue":  "京都",
+                 "race_no":  9,
+                 "name":  "なでしこ賞"
+             },
+    "results":  [
+                    {
+                        "number":  6,
+                        "name":  "スカイメテオ",
+                        "finish":  "1",
+                        "time":  "1:22.9",
+                        "margin":  "レコード",
+                        "corner":  "2-2",
+                        "last3f":  "36.8",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  5,
+                        "name":  "ペアスターロード",
+                        "finish":  "2",
+                        "time":  "1:23.0",
+                        "margin":  "３／４",
+                        "corner":  "2-1",
+                        "last3f":  "37.0",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  2,
+                        "name":  "タケルレジェンド",
+                        "finish":  "3",
+                        "time":  "1:23.0",
+                        "margin":  "アタマ",
+                        "corner":  "7-7",
+                        "last3f":  "36.4",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  4,
+                        "name":  "フィリップヴィル",
+                        "finish":  "4",
+                        "time":  "1:23.5",
+                        "margin":  "３",
+                        "corner":  "5-5",
+                        "last3f":  "37.2",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  9,
+                        "name":  "マルガイ ユウライクスター",
+                        "finish":  "5",
+                        "time":  "1:23.6",
+                        "margin":  "クビ",
+                        "corner":  "4-3",
+                        "last3f":  "37.4",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  1,
+                        "name":  "ムーンベリル",
+                        "finish":  "6",
+                        "time":  "1:24.5",
+                        "margin":  "５",
+                        "corner":  "7-9",
+                        "last3f":  "37.9",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  8,
+                        "name":  "マルガイ ポッドビート",
+                        "finish":  "7",
+                        "time":  "1:24.7",
+                        "margin":  "１ 1/4",
+                        "corner":  "7-7",
+                        "last3f":  "38.0",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  7,
+                        "name":  "クラウスーラ",
+                        "finish":  "8",
+                        "time":  "1:25.0",
+                        "margin":  "２",
+                        "corner":  "5-5",
+                        "last3f":  "38.7",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ラピッドテソーロ",
+                        "finish":  "9",
+                        "time":  "1:29.0",
+                        "margin":  "大差",
+                        "corner":  "1-3",
+                        "last3f":  "43.1",
+                        "popularity":  9
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "6",
+                                       "yen":  420
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "6",
+                                        "yen":  170
+                                    },
+                                    {
+                                        "combo":  "5",
+                                        "yen":  270
+                                    },
+                                    {
+                                        "combo":  "2",
+                                        "yen":  190
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "5-6",
+                                        "yen":  1400
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "5-6",
+                                     "yen":  450
+                                 },
+                                 {
+                                     "combo":  "2-6",
+                                     "yen":  430
+                                 },
+                                 {
+                                     "combo":  "2-5",
+                                     "yen":  710
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "5-6",
+                                       "yen":  1330
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "6-5",
+                                       "yen":  2340
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "2-5-6",
+                                           "yen":  1870
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "6-5-2",
+                                          "yen":  9530
+                                      }
+                                  ]
+                }
+}

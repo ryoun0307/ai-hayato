@@ -1,0 +1,226 @@
+{
+    "race":  {
+                 "date":  "20261018",
+                 "venue":  "京都",
+                 "race_no":  4,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  7,
+                        "name":  "ルージュバロン",
+                        "finish":  "1",
+                        "time":  "1:23.2",
+                        "margin":  "",
+                        "corner":  "4-4",
+                        "last3f":  "36.3",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  10,
+                        "name":  "マルガイ ラブインアクション",
+                        "finish":  "2",
+                        "time":  "1:23.4",
+                        "margin":  "１ 1/4",
+                        "corner":  "2-2",
+                        "last3f":  "36.7",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  12,
+                        "name":  "ハグレジョー",
+                        "finish":  "3",
+                        "time":  "1:23.7",
+                        "margin":  "１ 3/4",
+                        "corner":  "7-7",
+                        "last3f":  "36.6",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  8,
+                        "name":  "マルガイ キーンセンス ブリンカー着用",
+                        "finish":  "4",
+                        "time":  "1:23.8",
+                        "margin":  "クビ",
+                        "corner":  "1-1",
+                        "last3f":  "37.3",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  9,
+                        "name":  "マルガイ カフジクロミエ",
+                        "finish":  "5",
+                        "time":  "1:24.0",
+                        "margin":  "１ 1/4",
+                        "corner":  "9-9",
+                        "last3f":  "36.6",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ナムラティアラ",
+                        "finish":  "6",
+                        "time":  "1:24.0",
+                        "margin":  "ハナ",
+                        "corner":  "7-7",
+                        "last3f":  "36.9",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  14,
+                        "name":  "キンダープンシュ ブリンカー着用",
+                        "finish":  "7",
+                        "time":  "1:24.0",
+                        "margin":  "アタマ",
+                        "corner":  "4-4",
+                        "last3f":  "37.2",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  1,
+                        "name":  "マルチ ジーヴル",
+                        "finish":  "8",
+                        "time":  "1:24.1",
+                        "margin":  "クビ",
+                        "corner":  "15-15",
+                        "last3f":  "36.1",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ゴメンネジロー",
+                        "finish":  "9",
+                        "time":  "1:24.1",
+                        "margin":  "クビ",
+                        "corner":  "12-11",
+                        "last3f":  "36.5",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  15,
+                        "name":  "マルチ チリーゴールド",
+                        "finish":  "10",
+                        "time":  "1:24.1",
+                        "margin":  "アタマ",
+                        "corner":  "12-11",
+                        "last3f":  "36.5",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  13,
+                        "name":  "マルガイ メティエダール",
+                        "finish":  "11",
+                        "time":  "1:24.2",
+                        "margin":  "１／２",
+                        "corner":  "2-3",
+                        "last3f":  "37.4",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  2,
+                        "name":  "マルガイ パーシャングレー ブリンカー着用",
+                        "finish":  "12",
+                        "time":  "1:24.7",
+                        "margin":  "３",
+                        "corner":  "12-14",
+                        "last3f":  "37.1",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  6,
+                        "name":  "シャインベック",
+                        "finish":  "13",
+                        "time":  "1:25.1",
+                        "margin":  "２ 1/2",
+                        "corner":  "11-11",
+                        "last3f":  "37.6",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  5,
+                        "name":  "マルガイ シークザドリーム",
+                        "finish":  "14",
+                        "time":  "1:25.6",
+                        "margin":  "３",
+                        "corner":  "9-9",
+                        "last3f":  "38.3",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  3,
+                        "name":  "シオンダンサー",
+                        "finish":  "15",
+                        "time":  "1:26.2",
+                        "margin":  "４",
+                        "corner":  "4-4",
+                        "last3f":  "39.4",
+                        "popularity":  11
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "7",
+                                       "yen":  380
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "7",
+                                        "yen":  130
+                                    },
+                                    {
+                                        "combo":  "10",
+                                        "yen":  170
+                                    },
+                                    {
+                                        "combo":  "12",
+                                        "yen":  110
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "4-6",
+                                        "yen":  970
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "7-10",
+                                     "yen":  440
+                                 },
+                                 {
+                                     "combo":  "7-12",
+                                     "yen":  250
+                                 },
+                                 {
+                                     "combo":  "10-12",
+                                     "yen":  310
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "7-10",
+                                       "yen":  1120
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "7-10",
+                                       "yen":  2040
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "7-10-12",
+                                           "yen":  820
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "7-10-12",
+                                          "yen":  5420
+                                      }
+                                  ]
+                }
+}

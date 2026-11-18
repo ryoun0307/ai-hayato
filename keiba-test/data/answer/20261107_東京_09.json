@@ -1,0 +1,226 @@
+{
+    "race":  {
+                 "date":  "20261107",
+                 "venue":  "東京",
+                 "race_no":  9,
+                 "name":  "神奈川新聞杯"
+             },
+    "results":  [
+                    {
+                        "number":  6,
+                        "name":  "ボクマダネムイヨ",
+                        "finish":  "1",
+                        "time":  "2:10.1",
+                        "margin":  "",
+                        "corner":  "5-5-3-2",
+                        "last3f":  "36.3",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  13,
+                        "name":  "テンカムテキ",
+                        "finish":  "2",
+                        "time":  "2:10.4",
+                        "margin":  "１ 3/4",
+                        "corner":  "3-4-5-4",
+                        "last3f":  "36.4",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  14,
+                        "name":  "バードウォッチャー",
+                        "finish":  "3",
+                        "time":  "2:11.0",
+                        "margin":  "３ 1/2",
+                        "corner":  "12-12-8-7",
+                        "last3f":  "36.7",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  5,
+                        "name":  "マルガイ ユウトザユウト",
+                        "finish":  "4",
+                        "time":  "2:11.0",
+                        "margin":  "クビ",
+                        "corner":  "2-1-1-1",
+                        "last3f":  "37.3",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  11,
+                        "name":  "エンマ ブリンカー着用",
+                        "finish":  "5",
+                        "time":  "2:11.2",
+                        "margin":  "１ 1/4",
+                        "corner":  "9-9-5-7",
+                        "last3f":  "36.9",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  1,
+                        "name":  "ローズマイスター ブリンカー着用",
+                        "finish":  "6",
+                        "time":  "2:11.2",
+                        "margin":  "アタマ",
+                        "corner":  "14-13-11-9",
+                        "last3f":  "36.6",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  7,
+                        "name":  "マルチ リラゲイル ブリンカー着用",
+                        "finish":  "7",
+                        "time":  "2:11.7",
+                        "margin":  "３",
+                        "corner":  "10-9-11-13",
+                        "last3f":  "37.0",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  4,
+                        "name":  "トレインザマインド",
+                        "finish":  "8",
+                        "time":  "2:11.9",
+                        "margin":  "１ 1/4",
+                        "corner":  "13-13-14-9",
+                        "last3f":  "37.4",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  9,
+                        "name":  "マルチ モエレサワンミヤギ",
+                        "finish":  "9",
+                        "time":  "2:12.3",
+                        "margin":  "２",
+                        "corner":  "11-11-14-15",
+                        "last3f":  "37.5",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  15,
+                        "name":  "バートラガッツ",
+                        "finish":  "10",
+                        "time":  "2:12.6",
+                        "margin":  "２",
+                        "corner":  "1-2-2-2",
+                        "last3f":  "38.8",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  10,
+                        "name":  "ストロングエース",
+                        "finish":  "11",
+                        "time":  "2:12.6",
+                        "margin":  "アタマ",
+                        "corner":  "15-13-11-13",
+                        "last3f":  "37.9",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ムジェロ ブリンカー着用",
+                        "finish":  "12",
+                        "time":  "2:12.7",
+                        "margin":  "クビ",
+                        "corner":  "4-2-3-4",
+                        "last3f":  "38.7",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  8,
+                        "name":  "メイケイロゼッタ",
+                        "finish":  "13",
+                        "time":  "2:12.7",
+                        "margin":  "アタマ",
+                        "corner":  "6-8-8-9",
+                        "last3f":  "38.2",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  12,
+                        "name":  "フェイトライン ブリンカー着用",
+                        "finish":  "14",
+                        "time":  "2:14.2",
+                        "margin":  "９",
+                        "corner":  "6-6-5-6",
+                        "last3f":  "40.0",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  2,
+                        "name":  "マルチ イプシロンナンバー",
+                        "finish":  "15",
+                        "time":  "2:20.2",
+                        "margin":  "大差",
+                        "corner":  "8-6-8-9",
+                        "last3f":  "45.7",
+                        "popularity":  7
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "6",
+                                       "yen":  250
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "6",
+                                        "yen":  130
+                                    },
+                                    {
+                                        "combo":  "13",
+                                        "yen":  230
+                                    },
+                                    {
+                                        "combo":  "14",
+                                        "yen":  350
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "4-7",
+                                        "yen":  780
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "6-13",
+                                     "yen":  320
+                                 },
+                                 {
+                                     "combo":  "6-14",
+                                     "yen":  620
+                                 },
+                                 {
+                                     "combo":  "13-14",
+                                     "yen":  2260
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "6-13",
+                                       "yen":  710
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "6-13",
+                                       "yen":  1150
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "6-13-14",
+                                           "yen":  4760
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "6-13-14",
+                                          "yen":  14740
+                                      }
+                                  ]
+                }
+}

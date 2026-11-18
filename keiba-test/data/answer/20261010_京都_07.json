@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261010",
+                 "venue":  "京都",
+                 "race_no":  7,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  13,
+                        "name":  "レディーゴール",
+                        "finish":  "1",
+                        "time":  "1:52.2",
+                        "margin":  "",
+                        "corner":  "3-3-2-2",
+                        "last3f":  "37.1",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  1,
+                        "name":  "ブラックドレス",
+                        "finish":  "2",
+                        "time":  "1:52.3",
+                        "margin":  "クビ",
+                        "corner":  "1-1-1-1",
+                        "last3f":  "37.3",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  4,
+                        "name":  "エイコーンドリーム",
+                        "finish":  "3",
+                        "time":  "1:52.3",
+                        "margin":  "クビ",
+                        "corner":  "4-3-5-5",
+                        "last3f":  "36.8",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  14,
+                        "name":  "シュネルアンジュ",
+                        "finish":  "4",
+                        "time":  "1:52.5",
+                        "margin":  "１ 1/4",
+                        "corner":  "6-5-3-3",
+                        "last3f":  "37.2",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  3,
+                        "name":  "リアンクトワ",
+                        "finish":  "5",
+                        "time":  "1:52.8",
+                        "margin":  "２",
+                        "corner":  "12-12-14-15",
+                        "last3f":  "36.5",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  12,
+                        "name":  "アーデルリーベ",
+                        "finish":  "6",
+                        "time":  "1:52.9",
+                        "margin":  "１／２",
+                        "corner":  "15-15-15-16",
+                        "last3f":  "36.5",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  11,
+                        "name":  "リーチグローリー",
+                        "finish":  "7",
+                        "time":  "1:52.9",
+                        "margin":  "クビ",
+                        "corner":  "11-10-11-12",
+                        "last3f":  "36.9",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  16,
+                        "name":  "ドリームキャリー",
+                        "finish":  "8",
+                        "time":  "1:53.1",
+                        "margin":  "１",
+                        "corner":  "2-2-3-4",
+                        "last3f":  "37.9",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  9,
+                        "name":  "アンリーベイビー",
+                        "finish":  "9",
+                        "time":  "1:53.1",
+                        "margin":  "ハナ",
+                        "corner":  "7-8-8-8",
+                        "last3f":  "37.3",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  5,
+                        "name":  "クイーンズホリデー ブリンカー着用",
+                        "finish":  "10",
+                        "time":  "1:53.1",
+                        "margin":  "クビ",
+                        "corner":  "7-7-8-8",
+                        "last3f":  "37.4",
+                        "popularity":  16
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ガールズデイアウト",
+                        "finish":  "11",
+                        "time":  "1:53.2",
+                        "margin":  "クビ",
+                        "corner":  "16-16-15-12",
+                        "last3f":  "36.7",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  6,
+                        "name":  "オヤツノジカン",
+                        "finish":  "12",
+                        "time":  "1:53.4",
+                        "margin":  "１ 1/4",
+                        "corner":  "13-14-13-8",
+                        "last3f":  "37.2",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  2,
+                        "name":  "シャフメラン",
+                        "finish":  "13",
+                        "time":  "1:53.9",
+                        "margin":  "３ 1/2",
+                        "corner":  "14-12-10-8",
+                        "last3f":  "38.1",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  8,
+                        "name":  "オーケーリアン",
+                        "finish":  "14",
+                        "time":  "1:54.7",
+                        "margin":  "５",
+                        "corner":  "4-5-5-5",
+                        "last3f":  "39.2",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  15,
+                        "name":  "ヒメモモアスク",
+                        "finish":  "15",
+                        "time":  "1:55.2",
+                        "margin":  "３",
+                        "corner":  "7-8-5-5",
+                        "last3f":  "39.6",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  10,
+                        "name":  "フェロニエール ブリンカー着用",
+                        "finish":  "16",
+                        "time":  "1:57.1",
+                        "margin":  "大差",
+                        "corner":  "10-10-11-12",
+                        "last3f":  "41.0",
+                        "popularity":  13
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "13",
+                                       "yen":  2590
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "13",
+                                        "yen":  1110
+                                    },
+                                    {
+                                        "combo":  "1",
+                                        "yen":  1900
+                                    },
+                                    {
+                                        "combo":  "4",
+                                        "yen":  240
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "1-7",
+                                        "yen":  5580
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "1-13",
+                                     "yen":  26040
+                                 },
+                                 {
+                                     "combo":  "4-13",
+                                     "yen":  2700
+                                 },
+                                 {
+                                     "combo":  "1-4",
+                                     "yen":  6540
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "1-13",
+                                       "yen":  88360
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "13-1",
+                                       "yen":  166590
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "1-4-13",
+                                           "yen":  246090
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "13-1-4",
+                                          "yen":  1776060
+                                      }
+                                  ]
+                }
+}

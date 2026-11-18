@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261017",
+                 "venue":  "京都",
+                 "race_no":  9,
+                 "name":  "3歳以上2勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  7,
+                        "name":  "ジャンヌドゥレーヴ",
+                        "finish":  "1",
+                        "time":  "1:23.0",
+                        "margin":  "",
+                        "corner":  "8-7",
+                        "last3f":  "36.5",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ルビドゥソレイユ",
+                        "finish":  "2",
+                        "time":  "1:23.0",
+                        "margin":  "クビ",
+                        "corner":  "6-6",
+                        "last3f":  "36.6",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  14,
+                        "name":  "ホウショウマリス ブリンカー着用",
+                        "finish":  "3",
+                        "time":  "1:23.1",
+                        "margin":  "３／４",
+                        "corner":  "6-7",
+                        "last3f":  "36.7",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  5,
+                        "name":  "ワイズギャング",
+                        "finish":  "4",
+                        "time":  "1:23.1",
+                        "margin":  "ハナ",
+                        "corner":  "4-3",
+                        "last3f":  "37.0",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  4,
+                        "name":  "プレアデスグループ",
+                        "finish":  "5",
+                        "time":  "1:23.5",
+                        "margin":  "２",
+                        "corner":  "2-1",
+                        "last3f":  "37.6",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  3,
+                        "name":  "マヴィ",
+                        "finish":  "6",
+                        "time":  "1:23.7",
+                        "margin":  "１ 1/2",
+                        "corner":  "10-10",
+                        "last3f":  "36.9",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  12,
+                        "name":  "ラピダリア",
+                        "finish":  "7",
+                        "time":  "1:23.7",
+                        "margin":  "アタマ",
+                        "corner":  "13-13",
+                        "last3f":  "36.5",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  16,
+                        "name":  "ラヴオントップ",
+                        "finish":  "8",
+                        "time":  "1:23.9",
+                        "margin":  "１ 1/4",
+                        "corner":  "10-7",
+                        "last3f":  "37.1",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  8,
+                        "name":  "ワイノナオミ",
+                        "finish":  "9",
+                        "time":  "1:24.3",
+                        "margin":  "２",
+                        "corner":  "16-16",
+                        "last3f":  "36.1",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ローマンレイク",
+                        "finish":  "10",
+                        "time":  "1:24.5",
+                        "margin":  "１",
+                        "corner":  "8-10",
+                        "last3f":  "37.9",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  1,
+                        "name":  "コパノエビータ ブリンカー着用",
+                        "finish":  "11",
+                        "time":  "1:24.6",
+                        "margin":  "クビ",
+                        "corner":  "15-15",
+                        "last3f":  "36.9",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  6,
+                        "name":  "メイショウリリー",
+                        "finish":  "12",
+                        "time":  "1:25.0",
+                        "margin":  "２ 1/2",
+                        "corner":  "13-14",
+                        "last3f":  "37.8",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  10,
+                        "name":  "メイショウザンゲツ",
+                        "finish":  "13",
+                        "time":  "1:25.2",
+                        "margin":  "１ 1/2",
+                        "corner":  "3-3",
+                        "last3f":  "39.2",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  15,
+                        "name":  "インフローレ",
+                        "finish":  "14",
+                        "time":  "1:25.8",
+                        "margin":  "３ 1/2",
+                        "corner":  "12-12",
+                        "last3f":  "38.9",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  9,
+                        "name":  "ランスオブセヘル",
+                        "finish":  "15",
+                        "time":  "1:25.9",
+                        "margin":  "３／４",
+                        "corner":  "4-5",
+                        "last3f":  "39.8",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  2,
+                        "name":  "エルサトアナ",
+                        "finish":  "16",
+                        "time":  "1:26.6",
+                        "margin":  "４",
+                        "corner":  "1-2",
+                        "last3f":  "40.8",
+                        "popularity":  16
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "7",
+                                       "yen":  470
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "7",
+                                        "yen":  150
+                                    },
+                                    {
+                                        "combo":  "11",
+                                        "yen":  130
+                                    },
+                                    {
+                                        "combo":  "14",
+                                        "yen":  230
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "4-6",
+                                        "yen":  590
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "7-11",
+                                     "yen":  290
+                                 },
+                                 {
+                                     "combo":  "7-14",
+                                     "yen":  780
+                                 },
+                                 {
+                                     "combo":  "11-14",
+                                     "yen":  500
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "7-11",
+                                       "yen":  640
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "7-11",
+                                       "yen":  1570
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "7-11-14",
+                                           "yen":  1830
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "7-11-14",
+                                          "yen":  9180
+                                      }
+                                  ]
+                }
+}

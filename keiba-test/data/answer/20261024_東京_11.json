@@ -1,0 +1,206 @@
+{
+    "race":  {
+                 "date":  "20261024",
+                 "venue":  "東京",
+                 "race_no":  11,
+                 "name":  "アルテミスステークス GⅢ"
+             },
+    "results":  [
+                    {
+                        "number":  9,
+                        "name":  "プルヴィナル",
+                        "finish":  "1",
+                        "time":  "1:35.8",
+                        "margin":  "",
+                        "corner":  "4-2",
+                        "last3f":  "34.6",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ローズサルーテ",
+                        "finish":  "2",
+                        "time":  "1:36.0",
+                        "margin":  "１ 1/4",
+                        "corner":  "11-7",
+                        "last3f":  "34.1",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  5,
+                        "name":  "シティオブドリーム",
+                        "finish":  "3",
+                        "time":  "1:36.2",
+                        "margin":  "１ 1/4",
+                        "corner":  "2-4",
+                        "last3f":  "34.5",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ファミーリエ",
+                        "finish":  "4",
+                        "time":  "1:36.5",
+                        "margin":  "２",
+                        "corner":  "4-4",
+                        "last3f":  "34.7",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  1,
+                        "name":  "タプティ",
+                        "finish":  "5",
+                        "time":  "1:36.6",
+                        "margin":  "３／４",
+                        "corner":  "9-11",
+                        "last3f":  "34.3",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  2,
+                        "name":  "マリアンデール",
+                        "finish":  "6",
+                        "time":  "1:36.7",
+                        "margin":  "１／２",
+                        "corner":  "6-7",
+                        "last3f":  "34.7",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  12,
+                        "name":  "サトノスプレマシー",
+                        "finish":  "7",
+                        "time":  "1:36.7",
+                        "margin":  "アタマ",
+                        "corner":  "9-7",
+                        "last3f":  "34.7",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  6,
+                        "name":  "リスグロワール",
+                        "finish":  "8",
+                        "time":  "1:36.8",
+                        "margin":  "クビ",
+                        "corner":  "2-3",
+                        "last3f":  "35.2",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ホウオウプレマ",
+                        "finish":  "9",
+                        "time":  "1:36.9",
+                        "margin":  "１",
+                        "corner":  "6-4",
+                        "last3f":  "35.1",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  10,
+                        "name":  "ジーティーキャリー",
+                        "finish":  "10",
+                        "time":  "1:37.1",
+                        "margin":  "３／４",
+                        "corner":  "1-1",
+                        "last3f":  "35.9",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ピコベリー",
+                        "finish":  "11",
+                        "time":  "1:37.6",
+                        "margin":  "３",
+                        "corner":  "8-7",
+                        "last3f":  "35.6",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  11,
+                        "name":  "カナデルペガサス",
+                        "finish":  "12",
+                        "time":  "1:37.6",
+                        "margin":  "クビ",
+                        "corner":  "12-12",
+                        "last3f":  "35.0",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  8,
+                        "name":  "カクチ ベストプラージュ",
+                        "finish":  "13",
+                        "time":  "1:38.4",
+                        "margin":  "５",
+                        "corner":  "13-13",
+                        "last3f":  "35.4",
+                        "popularity":  13
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "9",
+                                       "yen":  290
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "9",
+                                        "yen":  130
+                                    },
+                                    {
+                                        "combo":  "13",
+                                        "yen":  520
+                                    },
+                                    {
+                                        "combo":  "5",
+                                        "yen":  190
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "6-8",
+                                        "yen":  2490
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "9-13",
+                                     "yen":  1630
+                                 },
+                                 {
+                                     "combo":  "5-9",
+                                     "yen":  370
+                                 },
+                                 {
+                                     "combo":  "5-13",
+                                     "yen":  2620
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "9-13",
+                                       "yen":  6200
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "9-13",
+                                       "yen":  8810
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "5-9-13",
+                                           "yen":  11170
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "9-13-5",
+                                          "yen":  67050
+                                      }
+                                  ]
+                }
+}

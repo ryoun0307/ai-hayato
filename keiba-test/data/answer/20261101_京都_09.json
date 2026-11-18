@@ -1,0 +1,176 @@
+{
+    "race":  {
+                 "date":  "20261101",
+                 "venue":  "京都",
+                 "race_no":  9,
+                 "name":  "愛宕特別"
+             },
+    "results":  [
+                    {
+                        "number":  6,
+                        "name":  "タガノエルー",
+                        "finish":  "1",
+                        "time":  "1:51.1",
+                        "margin":  "",
+                        "corner":  "7-7-5-4",
+                        "last3f":  "38.1",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  2,
+                        "name":  "ビルンバウム ブリンカー着用",
+                        "finish":  "2",
+                        "time":  "1:51.2",
+                        "margin":  "３／４",
+                        "corner":  "5-5-8-7",
+                        "last3f":  "38.0",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  4,
+                        "name":  "タガノアルトゥーラ ブリンカー着用",
+                        "finish":  "3",
+                        "time":  "1:51.2",
+                        "margin":  "アタマ",
+                        "corner":  "6-6-7-4",
+                        "last3f":  "38.1",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  9,
+                        "name":  "アトモス ブリンカー着用",
+                        "finish":  "4",
+                        "time":  "1:51.3",
+                        "margin":  "１／２",
+                        "corner":  "3-3-2-2",
+                        "last3f":  "38.5",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  1,
+                        "name":  "ダディーズトリップ",
+                        "finish":  "5",
+                        "time":  "1:51.6",
+                        "margin":  "２",
+                        "corner":  "9-9-8-7",
+                        "last3f":  "38.3",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  8,
+                        "name":  "ロードアマルフィ",
+                        "finish":  "6",
+                        "time":  "1:52.0",
+                        "margin":  "２",
+                        "corner":  "3-3-2-2",
+                        "last3f":  "39.3",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ジーニアスバローズ",
+                        "finish":  "7",
+                        "time":  "1:52.4",
+                        "margin":  "２ 1/2",
+                        "corner":  "2-2-1-1",
+                        "last3f":  "39.9",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ゼットレジーナ",
+                        "finish":  "8",
+                        "time":  "1:52.9",
+                        "margin":  "３",
+                        "corner":  "10-10-10-10",
+                        "last3f":  "38.7",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  5,
+                        "name":  "ニホンピロデヴィン",
+                        "finish":  "9",
+                        "time":  "1:53.0",
+                        "margin":  "３／４",
+                        "corner":  "7-7-5-4",
+                        "last3f":  "40.2",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  10,
+                        "name":  "サイモンゼスト",
+                        "finish":  "10",
+                        "time":  "1:54.1",
+                        "margin":  "７",
+                        "corner":  "1-1-2-7",
+                        "last3f":  "41.4",
+                        "popularity":  8
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "6",
+                                       "yen":  260
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "6",
+                                        "yen":  110
+                                    },
+                                    {
+                                        "combo":  "2",
+                                        "yen":  300
+                                    },
+                                    {
+                                        "combo":  "4",
+                                        "yen":  110
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "2-6",
+                                        "yen":  3320
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "2-6",
+                                     "yen":  880
+                                 },
+                                 {
+                                     "combo":  "4-6",
+                                     "yen":  180
+                                 },
+                                 {
+                                     "combo":  "2-4",
+                                     "yen":  730
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "2-6",
+                                       "yen":  3580
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "6-2",
+                                       "yen":  5270
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "2-4-6",
+                                           "yen":  1670
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "6-2-4",
+                                          "yen":  12090
+                                      }
+                                  ]
+                }
+}

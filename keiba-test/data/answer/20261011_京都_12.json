@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261011",
+                 "venue":  "京都",
+                 "race_no":  12,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  3,
+                        "name":  "ダークマルス",
+                        "finish":  "1",
+                        "time":  "1:32.3",
+                        "margin":  "",
+                        "corner":  "4-4",
+                        "last3f":  "34.8",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  1,
+                        "name":  "メイショウトウコウ",
+                        "finish":  "2",
+                        "time":  "1:32.3",
+                        "margin":  "１／２",
+                        "corner":  "8-8",
+                        "last3f":  "34.5",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ペイシャシス",
+                        "finish":  "3",
+                        "time":  "1:32.7",
+                        "margin":  "２",
+                        "corner":  "9-9",
+                        "last3f":  "34.8",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  5,
+                        "name":  "サトノセプター",
+                        "finish":  "4",
+                        "time":  "1:32.8",
+                        "margin":  "３／４",
+                        "corner":  "5-5",
+                        "last3f":  "35.1",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  8,
+                        "name":  "エグジスタンス",
+                        "finish":  "5",
+                        "time":  "1:32.9",
+                        "margin":  "１／２",
+                        "corner":  "5-5",
+                        "last3f":  "35.2",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ドーギッド",
+                        "finish":  "6",
+                        "time":  "1:32.9",
+                        "margin":  "クビ",
+                        "corner":  "13-12",
+                        "last3f":  "34.8",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  2,
+                        "name":  "タイムレスキス",
+                        "finish":  "7",
+                        "time":  "1:32.9",
+                        "margin":  "アタマ",
+                        "corner":  "9-9",
+                        "last3f":  "35.0",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  12,
+                        "name":  "レインボーステート",
+                        "finish":  "8",
+                        "time":  "1:33.0",
+                        "margin":  "１／２",
+                        "corner":  "13-14",
+                        "last3f":  "34.8",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ウォーターデライト",
+                        "finish":  "9",
+                        "time":  "1:33.2",
+                        "margin":  "１ 1/4",
+                        "corner":  "15-16",
+                        "last3f":  "34.8",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  6,
+                        "name":  "ルートサーティーン",
+                        "finish":  "10",
+                        "time":  "1:33.5",
+                        "margin":  "１ 1/2",
+                        "corner":  "16-14",
+                        "last3f":  "35.2",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  10,
+                        "name":  "マルチ ルディシャ",
+                        "finish":  "11",
+                        "time":  "1:33.5",
+                        "margin":  "クビ",
+                        "corner":  "2-2",
+                        "last3f":  "36.1",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  9,
+                        "name":  "ミッキーコンドル ブリンカー着用",
+                        "finish":  "12",
+                        "time":  "1:33.6",
+                        "margin":  "クビ",
+                        "corner":  "9-9",
+                        "last3f":  "35.7",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  16,
+                        "name":  "ウインラウダ",
+                        "finish":  "13",
+                        "time":  "1:33.7",
+                        "margin":  "１／２",
+                        "corner":  "9-12",
+                        "last3f":  "35.8",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  14,
+                        "name":  "エスティヴァリス ブリンカー着用",
+                        "finish":  "14",
+                        "time":  "1:33.9",
+                        "margin":  "１ 1/4",
+                        "corner":  "1-1",
+                        "last3f":  "36.7",
+                        "popularity":  16
+                    },
+                    {
+                        "number":  15,
+                        "name":  "ニシノイツキムスメ",
+                        "finish":  "15",
+                        "time":  "1:33.9",
+                        "margin":  "クビ",
+                        "corner":  "2-2",
+                        "last3f":  "36.5",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  11,
+                        "name":  "マゲバスピード",
+                        "finish":  "16",
+                        "time":  "1:35.3",
+                        "margin":  "８",
+                        "corner":  "5-5",
+                        "last3f":  "37.6",
+                        "popularity":  2
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "3",
+                                       "yen":  240
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "3",
+                                        "yen":  130
+                                    },
+                                    {
+                                        "combo":  "1",
+                                        "yen":  660
+                                    },
+                                    {
+                                        "combo":  "4",
+                                        "yen":  220
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "1-2",
+                                        "yen":  610
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "1-3",
+                                     "yen":  1560
+                                 },
+                                 {
+                                     "combo":  "3-4",
+                                     "yen":  380
+                                 },
+                                 {
+                                     "combo":  "1-4",
+                                     "yen":  2350
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "1-3",
+                                       "yen":  4370
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "3-1",
+                                       "yen":  6570
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "1-3-4",
+                                           "yen":  6900
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "3-1-4",
+                                          "yen":  35730
+                                      }
+                                  ]
+                }
+}

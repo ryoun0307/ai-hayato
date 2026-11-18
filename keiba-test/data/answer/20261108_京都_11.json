@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261108",
+                 "venue":  "京都",
+                 "race_no":  11,
+                 "name":  "みやこステークス GⅢ"
+             },
+    "results":  [
+                    {
+                        "number":  11,
+                        "name":  "ロードクロンヌ",
+                        "finish":  "1",
+                        "time":  "1:49.6",
+                        "margin":  "",
+                        "corner":  "3-3-3-3",
+                        "last3f":  "36.2",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  8,
+                        "name":  "テスティモーネ",
+                        "finish":  "2",
+                        "time":  "1:49.8",
+                        "margin":  "１ 1/2",
+                        "corner":  "1-1-1-1",
+                        "last3f":  "36.8",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  3,
+                        "name":  "パシアンジャン",
+                        "finish":  "3",
+                        "time":  "1:50.1",
+                        "margin":  "１ 1/2",
+                        "corner":  "3-5-3-3",
+                        "last3f":  "36.6",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  5,
+                        "name":  "ヴァルツァーシャル",
+                        "finish":  "4",
+                        "time":  "1:50.2",
+                        "margin":  "クビ",
+                        "corner":  "10-10-9-8",
+                        "last3f":  "36.1",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  10,
+                        "name":  "ムルソー",
+                        "finish":  "5",
+                        "time":  "1:50.2",
+                        "margin":  "クビ",
+                        "corner":  "2-2-2-2",
+                        "last3f":  "37.1",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ビービークローサー",
+                        "finish":  "6",
+                        "time":  "1:50.3",
+                        "margin":  "クビ",
+                        "corner":  "13-13-13-9",
+                        "last3f":  "35.8",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  1,
+                        "name":  "トリポリタニア",
+                        "finish":  "7",
+                        "time":  "1:50.3",
+                        "margin":  "ハナ",
+                        "corner":  "7-7-7-6",
+                        "last3f":  "36.5",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  15,
+                        "name":  "ショウナンバンライ",
+                        "finish":  "8",
+                        "time":  "1:50.5",
+                        "margin":  "１",
+                        "corner":  "6-5-3-5",
+                        "last3f":  "37.0",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  12,
+                        "name":  "サイモンザナドゥ",
+                        "finish":  "9",
+                        "time":  "1:50.7",
+                        "margin":  "１ 1/2",
+                        "corner":  "10-10-9-10",
+                        "last3f":  "36.6",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  7,
+                        "name":  "マイノワール",
+                        "finish":  "10",
+                        "time":  "1:51.3",
+                        "margin":  "３ 1/2",
+                        "corner":  "15-15-14-13",
+                        "last3f":  "36.5",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  14,
+                        "name":  "ルシュヴァルドール ブリンカー着用",
+                        "finish":  "11",
+                        "time":  "1:51.4",
+                        "margin":  "クビ",
+                        "corner":  "14-14-14-14",
+                        "last3f":  "36.6",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  9,
+                        "name":  "ラムジェット ブリンカー着用",
+                        "finish":  "12",
+                        "time":  "1:51.5",
+                        "margin":  "１／２",
+                        "corner":  "16-16-16-16",
+                        "last3f":  "36.3",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  6,
+                        "name":  "シゲルショウグン",
+                        "finish":  "13",
+                        "time":  "1:51.7",
+                        "margin":  "１",
+                        "corner":  "7-7-6-6",
+                        "last3f":  "38.0",
+                        "popularity":  16
+                    },
+                    {
+                        "number":  13,
+                        "name":  "レヴォントゥレット ブリンカー着用",
+                        "finish":  "14",
+                        "time":  "1:52.0",
+                        "margin":  "２",
+                        "corner":  "9-9-8-10",
+                        "last3f":  "38.0",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  16,
+                        "name":  "シリウスコルト",
+                        "finish":  "15",
+                        "time":  "1:52.1",
+                        "margin":  "クビ",
+                        "corner":  "12-12-12-12",
+                        "last3f":  "37.7",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  2,
+                        "name":  "バスタードサフラン ブリンカー着用",
+                        "finish":  "16",
+                        "time":  "1:54.2",
+                        "margin":  "大差",
+                        "corner":  "3-3-9-15",
+                        "last3f":  "40.0",
+                        "popularity":  10
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "11",
+                                       "yen":  450
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "11",
+                                        "yen":  170
+                                    },
+                                    {
+                                        "combo":  "8",
+                                        "yen":  260
+                                    },
+                                    {
+                                        "combo":  "3",
+                                        "yen":  1840
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "4-6",
+                                        "yen":  1330
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "8-11",
+                                     "yen":  570
+                                 },
+                                 {
+                                     "combo":  "3-11",
+                                     "yen":  9300
+                                 },
+                                 {
+                                     "combo":  "3-8",
+                                     "yen":  10710
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "8-11",
+                                       "yen":  1670
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "11-8",
+                                       "yen":  3440
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "3-8-11",
+                                           "yen":  68340
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "11-8-3",
+                                          "yen":  271010
+                                      }
+                                  ]
+                }
+}

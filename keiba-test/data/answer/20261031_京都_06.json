@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261031",
+                 "venue":  "京都",
+                 "race_no":  6,
+                 "name":  "メイクデビュー京都"
+             },
+    "results":  [
+                    {
+                        "number":  14,
+                        "name":  "マルガイ サイモンレコルト",
+                        "finish":  "1",
+                        "time":  "1:25.1",
+                        "margin":  "",
+                        "corner":  "4-4",
+                        "last3f":  "36.7",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  15,
+                        "name":  "マスターピース",
+                        "finish":  "2",
+                        "time":  "1:25.4",
+                        "margin":  "１ 3/4",
+                        "corner":  "2-3",
+                        "last3f":  "37.3",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  10,
+                        "name":  "スターシーカー",
+                        "finish":  "3",
+                        "time":  "1:25.4",
+                        "margin":  "クビ",
+                        "corner":  "2-2",
+                        "last3f":  "37.4",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  2,
+                        "name":  "マルガイ モアザンヴォルト",
+                        "finish":  "4",
+                        "time":  "1:25.9",
+                        "margin":  "３",
+                        "corner":  "7-7",
+                        "last3f":  "37.4",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  1,
+                        "name":  "レッドガレオン",
+                        "finish":  "5",
+                        "time":  "1:26.2",
+                        "margin":  "１ 1/2",
+                        "corner":  "4-4",
+                        "last3f":  "38.0",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  8,
+                        "name":  "マルガイ ジーティーイレブン",
+                        "finish":  "6",
+                        "time":  "1:26.4",
+                        "margin":  "１",
+                        "corner":  "7-9",
+                        "last3f":  "37.8",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  12,
+                        "name":  "マルガイ ホーフアイゼン",
+                        "finish":  "7",
+                        "time":  "1:26.5",
+                        "margin":  "１",
+                        "corner":  "10-11",
+                        "last3f":  "37.7",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  6,
+                        "name":  "クリコリンダ",
+                        "finish":  "8",
+                        "time":  "1:26.6",
+                        "margin":  "クビ",
+                        "corner":  "7-7",
+                        "last3f":  "38.1",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ルシエルノーブル",
+                        "finish":  "9",
+                        "time":  "1:26.7",
+                        "margin":  "１",
+                        "corner":  "13-13",
+                        "last3f":  "37.5",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  9,
+                        "name":  "マルガイ トップエンドパワー",
+                        "finish":  "10",
+                        "time":  "1:26.8",
+                        "margin":  "１／２",
+                        "corner":  "1-1",
+                        "last3f":  "38.9",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ドリームハロウ",
+                        "finish":  "11",
+                        "time":  "1:26.9",
+                        "margin":  "クビ",
+                        "corner":  "4-4",
+                        "last3f":  "38.6",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  3,
+                        "name":  "クローネンリーベ",
+                        "finish":  "12",
+                        "time":  "1:26.9",
+                        "margin":  "クビ",
+                        "corner":  "12-10",
+                        "last3f":  "37.9",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  16,
+                        "name":  "ビップカレッジ",
+                        "finish":  "13",
+                        "time":  "1:28.7",
+                        "margin":  "大差",
+                        "corner":  "14-14",
+                        "last3f":  "37.8",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  4,
+                        "name":  "サマーレディ",
+                        "finish":  "14",
+                        "time":  "1:29.1",
+                        "margin":  "２ 1/2",
+                        "corner":  "10-11",
+                        "last3f":  "40.4",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  5,
+                        "name":  "キングゴールド",
+                        "finish":  "15",
+                        "time":  "1:30.2",
+                        "margin":  "７",
+                        "corner":  "15-15",
+                        "last3f":  "38.8",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ナムラウルフ",
+                        "finish":  "16",
+                        "time":  "1:31.2",
+                        "margin":  "６",
+                        "corner":  "16-16",
+                        "last3f":  "39.2",
+                        "popularity":  16
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "14",
+                                       "yen":  3030
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "14",
+                                        "yen":  650
+                                    },
+                                    {
+                                        "combo":  "15",
+                                        "yen":  300
+                                    },
+                                    {
+                                        "combo":  "10",
+                                        "yen":  170
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "7-8",
+                                        "yen":  6880
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "14-15",
+                                     "yen":  3510
+                                 },
+                                 {
+                                     "combo":  "10-14",
+                                     "yen":  2070
+                                 },
+                                 {
+                                     "combo":  "10-15",
+                                     "yen":  1140
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "14-15",
+                                       "yen":  13120
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "14-15",
+                                       "yen":  27330
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "10-14-15",
+                                           "yen":  19800
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "14-15-10",
+                                          "yen":  167980
+                                      }
+                                  ]
+                }
+}

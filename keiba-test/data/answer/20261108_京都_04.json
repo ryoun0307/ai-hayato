@@ -1,0 +1,216 @@
+{
+    "race":  {
+                 "date":  "20261108",
+                 "venue":  "京都",
+                 "race_no":  4,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  6,
+                        "name":  "サトノグロリア",
+                        "finish":  "1",
+                        "time":  "1:52.8",
+                        "margin":  "",
+                        "corner":  "5-6-6-6",
+                        "last3f":  "37.2",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  8,
+                        "name":  "マルガイ トラッドロア",
+                        "finish":  "2",
+                        "time":  "1:53.1",
+                        "margin":  "２",
+                        "corner":  "2-2-2-2",
+                        "last3f":  "38.0",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  7,
+                        "name":  "マルガイ アメリカンスタイル ブリンカー着用",
+                        "finish":  "3",
+                        "time":  "1:53.1",
+                        "margin":  "ハナ",
+                        "corner":  "9-7-7-6",
+                        "last3f":  "37.4",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  10,
+                        "name":  "コルヴァス ブリンカー着用",
+                        "finish":  "4",
+                        "time":  "1:53.5",
+                        "margin":  "２",
+                        "corner":  "6-3-3-3",
+                        "last3f":  "38.2",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  1,
+                        "name":  "ペトリコール",
+                        "finish":  "5",
+                        "time":  "1:53.6",
+                        "margin":  "１／２",
+                        "corner":  "3-3-3-3",
+                        "last3f":  "38.3",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  12,
+                        "name":  "アミラル",
+                        "finish":  "6",
+                        "time":  "1:53.6",
+                        "margin":  "アタマ",
+                        "corner":  "12-11-10-8",
+                        "last3f":  "37.5",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  9,
+                        "name":  "クリュギスト",
+                        "finish":  "7",
+                        "time":  "1:54.0",
+                        "margin":  "２ 1/2",
+                        "corner":  "7-7-8-8",
+                        "last3f":  "38.1",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  2,
+                        "name":  "マルチ ガイラルディア",
+                        "finish":  "8",
+                        "time":  "1:54.1",
+                        "margin":  "クビ",
+                        "corner":  "7-7-10-8",
+                        "last3f":  "38.1",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ゴーントゥファー",
+                        "finish":  "9",
+                        "time":  "1:54.1",
+                        "margin":  "アタマ",
+                        "corner":  "14-14-13-13",
+                        "last3f":  "37.7",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  5,
+                        "name":  "アルビオン ブリンカー着用",
+                        "finish":  "10",
+                        "time":  "1:54.1",
+                        "margin":  "クビ",
+                        "corner":  "12-13-13-13",
+                        "last3f":  "37.8",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  13,
+                        "name":  "マルガイ アメリカンイズム ブリンカー着用",
+                        "finish":  "11",
+                        "time":  "1:54.3",
+                        "margin":  "１ 1/4",
+                        "corner":  "3-3-3-5",
+                        "last3f":  "39.0",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ダノンストラーダ ブリンカー着用",
+                        "finish":  "12",
+                        "time":  "1:54.6",
+                        "margin":  "１ 3/4",
+                        "corner":  "1-1-1-1",
+                        "last3f":  "39.7",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  11,
+                        "name":  "メイショウサッソウ",
+                        "finish":  "13",
+                        "time":  "1:54.7",
+                        "margin":  "１／２",
+                        "corner":  "11-11-10-11",
+                        "last3f":  "38.6",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  14,
+                        "name":  "ビナハイバン",
+                        "finish":  "14",
+                        "time":  "1:56.1",
+                        "margin":  "８",
+                        "corner":  "9-7-8-11",
+                        "last3f":  "40.2",
+                        "popularity":  12
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "6",
+                                       "yen":  190
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "6",
+                                        "yen":  110
+                                    },
+                                    {
+                                        "combo":  "8",
+                                        "yen":  590
+                                    },
+                                    {
+                                        "combo":  "7",
+                                        "yen":  310
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "4-5",
+                                        "yen":  730
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "6-8",
+                                     "yen":  1250
+                                 },
+                                 {
+                                     "combo":  "6-7",
+                                     "yen":  490
+                                 },
+                                 {
+                                     "combo":  "7-8",
+                                     "yen":  3240
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "6-8",
+                                       "yen":  3000
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "6-8",
+                                       "yen":  3900
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "6-7-8",
+                                           "yen":  7440
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "6-8-7",
+                                          "yen":  28320
+                                      }
+                                  ]
+                }
+}

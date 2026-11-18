@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261010",
+                 "venue":  "京都",
+                 "race_no":  9,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  6,
+                        "name":  "テーオーパーセル",
+                        "finish":  "1",
+                        "time":  "1:23.1",
+                        "margin":  "",
+                        "corner":  "2-2",
+                        "last3f":  "37.1",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  9,
+                        "name":  "オウケンブラッド",
+                        "finish":  "2",
+                        "time":  "1:23.1",
+                        "margin":  "ハナ",
+                        "corner":  "12-11",
+                        "last3f":  "35.7",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  12,
+                        "name":  "エシェックオロワ",
+                        "finish":  "3",
+                        "time":  "1:23.4",
+                        "margin":  "２",
+                        "corner":  "6-5",
+                        "last3f":  "36.8",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  1,
+                        "name":  "デュアルロール",
+                        "finish":  "4",
+                        "time":  "1:23.5",
+                        "margin":  "クビ",
+                        "corner":  "8-8",
+                        "last3f":  "36.7",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  7,
+                        "name":  "グランデスフィーダ",
+                        "finish":  "5",
+                        "time":  "1:23.5",
+                        "margin":  "クビ",
+                        "corner":  "11-10",
+                        "last3f":  "36.4",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  4,
+                        "name":  "マルチ マテンロウミラクル",
+                        "finish":  "6",
+                        "time":  "1:23.6",
+                        "margin":  "１／２",
+                        "corner":  "15-13",
+                        "last3f":  "35.8",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  2,
+                        "name":  "アパレイユ ブリンカー着用",
+                        "finish":  "7",
+                        "time":  "1:23.7",
+                        "margin":  "３／４",
+                        "corner":  "1-1",
+                        "last3f":  "37.8",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ウォーターパラディ",
+                        "finish":  "8",
+                        "time":  "1:23.8",
+                        "margin":  "クビ",
+                        "corner":  "3-3",
+                        "last3f":  "37.5",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  15,
+                        "name":  "リアルアルバ",
+                        "finish":  "9",
+                        "time":  "1:23.9",
+                        "margin":  "１／２",
+                        "corner":  "10-8",
+                        "last3f":  "37.0",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  3,
+                        "name":  "チャチャピンク",
+                        "finish":  "10",
+                        "time":  "1:24.0",
+                        "margin":  "１／２",
+                        "corner":  "15-16",
+                        "last3f":  "36.2",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  16,
+                        "name":  "フィアーブル ブリンカー着用",
+                        "finish":  "11",
+                        "time":  "1:24.3",
+                        "margin":  "１ 3/4",
+                        "corner":  "3-3",
+                        "last3f":  "37.9",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  5,
+                        "name":  "ケイエイト",
+                        "finish":  "12",
+                        "time":  "1:24.4",
+                        "margin":  "１／２",
+                        "corner":  "13-13",
+                        "last3f":  "36.7",
+                        "popularity":  16
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ナムラドロン",
+                        "finish":  "13",
+                        "time":  "1:24.7",
+                        "margin":  "１ 3/4",
+                        "corner":  "13-13",
+                        "last3f":  "37.0",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  8,
+                        "name":  "エナジーガンツ",
+                        "finish":  "14",
+                        "time":  "1:24.9",
+                        "margin":  "１ 1/4",
+                        "corner":  "6-7",
+                        "last3f":  "38.3",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  10,
+                        "name":  "サトノロザリー",
+                        "finish":  "15",
+                        "time":  "1:25.1",
+                        "margin":  "３／４",
+                        "corner":  "3-5",
+                        "last3f":  "38.8",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  14,
+                        "name":  "マルチ モズイージス",
+                        "finish":  "16",
+                        "time":  "1:26.2",
+                        "margin":  "７",
+                        "corner":  "8-11",
+                        "last3f":  "39.3",
+                        "popularity":  15
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "6",
+                                       "yen":  430
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "6",
+                                        "yen":  190
+                                    },
+                                    {
+                                        "combo":  "9",
+                                        "yen":  130
+                                    },
+                                    {
+                                        "combo":  "12",
+                                        "yen":  420
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "3-5",
+                                        "yen":  790
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "6-9",
+                                     "yen":  370
+                                 },
+                                 {
+                                     "combo":  "6-12",
+                                     "yen":  1530
+                                 },
+                                 {
+                                     "combo":  "9-12",
+                                     "yen":  1210
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "6-9",
+                                       "yen":  820
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "6-9",
+                                       "yen":  1630
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "6-9-12",
+                                           "yen":  5210
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "6-9-12",
+                                          "yen":  24360
+                                      }
+                                  ]
+                }
+}
