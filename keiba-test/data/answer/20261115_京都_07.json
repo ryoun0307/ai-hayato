@@ -1,0 +1,256 @@
+{
+    "race":  {
+                 "date":  "20261115",
+                 "venue":  "京都",
+                 "race_no":  7,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  6,
+                        "name":  "ミラキュラスアース",
+                        "finish":  "1",
+                        "time":  "1:34.4",
+                        "margin":  "",
+                        "corner":  "6-6",
+                        "last3f":  "34.2",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  17,
+                        "name":  "ルーチェブリラーレ",
+                        "finish":  "2",
+                        "time":  "1:34.5",
+                        "margin":  "１／２",
+                        "corner":  "10-6",
+                        "last3f":  "34.3",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ロードレジェロ",
+                        "finish":  "3",
+                        "time":  "1:34.5",
+                        "margin":  "アタマ",
+                        "corner":  "1-1",
+                        "last3f":  "34.6",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  12,
+                        "name":  "シャンパンライフ",
+                        "finish":  "4",
+                        "time":  "1:34.6",
+                        "margin":  "３／４",
+                        "corner":  "2-2",
+                        "last3f":  "34.6",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  9,
+                        "name":  "ムーンライトラガー",
+                        "finish":  "5",
+                        "time":  "1:34.7",
+                        "margin":  "クビ",
+                        "corner":  "14-11",
+                        "last3f":  "34.3",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  5,
+                        "name":  "アルヴァンドルード",
+                        "finish":  "6",
+                        "time":  "1:34.9",
+                        "margin":  "１ 1/2",
+                        "corner":  "3-4",
+                        "last3f":  "34.8",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  16,
+                        "name":  "ホワイトオーキッド",
+                        "finish":  "7",
+                        "time":  "1:35.0",
+                        "margin":  "クビ",
+                        "corner":  "11-9",
+                        "last3f":  "34.6",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  18,
+                        "name":  "カステッロトゥーレ",
+                        "finish":  "8",
+                        "time":  "1:35.0",
+                        "margin":  "クビ",
+                        "corner":  "15-15",
+                        "last3f":  "34.3",
+                        "popularity":  17
+                    },
+                    {
+                        "number":  15,
+                        "name":  "コスモグローリー ブリンカー着用",
+                        "finish":  "9",
+                        "time":  "1:35.1",
+                        "margin":  "１",
+                        "corner":  "3-3",
+                        "last3f":  "35.1",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  14,
+                        "name":  "ゴールドブレス ブリンカー着用",
+                        "finish":  "10",
+                        "time":  "1:35.2",
+                        "margin":  "クビ",
+                        "corner":  "6-4",
+                        "last3f":  "35.1",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  3,
+                        "name":  "カドーダムール",
+                        "finish":  "11",
+                        "time":  "1:35.3",
+                        "margin":  "１／２",
+                        "corner":  "17-17",
+                        "last3f":  "34.3",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  10,
+                        "name":  "エクリュ",
+                        "finish":  "12",
+                        "time":  "1:35.3",
+                        "margin":  "クビ",
+                        "corner":  "5-6",
+                        "last3f":  "35.1",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  1,
+                        "name":  "メイショウトウコウ",
+                        "finish":  "13",
+                        "time":  "1:35.4",
+                        "margin":  "クビ",
+                        "corner":  "6-9",
+                        "last3f":  "35.0",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  8,
+                        "name":  "コーディアリー",
+                        "finish":  "14",
+                        "time":  "1:35.4",
+                        "margin":  "クビ",
+                        "corner":  "11-13",
+                        "last3f":  "34.8",
+                        "popularity":  18
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ドルチェリターン ブリンカー着用",
+                        "finish":  "15",
+                        "time":  "1:35.4",
+                        "margin":  "ハナ",
+                        "corner":  "15-15",
+                        "last3f":  "34.5",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  2,
+                        "name":  "レッドリガーレ",
+                        "finish":  "16",
+                        "time":  "1:35.4",
+                        "margin":  "アタマ",
+                        "corner":  "6-11",
+                        "last3f":  "35.0",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ラテライト ブリンカー着用",
+                        "finish":  "17",
+                        "time":  "1:35.7",
+                        "margin":  "１ 3/4",
+                        "corner":  "18-17",
+                        "last3f":  "34.6",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ラヴリーティアラ",
+                        "finish":  "18",
+                        "time":  "1:35.9",
+                        "margin":  "１ 1/4",
+                        "corner":  "11-13",
+                        "last3f":  "35.3",
+                        "popularity":  16
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "6",
+                                       "yen":  2810
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "6",
+                                        "yen":  470
+                                    },
+                                    {
+                                        "combo":  "17",
+                                        "yen":  170
+                                    },
+                                    {
+                                        "combo":  "7",
+                                        "yen":  160
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "3-8",
+                                        "yen":  1030
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "6-17",
+                                     "yen":  2100
+                                 },
+                                 {
+                                     "combo":  "6-7",
+                                     "yen":  1750
+                                 },
+                                 {
+                                     "combo":  "7-17",
+                                     "yen":  430
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "6-17",
+                                       "yen":  9630
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "6-17",
+                                       "yen":  23460
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "6-7-17",
+                                           "yen":  8840
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "6-17-7",
+                                          "yen":  109830
+                                      }
+                                  ]
+                }
+}

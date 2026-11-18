@@ -1,0 +1,166 @@
+{
+    "race":  {
+                 "date":  "20261115",
+                 "venue":  "京都",
+                 "race_no":  9,
+                 "name":  "黄菊賞"
+             },
+    "results":  [
+                    {
+                        "number":  1,
+                        "name":  "サイモンレガシー",
+                        "finish":  "1",
+                        "time":  "2:03.1",
+                        "margin":  "",
+                        "corner":  "6-6-5-5",
+                        "last3f":  "35.0",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  2,
+                        "name":  "モナークスヴァラー",
+                        "finish":  "2",
+                        "time":  "2:03.1",
+                        "margin":  "クビ",
+                        "corner":  "8-8-9-9",
+                        "last3f":  "34.5",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  9,
+                        "name":  "フランソワーズ",
+                        "finish":  "3",
+                        "time":  "2:03.1",
+                        "margin":  "クビ",
+                        "corner":  "3-4-4-4",
+                        "last3f":  "35.1",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  3,
+                        "name":  "トロカアニマダ",
+                        "finish":  "4",
+                        "time":  "2:03.2",
+                        "margin":  "アタマ",
+                        "corner":  "9-9-7-7",
+                        "last3f":  "34.9",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  6,
+                        "name":  "キトゥンズクラフト",
+                        "finish":  "5",
+                        "time":  "2:03.2",
+                        "margin":  "ハナ",
+                        "corner":  "7-7-7-7",
+                        "last3f":  "34.8",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  5,
+                        "name":  "マンナット ブリンカー着用",
+                        "finish":  "6",
+                        "time":  "2:03.4",
+                        "margin":  "１ 1/2",
+                        "corner":  "1-1-1-1",
+                        "last3f":  "35.6",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ロマノヴェリテ",
+                        "finish":  "7",
+                        "time":  "2:03.8",
+                        "margin":  "２ 1/2",
+                        "corner":  "5-5-5-5",
+                        "last3f":  "35.7",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  4,
+                        "name":  "チカバリエンテ",
+                        "finish":  "8",
+                        "time":  "2:04.2",
+                        "margin":  "２ 1/2",
+                        "corner":  "3-3-2-3",
+                        "last3f":  "36.3",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  8,
+                        "name":  "タイヴァス",
+                        "finish":  "9",
+                        "time":  "2:04.3",
+                        "margin":  "１／２",
+                        "corner":  "2-2-2-2",
+                        "last3f":  "36.5",
+                        "popularity":  9
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "1",
+                                       "yen":  380
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "1",
+                                        "yen":  170
+                                    },
+                                    {
+                                        "combo":  "2",
+                                        "yen":  340
+                                    },
+                                    {
+                                        "combo":  "9",
+                                        "yen":  230
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "1-2",
+                                        "yen":  1980
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "1-2",
+                                     "yen":  690
+                                 },
+                                 {
+                                     "combo":  "1-9",
+                                     "yen":  480
+                                 },
+                                 {
+                                     "combo":  "2-9",
+                                     "yen":  1870
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "1-2",
+                                       "yen":  2030
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "1-2",
+                                       "yen":  3210
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "1-2-9",
+                                           "yen":  5970
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "1-2-9",
+                                          "yen":  31290
+                                      }
+                                  ]
+                }
+}
