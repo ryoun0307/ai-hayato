@@ -20,7 +20,8 @@ param(
   [int]$MaxRaces = 0,        # 0 = 全部。試すときは 2 など
   [int]$WaitMs = 1000,
   [int]$PastN = 4,           # 各馬の過去何走分を入れるか（10走版は 10）
-  [string]$QSub = "question" # 予想用データの出力先（10走版は question10）
+  [string]$QSub = "question", # 予想用データの出力先（10走版は question10）
+  [string]$ASub = "answer"    # 答えの出力先
 )
 
 $ErrorActionPreference = "Stop"
@@ -30,7 +31,7 @@ $sjis = [Text.Encoding]::GetEncoding(932)
 $utf8 = New-Object Text.UTF8Encoding($false)
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $qDir = Join-Path $root ("data\" + $QSub)
-$aDir = Join-Path $root "data\answer"
+$aDir = Join-Path $root ("data\" + $ASub)
 $cDir = Join-Path $root "cache"
 foreach ($d in @($qDir, $aDir, $cDir)) { New-Item -ItemType Directory -Force $d | Out-Null }
 
