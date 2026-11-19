@@ -1,4 +1,5 @@
-﻿# 答え合わせ：予想（predictions）と実際の払戻金（data\answer）を突き合わせて、的中率・回収率を出す。
+﻿param([string]$Set = "all", [string]$OutFile = "結果.md")
+# 答え合わせ：予想（predictions）と実際の払戻金（data\answer）を突き合わせて、的中率・回収率を出す。
 #   powershell -ExecutionPolicy Bypass -File score.ps1            … 全部の予想を採点
 #   結果は画面に出し、結果.md にも保存する。
 # 買い目（1点100円）：◎単勝・◎複勝・馬連ボックス(◎○▲△の4頭=6点)・馬連流し(◎→○▲△△=4点)・3連単(◎1着固定→○▲△△の2・3着=12点)
@@ -35,7 +36,11 @@ function Eval-Bets($marks, $p) {
 }
 
 $rows = @()   # 1予想=1行
+$mainList = @([IO.File]::ReadAllLines((Join-Path $root "本番レース一覧.txt"), $utf8) | ForEach-Object { $_.Trim([char]0xFEFF).Trim() } | Where-Object { $_ })
 foreach ($pf in Get-ChildItem (Join-Path $root "predictions") -Filter *.json | Sort-Object Name) {
+  $rn = $pf.BaseName -replace "_(仮|最終)$",""
+  if ($Set -eq "main" -and ($mainList -notcontains $rn)) { continue }
+  if ($Set -eq "ref" -and ($mainList -contains $rn)) { continue }
   $pr = [IO.File]::ReadAllText($pf.FullName, $utf8) | ConvertFrom-Json
   $ans = [IO.File]::ReadAllText((Join-Path $root ("data\answer\" + $pr.race + ".json")), $utf8) | ConvertFrom-Json
   $fin = @{}; $pop = @{}
@@ -65,6 +70,8 @@ function Summarize($subset, [string]$key) {
     Say ("| {0} | {1:N0}円 | {2:N0}円 | {3:0.0}% | {4}/{5} |" -f $b, $stake, $ret, $(if ($stake) { 100.0 * $ret / $stake } else { 0 }), $hit, @($subset).Count)
   }
   Say ("| **全部まとめて** | {0:N0}円 | {1:N0}円 | **{2:0.0}%** | |" -f $tot[0], $tot[1], $(if ($tot[0]) { 100.0 * $tot[1] / $tot[0] } else { 0 }))
+  $s3 = 0; $r3 = 0; foreach ($rr in $subset) { foreach ($b in @("単勝","複勝","馬連ボックス","馬連流し")) { $s3 += $rr.$key[$b][0]; $r3 += $rr.$key[$b][1] } }
+  Say ("| 3連単を除いた回収率 | {0:N0}円 | {1:N0}円 | {2:0.0}% | |" -f $s3, $r3, $(if ($s3) { 100.0 * $r3 / $s3 } else { 0 }))
 }
 
 Say "# 答え合わせの結果"
@@ -101,4 +108,4 @@ foreach ($r in ($rows | Where-Object { $_.stage -eq "最終" })) {
   $s = 0; $t = 0; foreach ($b in $BETS) { $s += $r.ai[$b][0]; $t += $r.ai[$b][1] }
   Say ("| {0} | {1} | {2}番 | {3} | {4}番人気 | {5}頭 | {6:N0}円 | {7:N0}円 |" -f $r.race, $r.conf, $r.honmei, $r.honmeiFin, $r.honmeiPop, $r.top3, $t, $s)
 }
-[IO.File]::WriteAllText((Join-Path $root "結果.md"), $out.ToString(), (New-Object Text.UTF8Encoding($true)))
+[IO.File]::WriteAllText((Join-Path $root $OutFile), $out.ToString(), (New-Object Text.UTF8Encoding($true)))
