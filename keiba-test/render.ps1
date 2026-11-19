@@ -1,11 +1,11 @@
 ﻿# 予想用データ（data\question）を読みやすい文章にして表示する。答え（data\answer）は読まない。
 #   powershell -ExecutionPolicy Bypass -File render.ps1 -Race 20261115_京都_11 -Stage 仮     （仮予想：馬体重・人気・馬場は隠す）
 #   powershell -ExecutionPolicy Bypass -File render.ps1 -Race 20261115_京都_11 -Stage 最終
-param([string]$Race, [ValidateSet("仮", "最終", "最終差分")][string]$Stage = "仮")
+param([string]$Race, [ValidateSet("仮", "最終", "最終差分")][string]$Stage = "仮", [string]$QDir = "question")
 $utf8 = New-Object Text.UTF8Encoding($false)
 [Console]::OutputEncoding = $utf8
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$q = [IO.File]::ReadAllText((Join-Path $root "data\question\$Race.json"), $utf8) | ConvertFrom-Json
+$q = [IO.File]::ReadAllText((Join-Path $root "data\$QDir\$Race.json"), $utf8) | ConvertFrom-Json
 $r = $q.race
 "【{0}{1}R】{2} {3} 発走{4}" -f $r.venue, $r.race_no, $r.day_label, $r.name, $r.start_time
 "{0} {1} {2} {3} {4}" -f $r.category, $r.class, $r.rule, $r.weight_rule, $r.course
