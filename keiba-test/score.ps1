@@ -2,11 +2,11 @@
 # 答え合わせ：予想（predictions）と実際の払戻金（data\answer）を突き合わせて、的中率・回収率を出す。
 #   powershell -ExecutionPolicy Bypass -File score.ps1            … 全部の予想を採点
 #   結果は画面に出し、結果.md にも保存する。
-# 買い目（1点100円）：◎単勝・◎複勝・馬連ボックス(◎○▲△の4頭=6点)・馬連流し(◎→○▲△△=4点)・3連単(◎1着固定→○▲△△の2・3着=12点)
+# 買い目（1点100円）：◎単勝・◎複勝・馬連ボックス(◎○▲△の4頭=6点)・馬連流し(◎→○▲△△=4点)。3連単は買わない
 $utf8 = New-Object Text.UTF8Encoding($false)
 [Console]::OutputEncoding = $utf8
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$BETS = @("単勝", "複勝", "馬連ボックス", "馬連流し", "3連単")
+$BETS = @("単勝", "複勝", "馬連ボックス", "馬連流し")   # 3連単は買わない（手順書の見直し）
 
 function Norm2([string]$c) { (@($c -split '-' | ForEach-Object { [int]$_ } | Sort-Object) -join "-") }
 function Pay($lines, [string]$combo, [bool]$ordered) {
@@ -70,8 +70,6 @@ function Summarize($subset, [string]$key) {
     Say ("| {0} | {1:N0}円 | {2:N0}円 | {3:0.0}% | {4}/{5} |" -f $b, $stake, $ret, $(if ($stake) { 100.0 * $ret / $stake } else { 0 }), $hit, @($subset).Count)
   }
   Say ("| **全部まとめて** | {0:N0}円 | {1:N0}円 | **{2:0.0}%** | |" -f $tot[0], $tot[1], $(if ($tot[0]) { 100.0 * $tot[1] / $tot[0] } else { 0 }))
-  $s3 = 0; $r3 = 0; foreach ($rr in $subset) { foreach ($b in @("単勝","複勝","馬連ボックス","馬連流し")) { $s3 += $rr.$key[$b][0]; $r3 += $rr.$key[$b][1] } }
-  Say ("| 3連単を除いた回収率 | {0:N0}円 | {1:N0}円 | {2:0.0}% | |" -f $s3, $r3, $(if ($s3) { 100.0 * $r3 / $s3 } else { 0 }))
 }
 
 Say "# 答え合わせの結果"
