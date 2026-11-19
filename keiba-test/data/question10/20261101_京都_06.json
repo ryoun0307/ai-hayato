@@ -1,0 +1,354 @@
+{
+    "race":  {
+                 "date":  "20261101",
+                 "venue":  "京都",
+                 "race_no":  6,
+                 "day_label":  "2026年11月1日（日曜） 4回京都11日",
+                 "start_time":  "12時35分",
+                 "name":  "メイクデビュー京都",
+                 "category":  "2歳",
+                 "class":  "新馬",
+                 "rule":  "[指定]",
+                 "weight_rule":  "馬齢",
+                 "course":  "コース： 1,800 メートル （ダート・右）",
+                 "track_condition":  "天候:晴 ダート:稍重"
+             },
+    "horses":  [
+                   {
+                       "number":  8,
+                       "frame":  "4",
+                       "name":  "ニシノマサムネ",
+                       "jra_id":  "pw01dud102024102951/2F",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "高杉 吏麒",
+                       "trainer":  "前川 恭子",
+                       "sire":  "ルヴァンスレーヴ",
+                       "dam":  "プリメールアモーレ",
+                       "damsire":  "ミッキーアイル",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  494,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  4
+                                 }
+                   },
+                   {
+                       "number":  6,
+                       "frame":  "3",
+                       "name":  "タイセイアレグロ",
+                       "jra_id":  "pw01dud102024104689/42",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "藤懸 貴志",
+                       "trainer":  "田中 克典",
+                       "sire":  "ミスターメロディ",
+                       "dam":  "シェケラート",
+                       "damsire":  "ハーツクライ",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  500,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  9
+                                 }
+                   },
+                   {
+                       "number":  13,
+                       "frame":  "7",
+                       "name":  "サイモンホライズン",
+                       "jra_id":  "pw01dud102024105135/20",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "54.0",
+                       "jockey":  "◇ 永島 まなみ",
+                       "trainer":  "高橋 康之",
+                       "sire":  "マインドユアビスケッツ",
+                       "dam":  "フィビュラ",
+                       "damsire":  "クロフネ",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  538,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  14
+                                 }
+                   },
+                   {
+                       "number":  2,
+                       "frame":  "1",
+                       "name":  "アブソリュートガイ",
+                       "jra_id":  "pw01dud102024104353/CD",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "55.0",
+                       "jockey":  "☆ 田山 旺佑",
+                       "trainer":  "藤岡 健一",
+                       "sire":  "ニューイヤーズデイ",
+                       "dam":  "ブライスガウ",
+                       "damsire":  "パイロ",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  496,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  3
+                                 }
+                   },
+                   {
+                       "number":  16,
+                       "frame":  "8",
+                       "name":  "ヴァルキリーキック",
+                       "jra_id":  "pw01dud102024106072/C5",
+                       "sex_age":  "牝2",
+                       "weight_carried":  "55.0",
+                       "jockey":  "菊沢 一樹",
+                       "trainer":  "田中 勝春",
+                       "sire":  "オルフェーヴル",
+                       "dam":  "リトルモンスター",
+                       "damsire":  "Into Mischief",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  498,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  5
+                                 }
+                   },
+                   {
+                       "number":  11,
+                       "frame":  "6",
+                       "name":  "ロゼブレイズ",
+                       "jra_id":  "pw01dud102024104237/48",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "富田 暁",
+                       "trainer":  "高柳 大輔",
+                       "sire":  "クリソベリル",
+                       "dam":  "ローズカリーナ",
+                       "damsire":  "ハービンジャー",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  480,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  12
+                                 }
+                   },
+                   {
+                       "number":  15,
+                       "frame":  "8",
+                       "name":  "ダルマパワー ブリンカー着用",
+                       "jra_id":  "pw01dud102024106656/97",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "渡辺 竜也",
+                       "trainer":  "斉藤 崇史",
+                       "sire":  "マインドユアビスケッツ",
+                       "dam":  "モヒニ",
+                       "damsire":  "Galileo",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  472,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  7
+                                 }
+                   },
+                   {
+                       "number":  1,
+                       "frame":  "1",
+                       "name":  "タマモウララカ",
+                       "jra_id":  "pw01dud102024103960/BB",
+                       "sex_age":  "牝2",
+                       "weight_carried":  "55.0",
+                       "jockey":  "田口 貫太",
+                       "trainer":  "大橋 勇樹",
+                       "sire":  "エスポワールシチー",
+                       "dam":  "チャームドリーム",
+                       "damsire":  "フレンチデピュティ",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  480,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  13
+                                 }
+                   },
+                   {
+                       "number":  10,
+                       "frame":  "5",
+                       "name":  "ディヴィニダッド",
+                       "jra_id":  "pw01dud102024106910/38",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "角田 大和",
+                       "trainer":  "辻野 泰之",
+                       "sire":  "サリオス",
+                       "dam":  "ディヴィナプレシオーサ",
+                       "damsire":  "Crocker Road",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  504,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  6
+                                 }
+                   },
+                   {
+                       "number":  7,
+                       "frame":  "4",
+                       "name":  "キタノディレク",
+                       "jra_id":  "pw01dud102024104616/79",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "加藤 祥太",
+                       "trainer":  "羽月 友彦",
+                       "sire":  "シュヴァルグラン",
+                       "dam":  "シードラゴン",
+                       "damsire":  "Siyouni",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  450,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  16
+                                 }
+                   },
+                   {
+                       "number":  12,
+                       "frame":  "6",
+                       "name":  "アラパリパリョー",
+                       "jra_id":  "pw01dud102024102924/58",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "吉村 誠之助",
+                       "trainer":  "小椋 研介",
+                       "sire":  "エスポワールシチー",
+                       "dam":  "ヘヴンアンドアース",
+                       "damsire":  "アドマイヤムーン",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  502,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  11
+                                 }
+                   },
+                   {
+                       "number":  5,
+                       "frame":  "3",
+                       "name":  "マジカルブラック",
+                       "jra_id":  "pw01dud102024100558/B2",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "武 豊",
+                       "trainer":  "角田 晃一",
+                       "sire":  "モズアスコット",
+                       "dam":  "ピエドラデルーナ",
+                       "damsire":  "キタサンブラック",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  478,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  1
+                                 }
+                   },
+                   {
+                       "number":  4,
+                       "frame":  "2",
+                       "name":  "コートドール",
+                       "jra_id":  "pw01dud102024100734/28",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "鮫島 克駿",
+                       "trainer":  "千田 輝彦",
+                       "sire":  "マインドユアビスケッツ",
+                       "dam":  "ジェロボーム",
+                       "damsire":  "アイルハヴアナザー",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  492,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  8
+                                 }
+                   },
+                   {
+                       "number":  3,
+                       "frame":  "2",
+                       "name":  "シャーマット",
+                       "jra_id":  "pw01dud102024103910/6B",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "52.0",
+                       "jockey":  "★ 河原田 菜々",
+                       "trainer":  "森田 直行",
+                       "sire":  "チュウワウィザード",
+                       "dam":  "ジョワユーズ",
+                       "damsire":  "エンパイアメーカー",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  502,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  15
+                                 }
+                   },
+                   {
+                       "number":  14,
+                       "frame":  "7",
+                       "name":  "バンブトンウーノ",
+                       "jra_id":  "pw01dud102024101879/C7",
+                       "sex_age":  "牝2",
+                       "weight_carried":  "53.0",
+                       "jockey":  "△ 柴田 裕一郎",
+                       "trainer":  "西村 真幸",
+                       "sire":  "ヴァンゴッホ",
+                       "dam":  "バンブトンハート",
+                       "damsire":  "サウスヴィグラス",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  446,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  10
+                                 }
+                   },
+                   {
+                       "number":  9,
+                       "frame":  "5",
+                       "name":  "オールベット",
+                       "jra_id":  "pw01dud102024104578/8E",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "北村 友一",
+                       "trainer":  "上村 洋行",
+                       "sire":  "キズナ",
+                       "dam":  "エスティロタレントーソ",
+                       "damsire":  "Maclean\u0027s Music",
+                       "past_runs":  [
+
+                                     ],
+                       "final":  {
+                                     "body_weight":  510,
+                                     "body_weight_diff":  "初出走",
+                                     "popularity":  2
+                                 }
+                   }
+               ]
+}

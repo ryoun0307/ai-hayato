@@ -1,0 +1,503 @@
+{
+    "race":  {
+                 "date":  "20261025",
+                 "venue":  "京都",
+                 "race_no":  2,
+                 "day_label":  "2026年10月25日（日曜） 4回京都9日",
+                 "start_time":  "10時30分",
+                 "name":  "2歳未勝利",
+                 "category":  "2歳",
+                 "class":  "未勝利",
+                 "rule":  "[指定]",
+                 "weight_rule":  "馬齢",
+                 "course":  "コース： 1,400 メートル （ダート・右）",
+                 "track_condition":  "天候:曇 ダート:不良"
+             },
+    "horses":  [
+                   {
+                       "number":  5,
+                       "frame":  "5",
+                       "name":  "タガノゲイル",
+                       "jra_id":  "pw01dud102024103377/CA",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "田口 貫太",
+                       "trainer":  "岡田 稲男",
+                       "sire":  "ミスチヴィアスアレックス",
+                       "dam":  "タガノカトレア",
+                       "damsire":  "エンパイアメーカー",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261004",
+                                             "venue":  "京都",
+                                             "race":  "2歳新馬",
+                                             "distance":  "ダ1400",
+                                             "going":  "良",
+                                             "heads":  16,
+                                             "popularity":  1,
+                                             "finish":  "2",
+                                             "jockey":  "田口 貫太",
+                                             "weight":  "56.0",
+                                             "body_weight":  "454",
+                                             "time":  "1:25.9",
+                                             "winner":  "ミホマル"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  454,
+                                     "body_weight_diff":  "0",
+                                     "popularity":  2
+                                 }
+                   },
+                   {
+                       "number":  4,
+                       "frame":  "4",
+                       "name":  "サルトヴェローチェ",
+                       "jra_id":  "pw01dud102024106406/E5",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "北村 友一",
+                       "trainer":  "上村 洋行",
+                       "sire":  "マインドユアビスケッツ",
+                       "dam":  "スピードリッパー",
+                       "damsire":  "ファルブラヴ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260809",
+                                             "venue":  "札幌",
+                                             "race":  "2歳未勝利",
+                                             "distance":  "ダ1700",
+                                             "going":  "良",
+                                             "heads":  12,
+                                             "popularity":  1,
+                                             "finish":  "2",
+                                             "jockey":  "北村 友一",
+                                             "weight":  "55.0",
+                                             "body_weight":  "490",
+                                             "time":  "1:47.4",
+                                             "winner":  "テムファイア"
+                                         },
+                                         {
+                                             "date":  "20260719",
+                                             "venue":  "函館",
+                                             "race":  "2歳新馬",
+                                             "distance":  "芝1800",
+                                             "going":  "重",
+                                             "heads":  14,
+                                             "popularity":  1,
+                                             "finish":  "5",
+                                             "jockey":  "北村 友一",
+                                             "weight":  "55.0",
+                                             "body_weight":  "488",
+                                             "time":  "1:51.8",
+                                             "winner":  "テンカタイヘイ"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  496,
+                                     "body_weight_diff":  "+6",
+                                     "popularity":  1
+                                 }
+                   },
+                   {
+                       "number":  1,
+                       "frame":  "1",
+                       "name":  "スナークモネ",
+                       "jra_id":  "pw01dud102024103038/6A",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "酒井 学",
+                       "trainer":  "宮地 貴稔",
+                       "sire":  "ホッコータルマエ",
+                       "dam":  "スナークヒロイン",
+                       "damsire":  "サクラバクシンオー",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261003",
+                                             "venue":  "京都",
+                                             "race":  "2歳未勝利",
+                                             "distance":  "ダ1400",
+                                             "going":  "良",
+                                             "heads":  15,
+                                             "popularity":  10,
+                                             "finish":  "9",
+                                             "jockey":  "酒井 学",
+                                             "weight":  "56.0",
+                                             "body_weight":  "446",
+                                             "time":  "1:26.7",
+                                             "winner":  "ペアスターロード"
+                                         },
+                                         {
+                                             "date":  "20260919",
+                                             "venue":  "阪神",
+                                             "race":  "2歳新馬",
+                                             "distance":  "ダ1800",
+                                             "going":  "良",
+                                             "heads":  11,
+                                             "popularity":  4,
+                                             "finish":  "5",
+                                             "jockey":  "酒井 学",
+                                             "weight":  "55.0",
+                                             "body_weight":  "448",
+                                             "time":  "1:58.3",
+                                             "winner":  "アンドレバローズ"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  450,
+                                     "body_weight_diff":  "+4",
+                                     "popularity":  8
+                                 }
+                   },
+                   {
+                       "number":  2,
+                       "frame":  "2",
+                       "name":  "ランスオブナイト",
+                       "jra_id":  "pw01dud102024106792/3C",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "太宰 啓介",
+                       "trainer":  "本田 優",
+                       "sire":  "シャンハイボビー",
+                       "dam":  "ヒロノクイーン",
+                       "damsire":  "ヘニーヒューズ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261004",
+                                             "venue":  "京都",
+                                             "race":  "2歳新馬",
+                                             "distance":  "ダ1400",
+                                             "going":  "良",
+                                             "heads":  16,
+                                             "popularity":  9,
+                                             "finish":  "3",
+                                             "jockey":  "太宰 啓介",
+                                             "weight":  "56.0",
+                                             "body_weight":  "480",
+                                             "time":  "1:26.1",
+                                             "winner":  "ミホマル"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  482,
+                                     "body_weight_diff":  "+2",
+                                     "popularity":  4
+                                 }
+                   },
+                   {
+                       "number":  6,
+                       "frame":  "6",
+                       "name":  "メネルブ",
+                       "jra_id":  "pw01dud102024104429/80",
+                       "sex_age":  "牝2",
+                       "weight_carried":  "55.0",
+                       "jockey":  "川須 栄彦",
+                       "trainer":  "中尾 秀正",
+                       "sire":  "マジェスティックウォリアー",
+                       "dam":  "ベーリングメファ",
+                       "damsire":  "スニッツェル",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261011",
+                                             "venue":  "京都",
+                                             "race":  "2歳新馬",
+                                             "distance":  "ダ1400",
+                                             "going":  "良",
+                                             "heads":  16,
+                                             "popularity":  15,
+                                             "finish":  "15",
+                                             "jockey":  "川須 栄彦",
+                                             "weight":  "55.0",
+                                             "body_weight":  "464",
+                                             "time":  "1:28.9",
+                                             "winner":  "ヒメハッカ"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  464,
+                                     "body_weight_diff":  "0",
+                                     "popularity":  10
+                                 }
+                   },
+                   {
+                       "number":  3,
+                       "frame":  "3",
+                       "name":  "タナコクシテンホウ ブリンカー着用",
+                       "jra_id":  "pw01dud102024101174/31",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "幸 英明",
+                       "trainer":  "大根田 裕之",
+                       "sire":  "アルアイン",
+                       "dam":  "エムオービーナス",
+                       "damsire":  "グラスワンダー",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260822",
+                                             "venue":  "中京",
+                                             "race":  "2歳未勝利",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  9,
+                                             "popularity":  5,
+                                             "finish":  "5",
+                                             "jockey":  "幸 英明",
+                                             "weight":  "55.0",
+                                             "body_weight":  "464",
+                                             "time":  "1:33.6",
+                                             "winner":  "クールタロウ"
+                                         },
+                                         {
+                                             "date":  "20260808",
+                                             "venue":  "中京",
+                                             "race":  "2歳未勝利",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  9,
+                                             "popularity":  8,
+                                             "finish":  "6",
+                                             "jockey":  "幸 英明",
+                                             "weight":  "55.0",
+                                             "body_weight":  "460",
+                                             "time":  "1:35.3",
+                                             "winner":  "ジーティーキャリー"
+                                         },
+                                         {
+                                             "date":  "20260718",
+                                             "venue":  "小倉",
+                                             "race":  "2歳新馬",
+                                             "distance":  "芝1200",
+                                             "going":  "良",
+                                             "heads":  7,
+                                             "popularity":  4,
+                                             "finish":  "5",
+                                             "jockey":  "幸 英明",
+                                             "weight":  "55.0",
+                                             "body_weight":  "464",
+                                             "time":  "1:11.3",
+                                             "winner":  "ウインガラハッド"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  466,
+                                     "body_weight_diff":  "+2",
+                                     "popularity":  6
+                                 }
+                   },
+                   {
+                       "number":  10,
+                       "frame":  "8",
+                       "name":  "メイショウペルル",
+                       "jra_id":  "pw01dud102024105611/29",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "長岡 禎仁",
+                       "trainer":  "千田 輝彦",
+                       "sire":  "ヴァンゴッホ",
+                       "dam":  "メイショウゼッケイ",
+                       "damsire":  "サウスヴィグラス",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261012",
+                                             "venue":  "京都",
+                                             "race":  "2歳未勝利",
+                                             "distance":  "ダ1800",
+                                             "going":  "良",
+                                             "heads":  12,
+                                             "popularity":  9,
+                                             "finish":  "8",
+                                             "jockey":  "河原田 菜々",
+                                             "weight":  "52.0",
+                                             "body_weight":  "460",
+                                             "time":  "1:56.5",
+                                             "winner":  "ホシヲミテルンナ"
+                                         },
+                                         {
+                                             "date":  "20260628",
+                                             "venue":  "小倉",
+                                             "race":  "2歳新馬",
+                                             "distance":  "芝1200",
+                                             "going":  "良",
+                                             "heads":  10,
+                                             "popularity":  10,
+                                             "finish":  "9",
+                                             "jockey":  "角田 大和",
+                                             "weight":  "55.0",
+                                             "body_weight":  "446",
+                                             "time":  "1:12.6",
+                                             "winner":  "ワールドエンジェル"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  452,
+                                     "body_weight_diff":  "-8",
+                                     "popularity":  9
+                                 }
+                   },
+                   {
+                       "number":  8,
+                       "frame":  "7",
+                       "name":  "マンノエンプレス",
+                       "jra_id":  "pw01dud102024101394/B3",
+                       "sex_age":  "牝2",
+                       "weight_carried":  "55.0",
+                       "jockey":  "菱田 裕二",
+                       "trainer":  "秋山 真一郎",
+                       "sire":  "ロジャーバローズ",
+                       "dam":  "マンノヴィクトリア",
+                       "damsire":  "トウカイテイオー",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261004",
+                                             "venue":  "京都",
+                                             "race":  "2歳新馬",
+                                             "distance":  "ダ1400",
+                                             "going":  "良",
+                                             "heads":  16,
+                                             "popularity":  7,
+                                             "finish":  "4",
+                                             "jockey":  "菱田 裕二",
+                                             "weight":  "55.0",
+                                             "body_weight":  "442",
+                                             "time":  "1:26.2",
+                                             "winner":  "ミホマル"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  444,
+                                     "body_weight_diff":  "+2",
+                                     "popularity":  5
+                                 }
+                   },
+                   {
+                       "number":  7,
+                       "frame":  "7",
+                       "name":  "メイショウギフト",
+                       "jra_id":  "pw01dud102024102038/7B",
+                       "sex_age":  "牡2",
+                       "weight_carried":  "56.0",
+                       "jockey":  "武 豊",
+                       "trainer":  "石橋 守",
+                       "sire":  "モズアスコット",
+                       "dam":  "エクスチェンジ",
+                       "damsire":  "マジェスティックウォリアー",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261012",
+                                             "venue":  "京都",
+                                             "race":  "2歳新馬",
+                                             "distance":  "芝1200",
+                                             "going":  "良",
+                                             "heads":  12,
+                                             "popularity":  2,
+                                             "finish":  "6",
+                                             "jockey":  "武 豊",
+                                             "weight":  "56.0",
+                                             "body_weight":  "474",
+                                             "time":  "1:10.1",
+                                             "winner":  "ベニーバローズ"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  474,
+                                     "body_weight_diff":  "0",
+                                     "popularity":  3
+                                 }
+                   },
+                   {
+                       "number":  9,
+                       "frame":  "8",
+                       "name":  "イザベル ブリンカー着用",
+                       "jra_id":  "pw01dud102024104426/27",
+                       "sex_age":  "牝2",
+                       "weight_carried":  "54.0",
+                       "jockey":  "☆ 田山 旺佑",
+                       "trainer":  "藤野 健太",
+                       "sire":  "ブラックタイド",
+                       "dam":  "ブロークインベガス",
+                       "damsire":  "キングカメハメハ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261017",
+                                             "venue":  "新潟",
+                                             "race":  "2歳未勝利",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  12,
+                                             "popularity":  7,
+                                             "finish":  "12",
+                                             "jockey":  "小林 美駒",
+                                             "weight":  "53.0",
+                                             "body_weight":  "434",
+                                             "time":  "1:36.5",
+                                             "winner":  "クシェドゥソレイユ"
+                                         },
+                                         {
+                                             "date":  "20260808",
+                                             "venue":  "中京",
+                                             "race":  "2歳未勝利",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  9,
+                                             "popularity":  6,
+                                             "finish":  "8",
+                                             "jockey":  "松若 風馬",
+                                             "weight":  "55.0",
+                                             "body_weight":  "420",
+                                             "time":  "1:35.9",
+                                             "winner":  "ジーティーキャリー"
+                                         },
+                                         {
+                                             "date":  "20260718",
+                                             "venue":  "小倉",
+                                             "race":  "2歳未勝利",
+                                             "distance":  "芝1800",
+                                             "going":  "稍重",
+                                             "heads":  11,
+                                             "popularity":  9,
+                                             "finish":  "4",
+                                             "jockey":  "松若 風馬",
+                                             "weight":  "55.0",
+                                             "body_weight":  "424",
+                                             "time":  "1:50.6",
+                                             "winner":  "ニシノフランケン"
+                                         },
+                                         {
+                                             "date":  "20260627",
+                                             "venue":  "小倉",
+                                             "race":  "2歳未勝利",
+                                             "distance":  "芝1200",
+                                             "going":  "重",
+                                             "heads":  6,
+                                             "popularity":  4,
+                                             "finish":  "6",
+                                             "jockey":  "松若 風馬",
+                                             "weight":  "55.0",
+                                             "body_weight":  "424",
+                                             "time":  "1:11.8",
+                                             "winner":  "シスキンブルーム"
+                                         },
+                                         {
+                                             "date":  "20260607",
+                                             "venue":  "阪神",
+                                             "race":  "2歳新馬",
+                                             "distance":  "芝1400",
+                                             "going":  "稍重",
+                                             "heads":  11,
+                                             "popularity":  7,
+                                             "finish":  "11",
+                                             "jockey":  "松若 風馬",
+                                             "weight":  "55.0",
+                                             "body_weight":  "430",
+                                             "time":  "1:23.8",
+                                             "winner":  "ビスケットサンド"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  426,
+                                     "body_weight_diff":  "-8",
+                                     "popularity":  7
+                                 }
+                   }
+               ]
+}

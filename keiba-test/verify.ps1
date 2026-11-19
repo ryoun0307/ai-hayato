@@ -1,11 +1,12 @@
-﻿# 集めたデータが正しいかを確かめる道具（特に「過去4走にそのレース以降の成績が混ざっていないか」）
+﻿param([string]$QSub = "question", [int]$PastN = 4)
+# 集めたデータが正しいかを確かめる道具（特に「過去4走にそのレース以降の成績が混ざっていないか」）
 #   powershell -ExecutionPolicy Bypass -File verify.ps1
 $ErrorActionPreference = "Stop"
 $utf8 = New-Object Text.UTF8Encoding($false)
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ng = 0; $horsesChecked = 0; $dropped = 0
 
-foreach ($qf in Get-ChildItem (Join-Path $root "data\question") -Filter *.json) {
+foreach ($qf in Get-ChildItem (Join-Path $root ("data\" + $QSub)) -Filter *.json) {
   $q = [IO.File]::ReadAllText($qf.FullName, $utf8) | ConvertFrom-Json
   $af = Join-Path $root ("data\answer\" + $qf.Name)
   $a = [IO.File]::ReadAllText($af, $utf8) | ConvertFrom-Json
@@ -15,7 +16,7 @@ foreach ($qf in Get-ChildItem (Join-Path $root "data\question") -Filter *.json) 
   foreach ($h in $q.horses) {
     $horsesChecked++
     $past = @($h.past_runs)
-    if ($past.Count -gt 4) { $problems += "$($h.name): 過去が5走以上" }
+    if ($past.Count -gt $PastN) { $problems += "$($h.name): 過去が規定より多い" }
     $prev = "99999999"
     foreach ($p in $past) {
       if ($p.date -ge $rd) { $problems += "$($h.name): ★レース日以降の成績が混ざっている $($p.date)" }
@@ -28,7 +29,7 @@ foreach ($qf in Get-ChildItem (Join-Path $root "data\question") -Filter *.json) 
     $s = $html.IndexOf("出走レース")
     $dates = @([regex]::Matches($html.Substring($s), '<td class="date">(\d+)年(\d+)月(\d+)日</td>') | ForEach-Object { "{0:0000}{1:00}{2:00}" -f [int]$_.Groups[1].Value, [int]$_.Groups[2].Value, [int]$_.Groups[3].Value })
     $dropped += @($dates | Where-Object { $_ -ge $rd }).Count
-    $expect = @($dates | Where-Object { $_ -lt $rd } | Select-Object -First 4)
+    $expect = @($dates | Where-Object { $_ -lt $rd } | Select-Object -First $PastN)
     $got = @($past | ForEach-Object { $_.date })
     if (($expect -join ",") -ne ($got -join ",")) { $problems += "$($h.name): 過去4走の日付が一致しない（期待 $($expect -join ',') / 実際 $($got -join ','))" }
   }

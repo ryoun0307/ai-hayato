@@ -1,0 +1,15 @@
+{
+    "race":  "20261108_京都_03",
+    "stage":  "最終",
+    "model":  "数字モデル",
+    "confidence":  "-",
+    "marks":  [
+                  4,
+                  1,
+                  6,
+                  2,
+                  3
+              ],
+    "win_pct":  49,
+    "split":  "train"
+}

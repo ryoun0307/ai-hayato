@@ -1,4 +1,4 @@
-﻿param([string]$Set = "all", [string]$OutFile = "結果.md")
+﻿param([string]$Set = "all", [string]$OutFile = "結果.md", [string]$PredDir = "predictions", [string]$Split = "")
 # 答え合わせ：予想（predictions）と実際の払戻金（data\answer）を突き合わせて、的中率・回収率を出す。
 #   powershell -ExecutionPolicy Bypass -File score.ps1            … 全部の予想を採点
 #   結果は画面に出し、結果.md にも保存する。
@@ -37,11 +37,12 @@ function Eval-Bets($marks, $p) {
 
 $rows = @()   # 1予想=1行
 $mainList = @([IO.File]::ReadAllLines((Join-Path $root "本番レース一覧.txt"), $utf8) | ForEach-Object { $_.Trim([char]0xFEFF).Trim() } | Where-Object { $_ })
-foreach ($pf in Get-ChildItem (Join-Path $root "predictions") -Filter *.json | Sort-Object Name) {
+foreach ($pf in Get-ChildItem (Join-Path $root $PredDir) -Filter *.json | Sort-Object Name) {
   $rn = $pf.BaseName -replace "_(仮|最終)$",""
   if ($Set -eq "main" -and ($mainList -notcontains $rn)) { continue }
   if ($Set -eq "ref" -and ($mainList -contains $rn)) { continue }
   $pr = [IO.File]::ReadAllText($pf.FullName, $utf8) | ConvertFrom-Json
+  if ($Split -and $pr.split -ne $Split) { continue }
   $ans = [IO.File]::ReadAllText((Join-Path $root ("data\answer\" + $pr.race + ".json")), $utf8) | ConvertFrom-Json
   $fin = @{}; $pop = @{}
   foreach ($x in $ans.results) { $fin["$($x.number)"] = "$($x.finish)"; $pop["$($x.number)"] = [int]$x.popularity }

@@ -18,7 +18,9 @@ param(
   [string]$To = "20261115",
   [string[]]$Venue = @("東京", "京都"),
   [int]$MaxRaces = 0,        # 0 = 全部。試すときは 2 など
-  [int]$WaitMs = 1000
+  [int]$WaitMs = 1000,
+  [int]$PastN = 4,           # 各馬の過去何走分を入れるか（10走版は 10）
+  [string]$QSub = "question" # 予想用データの出力先（10走版は question10）
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,7 +29,7 @@ $Venue = @($Venue | ForEach-Object { $_ -split ',' })   # 「東京,京都」の
 $sjis = [Text.Encoding]::GetEncoding(932)
 $utf8 = New-Object Text.UTF8Encoding($false)
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$qDir = Join-Path $root "data\question"
+$qDir = Join-Path $root ("data\" + $QSub)
 $aDir = Join-Path $root "data\answer"
 $cDir = Join-Path $root "cache"
 foreach ($d in @($qDir, $aDir, $cDir)) { New-Item -ItemType Directory -Force $d | Out-Null }
@@ -101,7 +103,7 @@ function Get-HorseInfo([string]$HorseCname, [string]$RaceDate) {
     }
   }
   # 新しい順に並んでいるが、念のため日付で並べ直して直近4走
-  $runs = @($runs | Sort-Object { $_.date } -Descending | Select-Object -First 4)
+  $runs = @($runs | Sort-Object { $_.date } -Descending | Select-Object -First $PastN)
   return @{ sire = $prof["父"]; dam = $prof["母"]; damsire = $prof["母の父"]; birth = $prof["生年月日"]; past = $runs }
 }
 
@@ -110,7 +112,7 @@ function Collect-Race([string]$RaceCname, [string]$Date, [string]$VenueName, [in
   $name = "{0}_{1}_{2:00}" -f $Date, $VenueName, $R
   $qf = Join-Path $qDir ($name + ".json")
   $af = Join-Path $aDir ($name + ".json")
-  if ((Test-Path $qf) -and (Test-Path $af)) { Write-Host "  飛ばす（できている）: $name"; return }
+  if (Test-Path $qf) { Write-Host "  飛ばす（できている）: $name"; return }
 
   $html = Get-Jra "POST" "https://www.jra.go.jp/JRADB/accessS.html" $RaceCname ("result_" + $Date + "_" + $VenueName + "_" + $R)
   $wait = ""
