@@ -273,7 +273,7 @@ foreach ($mt in $meetings) {
       $hs = @()
       foreach ($tr in ($tb -split '<tr[\s>]' | Select-Object -Skip 1)) {
         $hname = Pick $tr '<div class="name">(.*?)</div>'; if (-not $hname) { continue }
-        $num = Num (Pick $tr '<td class="num">(.*?)</td>')
+        $numTxt = Pick $tr '<td class="num">(.*?)</td>'; $nm0 = [regex]::Match($numTxt, '^\s*(\d+)'); $num = if ($nm0.Success) { [int]$nm0.Groups[1].Value } else { $null }   # ブリンカー等の記号が付くことがある
         $odds = Pick $tr '<div class="odds_line">(.*?)</div>'
         if (-not $odds) { $odds = Pick $tr '<(?:div|td|p|span)[^>]*class="[^"]*odds[^"]*"[^>]*>(.*?)</(?:div|td|p|span)>' }
         if (-not $odds -and -not $diagDone) { $diagDone = $true; Log ("診断：オッズ欄が見つかりません。1頭目の行：" + ((Strip $tr).Substring(0, [math]::Min(300, (Strip $tr).Length)))) }
@@ -293,15 +293,15 @@ foreach ($mt in $meetings) {
           $ord = @($hs | Sort-Object odds); for ($i = 0; $i -lt $ord.Count; $i++) { $ord[$i].pop = $i + 1 } }
         else { Log "$name：人気・オッズがまだ出ていません。あとでもう一度"; continue } }
       $rd = $Date
-      $F = @(); $detail = @()
+      $FM = @(); $detail = @()
       foreach ($h in $hs) {
         $past = if ($h.cname) { @(Get-HorsePast $h.cname $rd) } else { @() }
-        $f = Get-Features @{ pop = $h.pop; past = $past; jockey = $h.jockey; bwdiff = $h.bwd } @{ venue = $mt.venue; dist = $dist; surf = $surf; date = $rd } $jt
-        $F += , $f
+        $fv = Get-Features @{ pop = $h.pop; past = $past; jockey = $h.jockey; bwdiff = $h.bwd } @{ venue = $mt.venue; dist = $dist; surf = $surf; date = $rd } $jt
+        $FM += , $fv
         $detail += [pscustomobject]@{ past = $past }
       }
       $z = New-Object double[] $hs.Count
-      for ($i = 0; $i -lt $z.Length; $i++) { $s = 0.0; for ($k = 0; $k -lt $NF; $k++) { $s += $w[$k] * $F[$i][$k] }; $z[$i] = $s }
+      for ($i = 0; $i -lt $z.Length; $i++) { $s = 0.0; for ($k = 0; $k -lt $NF; $k++) { $s += $w[$k] * $FM[$i][$k] }; $z[$i] = $s }
       $pr = Softmax $z
       $idx = @(0..($hs.Count - 1) | Sort-Object { -$pr[$_] })
       $n = $hs.Count
@@ -315,9 +315,9 @@ foreach ($mt in $meetings) {
       # ◎の短いコメント（数字から自動で作る）
       $hh = $hs[$hon]; $cm2 = @("{0}番人気" -f $hh.pop)
       $pl = @($detail[$hon].past); if ($pl.Count) { $last = $pl | Select-Object -First 3 | ForEach-Object { $_.finish } ; $cm2 += ("近3走の着順 " + ($last -join "-")) } else { $cm2 += "初出走または過去走なし" }
-      if ($F[$hon][3] -gt 0.1) { $cm2 += "同距離・同芝ダが得意" } elseif ($F[$hon][3] -lt -0.1) { $cm2 += "同距離・同芝ダは不得意" }
-      if ($F[$hon][4] -gt 0.1) { $cm2 += "この競馬場が得意" } elseif ($F[$hon][4] -lt -0.1) { $cm2 += "この競馬場は不得意" }
-      if ($F[$hon][6] -ge 1) { $cm2 += "馬体重が大きく増減（注意）" }
+      if ($FM[$hon][3] -gt 0.1) { $cm2 += "同距離・同芝ダが得意" } elseif ($FM[$hon][3] -lt -0.1) { $cm2 += "同距離・同芝ダは不得意" }
+      if ($FM[$hon][4] -gt 0.1) { $cm2 += "この競馬場が得意" } elseif ($FM[$hon][4] -lt -0.1) { $cm2 += "この競馬場は不得意" }
+      if ($FM[$hon][6] -ge 1) { $cm2 += "馬体重が大きく増減（注意）" }
       $o = [ordered]@{ race = $name; name = "$rname"; class = $cls; start = $(if ($tm.Success) { "{0}:{1}" -f $tm.Groups[1].Value, $tm.Groups[2].Value } else { "" }); fetched = (Get-Date -Format "MM/dd HH:mm")
         heads = $n; dist = $dist; surf = $surf; kind = $kind
         honmei = [ordered]@{ num = $hh.num; name = $hh.name; pop = $hh.pop; win_pct = [math]::Round(100 * $pr[$hon], 1); comment = ($cm2 -join "／") }
@@ -326,7 +326,7 @@ foreach ($mt in $meetings) {
         pop_order = $popOrder }
       [IO.File]::WriteAllText($pf, ($o | ConvertTo-Json -Depth 6), $utf8)
       Log ("保存：{0} {1} ◎{2}番 {3}（{4}）" -f $name, $rname, $hh.num, $hh.name, $kind)
-    } catch { Log ("エラー {0}：{1}" -f $name, $_.Exception.Message) }
+    } catch { Log ("エラー {0}：{1} ／場所 {2}" -f $name, $_.Exception.Message, (($_.InvocationInfo.PositionMessage) -replace '\s+', ' ')) }
   }
 }
 # その日の予想を読みやすい表にまとめる
