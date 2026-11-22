@@ -220,7 +220,7 @@ $taskNames = @("AIハヤト競馬_予想", "AIハヤト競馬_結果")
 if ($Mode -eq "uninstall") { foreach ($t in $taskNames) { Unregister-ScheduledTask -TaskName $t -Confirm:$false -ErrorAction SilentlyContinue }; Log "自動実行を削除しました"; exit 0 }
 if ($Mode -eq "install") {
   $script = Join-Path $root "weekend.ps1"
-  $dates = @("2026-11-21", "2026-11-22")
+  $dates = @("2026-11-28", "2026-11-29", "2026-12-05", "2026-12-06", "2026-12-12", "2026-12-13", "2026-12-19", "2026-12-20")
   $trigP = @(); $trigR = @()
   foreach ($d in $dates) {
     $trigP += New-ScheduledTaskTrigger -Once -At ([datetime]"$d 08:30") -RepetitionInterval (New-TimeSpan -Minutes 30) -RepetitionDuration (New-TimeSpan -Hours 7)
@@ -233,7 +233,7 @@ if ($Mode -eq "install") {
   $actR = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$script`" -Mode result"
   Register-ScheduledTask -TaskName $taskNames[0] -Action $actP -Trigger $trigP -Settings $set -Force | Out-Null
   Register-ScheduledTask -TaskName $taskNames[1] -Action $actR -Trigger $trigR -Settings $set -Force | Out-Null
-  Log "自動実行を登録しました（11/21・11/22）：予想＝8:30から30分おき(15:30まで)、答え合わせ＝17:30と19:30"
+  Log "自動実行を登録しました（11/28・29、12/5・6、12/12・13、12/19・20）：予想＝8:30から30分おき(15:30まで)、答え合わせ＝17:30と19:30"
   exit 0
 }
 
