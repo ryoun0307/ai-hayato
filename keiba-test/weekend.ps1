@@ -24,7 +24,9 @@ function Push-Sync([string]$D) {
   try {
     $cf = Join-Path $wk "sync.txt"; if (-not (Test-Path $cf)) { return }
     $cfg = @{}; foreach ($ln in [IO.File]::ReadAllLines($cf, $utf8)) { $kv = $ln -split '=', 2; if ($kv.Count -eq 2) { $cfg[$kv[0].Trim()] = $kv[1].Trim() } }
-    if (-not $cfg.url) { return }
+    $um = [regex]::Match("$($cfg.url)", 'https?://[A-Za-z0-9.\-]+(?::\d+)?')   # 余計な文字（全角かっこなど）が混ざっても、URL の部分だけ使う
+    if (-not $um.Success) { return }
+    $cfg.url = $um.Value
     $syncRaces = @()
     foreach ($pf in Get-ChildItem $predDir -Filter "${D}_*.json" | Sort-Object Name) {
       $p = [IO.File]::ReadAllText($pf.FullName, $utf8) | ConvertFrom-Json
