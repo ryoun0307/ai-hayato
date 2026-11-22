@@ -199,9 +199,9 @@ function Collect-Race([string]$RaceCname, [string]$Date, [string]$VenueName, [in
 }
 
 # ---------- 開催日の一覧 → レースの一覧 ----------
-$list = Get-Jra "POST" "https://www.jra.go.jp/JRADB/accessS.html" "pw01sli00/AF" "meetings"
+$list = Get-Jra "POST" "https://www.jra.go.jp/JRADB/accessS.html" "pw01sli00/AF" $null   # 開催日の一覧は控えを使わず、毎回最新を読む
 $meetings = @()
-foreach ($m in [regex]::Matches($list, '(pw01srl10(\d\d)\d{4}\d\d\d\d(\d{8})/[0-9A-F]{2})')) {
+foreach ($m in [regex]::Matches($list, '(pw01srl(?:10|00)(\d\d)\d{4}\d\d\d\d(\d{8})/[0-9A-F]{2})')) {
   $v = $VENUES[$m.Groups[2].Value]; $d = $m.Groups[3].Value
   if ($Venue -notcontains $v) { continue }
   if ($d -lt $From -or $d -gt $To) { continue }
@@ -215,9 +215,9 @@ $done = 0
 foreach ($mt in $meetings) {
   Write-Host ("{0} {1}" -f $mt.date, $mt.venue)
   $dayHtml = Get-Jra "POST" "https://www.jra.go.jp/JRADB/accessS.html" $mt.cname ("day_" + $mt.date + "_" + $mt.venue)
-  $races = @([regex]::Matches($dayHtml, 'pw01sde10\d\d\d{4}\d\d\d\d(\d\d)\d{8}/[0-9A-F]{2}') | ForEach-Object { $_.Value } | Select-Object -Unique)
+  $races = @([regex]::Matches($dayHtml, 'pw01sde(?:10|01)\d\d\d{4}\d\d\d\d(\d\d)\d{8}/[0-9A-F]{2}') | ForEach-Object { $_.Value } | Select-Object -Unique)
   foreach ($rc in $races) {
-    $R = [int]([regex]::Match($rc, '^pw01sde10\d\d\d{4}\d\d\d\d(\d\d)').Groups[1].Value)
+    $R = [int]([regex]::Match($rc, '^pw01sde(?:10|01)\d\d\d{4}\d\d\d\d(\d\d)').Groups[1].Value)
     Collect-Race $rc $mt.date $mt.venue $R
     $done++
     if ($MaxRaces -gt 0 -and $done -ge $MaxRaces) { Write-Host "指定の数に達したので止めます"; exit 0 }
