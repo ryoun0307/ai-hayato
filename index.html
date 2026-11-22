@@ -1623,7 +1623,7 @@ function keibaSyncUrl() {
 }
 const KEIBA_SYSTEM_TOOL = {
   name: "keiba_system",
-  description: "ボスの PC が自動で作った「システム予想」（人気と過去成績を数字にした点数の1位＝◎、相手3頭、穴候補、堅さ判定）と、レース後はその結果を返す。" +
+  description: "ボスの PC が自動で作った「システム予想」（人気と過去成績を数字にした点数の1位＝本命、相手3頭、穴候補、堅さ判定）と、レース後はその結果を返す。" +
     "「システムの予想」「PCの予想」「予想の結果はどうだった」と聞かれたとき、または競馬の予想を聞かれたときに最初に呼ぶ。" +
     "date 省略＝届いている最新の日。venue・race で1レースに絞れる。",
   input_schema: {
@@ -1645,12 +1645,12 @@ function keibaSystemText(j, venue, race) {
   const lines = rs.map((r) => {
     const [, v, n] = String(r.race).split("_");
     let s = `${v}${Number(n)}R ${r.name}${r.class ? "（" + r.class + "）" : ""} ${r.start || ""}発走 ${r.heads}頭 判定:${r.kind}\n` +
-      `  ◎${fmt(r.honmei)} 勝つ見込み約${r.honmei?.win_pct ?? "?"}%／相手: ${(r.aite || []).map(fmt).join("、")}` +
+      `  本命${fmt(r.honmei)} 勝つ見込み約${r.honmei?.win_pct ?? "?"}%／相手: ${(r.aite || []).map(fmt).join("、")}` +
       (r.ana && r.ana.length ? `／穴候補: ${r.ana.map(fmt).join("、")}` : "") +
-      (r.honmei?.comment ? `\n  ◎の根拠: ${r.honmei.comment}` : "");
+      (r.honmei?.comment ? `\n  本命の根拠: ${r.honmei.comment}` : "");
     if (r.result) {
       s += `\n  結果: ` + (r.result.top3 || []).map((t) => `${t.finish}着${t.num}番${t.name}(${t.pop}人気)`).join(" ") +
-        `／◎は${r.result.honmei_finish}着`;
+        `／本命は${r.result.honmei_finish}着`;
     } else s += "\n  結果: まだ（レース前または集計中）";
     return s;
   });
@@ -1688,11 +1688,12 @@ function keibaTools() {
 function keibaPromptSection() {
   const sysPart = keibaSyncUrl()
     ? "\n\n# システム予想（PCの自動予想）\n" +
-      "- keiba_system ツールで、ボスの PC が自動で作った予想と、レース後の結果を取れる。◎は「人気と過去成績を数字にした点数」の1位で、AIが考えたものではない。\n" +
-      "- 競馬の予想を聞かれたら、まず keiba_system を見る。ある場合は、その◎・相手・堅さ判定を伝え、必要なら自分の見立て（最新ニュースなど）を足す。「システムの予想」と「自分の見立て」は分けて言う。\n" +
-      "- 結果を聞かれたら keiba_system で結果を見て、◎が何着だったか、実際の1〜3着を伝える。結果が「まだ」なら、集計は10〜15分おきなので少し待ってもう一度聞くよう伝える。\n" +
-      "- keiba_system のデータにあるのは、◎・相手・穴候補・堅さ判定と、1〜3着、◎の着順だけ。買い目、馬券が当たったか、払戻金・ワイド・馬連・複勝の的中は、データにないので推測で言わない。聞かれたら「そこまでのデータはない」と答え、◎が何着だったか、相手や穴候補が3着以内に入ったかを、データの範囲で伝える。\n" +
-      "- 的中率は46レースで、◎の複勝は約75%、単勝は約3割。大きく当たる保証はない、と正直に伝える（言いすぎない）。"
+      "- keiba_system ツールで、ボスの PC が自動で作った予想と、レース後の結果を取れる。「本命」は「人気と過去成績を数字にした点数」の1位で、AIが考えたものではない。\n" +
+      "- ◎・○・▲・△などの記号は、読み上げで「にじゅうまる」などと聞こえるので、返事には書かず、「本命」「相手」「穴候補」と言葉で言う。\n" +
+      "- 競馬の予想を聞かれたら、まず keiba_system を見る。ある場合は、その本命・相手・堅さ判定を伝え、必要なら自分の見立て（最新ニュースなど）を足す。「システムの予想」と「自分の見立て」は分けて言う。\n" +
+      "- 結果を聞かれたら keiba_system で結果を見て、本命が何着だったか、実際の1〜3着を伝える。結果が「まだ」なら、集計は10〜15分おきなので少し待ってもう一度聞くよう伝える。\n" +
+      "- keiba_system のデータにあるのは、本命・相手・穴候補・堅さ判定と、1〜3着、本命の着順だけ。買い目、馬券が当たったか、払戻金・ワイド・馬連・複勝の的中は、データにないので推測で言わない。聞かれたら「そこまでのデータはない」と答え、本命が何着だったか、相手や穴候補が3着以内に入ったかを、データの範囲で伝える。\n" +
+      "- 的中率は46レースで、本命の複勝は約75%、単勝は約3割。大きく当たる保証はない、と正直に伝える（言いすぎない）。"
     : "";
   if (!settings.keibaUrl) return sysPart;
   return sysPart + "\n\n# 競馬データ\n" +
@@ -1786,7 +1787,9 @@ function attachMap(text, logBody) {
   logEl.scrollTop = logEl.scrollHeight;
 }
 function cleanForSpeech(t) {
-  return stripMapTag(t).replace(/【要点】/g, "").replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク").trim();
+  return stripMapTag(t).replace(/【要点】/g, "").replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク")
+    // 競馬の印は、記号のままだと「にじゅうまる」などと読まれるので、言葉にする
+    .replace(/◎/g, "本命").replace(/[○〇]/g, "対抗").replace(/▲/g, "単穴").replace(/△/g, "連下").trim();
 }
 // first = 返事の最初の一言（Fish Audio では、速さ優先で声を作る）
 function speak(text, first = false) {
@@ -2375,7 +2378,7 @@ async function send(text) {
   // 答え方の指示は、毎回のメッセージの末尾に付ける（前提＝システムプロンプトは会話中に変えられないため）
   let hints = `（送信時刻: ${now}）`;
   if (mode.detail) hints += "\n（回答形式: 詳しく。1行目に【要点】と書いて、音声で読み上げる2〜3文の要約を書く。次に改行して【詳細】と書き、画面で読む詳しい説明を書く。詳細では改行と「・」で整理してよい。）";
-  if (mode.racing && keibaSyncUrl()) hints += "\n（競馬: まず keiba_system で、PC の自動予想（◎・相手・堅さ判定）と結果を見る。）";
+  if (mode.racing && keibaSyncUrl()) hints += "\n（競馬: まず keiba_system で、PC の自動予想（本命・相手・堅さ判定）と結果を見る。）";
   if (mode.racing) hints += settings.keibaUrl
     ? "\n（競馬予想: まず keiba_race で JRA の出馬表データ（馬体重・オッズ・過去4走・血統）を取ってから判断する。Web検索は、当日の馬場傾向やニュースなどデータにない情報が必要なときだけ。）"
     : "\n（競馬予想: 必要に応じてWeb検索で出走表・過去成績・馬場状態・調教・騎手などを確認してから判断する。）";
