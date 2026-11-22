@@ -68,10 +68,8 @@ export default {
     // 記憶と同じ合言葉を使う。保存先も同じ KV（MEMORY）。日付ごとに1つ保存。
     if (new URL(request.url).pathname === "/keiba") {
       if (!env.MEMORY) return json({ error: "Cloudflare に保存先（KV・名前 MEMORY）がつながっていません" }, 500);
-      const code = String(p.code || "");
-      if (code.length < 8) return json({ error: "合言葉は8文字以上にしてください" }, 400);
-      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("hayato-keiba:" + code));
-      const base = "keiba:" + [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("") + ":";
+      // 合言葉は使わない（競馬データの GAS と同じ考え方）。保存先は1つだけ。
+      const base = "keiba:all:";
       if (p.action === "put") {
         const date = String(p.date || "");
         if (!/^\d{8}$/.test(date)) return json({ error: "日付は YYYYMMDD で送ってください" }, 400);

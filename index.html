@@ -1604,8 +1604,9 @@ function makeUtterance(text, rate) {
 // ---- 競馬データ（GAS が JRA の出馬表を集めてスプレッドシートに保存したもの） ----
 // ---- 競馬の「システム予想」と結果（PC が自動で作り、Cloudflare の /keiba に送ったもの）----
 function keibaSyncUrl() {
-  const u = memSyncUrl(); // 記憶と同じ中継・同じ合言葉を使う
-  return u ? u.replace(/\/memory$/, "/keiba") : "";
+  // 声の中継（Cloudflare）の URL があれば使える。合言葉は使わない
+  if (!settings.fishUrl || isGasUrl(settings.fishUrl)) return "";
+  try { return new URL("/keiba", settings.fishUrl).href; } catch { return ""; }
 }
 const KEIBA_SYSTEM_TOOL = {
   name: "keiba_system",
@@ -1692,7 +1693,7 @@ async function runKeibaTool(name, input = {}) {
     try {
       const r = await fetch(keibaSyncUrl(), {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "get", code: settings.memCode, date: input.date ? String(input.date) : "" }),
+        body: JSON.stringify({ action: "get", date: input.date ? String(input.date) : "" }),
       });
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || "システム予想を取れませんでした");

@@ -19,12 +19,12 @@ $logFile = Join-Path $wk "log.txt"
 function Log([string]$s) { $line = "{0} {1}" -f (Get-Date -Format "MM/dd HH:mm:ss"), $s; Write-Host $line; [IO.File]::AppendAllText($logFile, $line + "`r`n", $utf8) }
 
 # ---- 予想と結果を Cloudflare の中継（/keiba）へ送る：ハヤトが「今日の予想は？」に答えるため ----
-# 設定は weekend\sync.txt（GitHub には上げない）。1行目 url=中継のURL　2行目 code=記憶の合言葉。無ければ何もしない。
+# 設定は weekend\sync.txt（GitHub には上げない）。1行 url=中継のURL だけ。合言葉は使わない。無ければ何もしない。
 function Push-Sync([string]$D) {
   try {
     $cf = Join-Path $wk "sync.txt"; if (-not (Test-Path $cf)) { return }
     $cfg = @{}; foreach ($ln in [IO.File]::ReadAllLines($cf, $utf8)) { $kv = $ln -split '=', 2; if ($kv.Count -eq 2) { $cfg[$kv[0].Trim()] = $kv[1].Trim() } }
-    if (-not $cfg.url -or -not $cfg.code) { return }
+    if (-not $cfg.url) { return }
     $syncRaces = @()
     foreach ($pf in Get-ChildItem $predDir -Filter "${D}_*.json" | Sort-Object Name) {
       $p = [IO.File]::ReadAllText($pf.FullName, $utf8) | ConvertFrom-Json
@@ -40,7 +40,7 @@ function Push-Sync([string]$D) {
       $syncRaces += $o
     }
     if (-not $syncRaces.Count) { return }
-    $body = [ordered]@{ action = "put"; code = $cfg.code; date = $D; races = $syncRaces; updated = (Get-Date -Format "MM/dd HH:mm") } | ConvertTo-Json -Depth 8 -Compress
+    $body = [ordered]@{ action = "put"; date = $D; races = $syncRaces; updated = (Get-Date -Format "MM/dd HH:mm") } | ConvertTo-Json -Depth 8 -Compress
     $uri = ($cfg.url.TrimEnd('/') -replace '/(memory|keiba)$', '') + "/keiba"
     $r = Invoke-RestMethod -Uri $uri -Method Post -ContentType "application/json; charset=utf-8" -Headers @{ Origin = "https://ryoun0307.github.io" } -Body ([Text.Encoding]::UTF8.GetBytes($body))
     Log ("ハヤトへ送りました：{0} {1}レース" -f $D, $syncRaces.Count)
