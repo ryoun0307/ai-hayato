@@ -216,6 +216,8 @@
   }
   .send:disabled { opacity: .5; cursor: not-allowed; }
 
+  /* セリフ欄を隠しているとき（ボタンで切り替え） */
+  body.hide-lines .thread, body.hide-lines .thread-user { display: none !important; }
   /* ---------- 履歴（折りたたみ） ---------- */
   .history {
     position: fixed; inset: 0; z-index: 40;
@@ -486,6 +488,7 @@
       <div class="status" id="status">待機中</div>
     </div>
     <div class="row">
+      <button class="icon-btn" id="linesBtn" title="セリフ欄を隠す／出す">🙈 セリフを隠す</button>
       <button class="icon-btn" id="historyBtn" title="会話の履歴">📜 履歴</button>
       <button class="icon-btn mobile-only" id="stopBtn" title="読み上げを止める">⏹ 停止</button>
       <button class="icon-btn desktop-only" id="handsFreeBtn" title="話しかけ続けられるモード（オンのときは、ハヤトが話し終えると自動で聞き取ります）">🎙 常時会話 ON</button>
@@ -523,6 +526,7 @@
       </div>
     </div>
     <div class="panel-tools">
+      <button class="tool-btn" id="linesBtn2">🙈 セリフを隠す</button>
       <button class="tool-btn" id="historyBtn2">📜 履歴</button>
       <button class="tool-btn" id="stopBtn2">⏹ 読み上げ停止</button>
       <button class="tool-btn mobile-only" id="clearBtn2">↺ 新しい会話</button>
@@ -1221,6 +1225,15 @@ const setCharTalking = (function setupCharacter() {
   window.addEventListener("resize", () => { resize(); draw(performance.now()); });
   if (reduce) draw(0); else requestAnimationFrame(loop);
 })();
+
+// セリフ欄を隠す／出す（長い返事で画面が文字で埋まるとき用。履歴からはいつでも読める）
+function applyLinesHidden(hide) {
+  document.body.classList.toggle("hide-lines", hide);
+  for (const id of ["linesBtn", "linesBtn2"]) { const b = $(id); if (b) b.textContent = hide ? "💬 セリフを出す" : "🙈 セリフを隠す"; }
+  store.set("linesHidden", hide ? "1" : "0");
+}
+for (const id of ["linesBtn", "linesBtn2"]) $(id).addEventListener("click", (e) => { e.stopPropagation(); applyLinesHidden(!document.body.classList.contains("hide-lines")); });
+applyLinesHidden(store.get("linesHidden", "0") === "1");
 
 // 履歴（折りたたみ）
 $("historyBtn").addEventListener("click", () => {
