@@ -1,24 +1,24 @@
-# 競馬の週末自動検証を、GitHub の機械（PC なし）で動かす【試験】。
-#  ・毎週 土・日 の朝8時ごろ〜夜8時ごろ、15分おきに動く（開催のない日は、すぐ終わる）。
-#  ・予想（JST 8:00〜15:59 のみ）と答え合わせを行い、結果は gha-results ブランチに置く。
-#  ・ハヤトへの送信（Cloudflare）は、試験のあいだは行わない（PC 側と二重にならないように）。
+# keiba weekend check on GitHub (trial, no PC needed).
+# - Runs Sat/Sun from about 8:00 to 20:00 JST, every 15 minutes (a day without races ends quickly).
+# - Predict (JST 8:00-15:59 only) and score; results go to the gha-results branch.
+# - No sending to Cloudflare during the trial (to avoid doubling with the PC).
 name: keiba-weekend
 
 on:
   schedule:
-    - cron: "*/15 23 * * 5,6"      # JST 土・日 8:00〜8:59
-    - cron: "*/15 0-10 * * 0,6"    # JST 土・日 9:00〜19:59
+    - cron: "*/15 23 * * 5,6"      # JST Sat/Sun 8:00-8:59
+    - cron: "*/15 0-10 * * 0,6"    # JST Sat/Sun 9:00-19:59
   workflow_dispatch:
     inputs:
       date:
-        description: "日付 YYYYMMDD（空なら今日）"
+        description: "date YYYYMMDD (empty = today)"
         required: false
       force:
-        description: "発走後でも予想する（試験用）"
+        description: "predict even after post time (test)"
         type: boolean
         default: false
   push:
-    branches: [gha-test]            # 試験用：このブランチに push すると、過去の日（11/22）で動かす
+    branches: [gha-test]            # test: pushing to this branch runs it for a past day (11/22)
 
 permissions:
   contents: write
@@ -34,8 +34,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 予想と答え合わせ
-        shell: powershell
+      - name: run
+        shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -44,46 +44,66 @@ jobs:
           IN_FORCE: ${{ github.event.inputs.force }}
         run: |
           $ErrorActionPreference = "Continue"
-          Set-TimeZone -Id "Tokyo Standard Time"
+          $dbg = Join-Path $env:RUNNER_TEMP "debug.txt"
+          try {
+            Start-Transcript -Path $dbg -Force | Out-Null
+            Set-TimeZone -Id "Tokyo Standard Time"
+            $repoRoot = (Get-Location).Path
+            $kt = Join-Path $repoRoot "keiba-test"
+            $date = Get-Date -Format "yyyyMMdd"; $force = $false
+            if ($env:IN_DATE) { $date = $env:IN_DATE }
+            if ($env:IN_FORCE -eq "true") { $force = $true }
+            if ($env:EVENT -eq "push") { $date = "20261122"; $force = $true }
+            $hour = (Get-Date).Hour
+            Write-Host "run: event=$env:EVENT date=$date hour=$hour force=$force"
+
+            git fetch origin gha-results --depth=1 2>&1 | Out-Host
+            if ($LASTEXITCODE -eq 0) {
+              $res = Join-Path $env:RUNNER_TEMP "res"
+              git worktree add $res FETCH_HEAD 2>&1 | Out-Host
+              foreach ($p in @("keiba-test/weekend/pred", "keiba-test/data/weekend")) {
+                $src = Join-Path $res $p
+                if (Test-Path $src) { New-Item -ItemType Directory -Force (Join-Path $repoRoot $p) | Out-Null; Copy-Item (Join-Path $src "*") (Join-Path $repoRoot $p) -Recurse -Force }
+              }
+              $lg = Join-Path $res "keiba-test/weekend/log.txt"
+              if (Test-Path $lg) { Copy-Item $lg (Join-Path $kt "weekend/log.txt") -Force }
+            }
+
+            Set-Location $kt
+            if (($hour -ge 8 -and $hour -le 15) -or $env:EVENT -ne "schedule") {
+              if ($force) { & powershell -NoProfile -ExecutionPolicy Bypass -File weekend.ps1 -Mode predict -Date $date -Force | Out-Host }
+              else { & powershell -NoProfile -ExecutionPolicy Bypass -File weekend.ps1 -Mode predict -Date $date | Out-Host }
+            }
+            & powershell -NoProfile -ExecutionPolicy Bypass -File weekend.ps1 -Mode result -Date $date | Out-Host
+          } catch {
+            Write-Host ("ERROR: " + $_.Exception.Message)
+            Write-Host ($_.ScriptStackTrace)
+          } finally {
+            try { Stop-Transcript | Out-Null } catch {}
+          }
+
+      - name: publish
+        if: always()
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          $ErrorActionPreference = "Continue"
           $repoRoot = (Get-Location).Path
           $kt = Join-Path $repoRoot "keiba-test"
-          $date = Get-Date -Format "yyyyMMdd"; $force = $false
-          if ($env:IN_DATE) { $date = $env:IN_DATE }
-          if ($env:IN_FORCE -eq "true") { $force = $true }
-          if ($env:EVENT -eq "push") { $date = "20261122"; $force = $true }   # 試験
-          $hour = (Get-Date).Hour
-          Write-Host "実行：$env:EVENT 日付=$date 時=$hour 強制=$force"
-
-          # 前回までの結果（予想・結果・ログ）を引き継ぐ
-          git fetch origin gha-results --depth=1 2>$null
-          if ($LASTEXITCODE -eq 0) {
-            $res = Join-Path $env:RUNNER_TEMP "res"
-            git worktree add $res FETCH_HEAD 2>$null | Out-Null
-            foreach ($p in @("keiba-test\weekend\pred", "keiba-test\data\weekend")) {
-              $src = Join-Path $res $p; if (Test-Path $src) { New-Item -ItemType Directory -Force (Join-Path $repoRoot $p) | Out-Null; Copy-Item (Join-Path $src "*") (Join-Path $repoRoot $p) -Recurse -Force }
-            }
-            $lg = Join-Path $res "keiba-test\weekend\log.txt"; if (Test-Path $lg) { Copy-Item $lg (Join-Path $kt "weekend\log.txt") -Force }
-          }
-
-          Set-Location $kt
-          # 予想は朝8時〜15時台だけ（試験・手動のときは時間に関係なく）
-          if (($hour -ge 8 -and $hour -le 15) -or $env:EVENT -ne "schedule") {
-            if ($force) { & powershell -NoProfile -ExecutionPolicy Bypass -File weekend.ps1 -Mode predict -Date $date -Force }
-            else { & powershell -NoProfile -ExecutionPolicy Bypass -File weekend.ps1 -Mode predict -Date $date }
-          }
-          & powershell -NoProfile -ExecutionPolicy Bypass -File weekend.ps1 -Mode result -Date $date
-
-          # 結果を gha-results ブランチに置く（履歴なしで上書き）
           $pub = Join-Path $env:RUNNER_TEMP "pub"; New-Item -ItemType Directory -Force $pub | Out-Null
-          $wkOut = Join-Path $pub "keiba-test\weekend"; New-Item -ItemType Directory -Force $wkOut | Out-Null
-          Copy-Item (Join-Path $kt "weekend\pred") $wkOut -Recurse -Force -ErrorAction SilentlyContinue
-          Copy-Item (Join-Path $kt "weekend\log.txt") $wkOut -Force -ErrorAction SilentlyContinue
-          Get-ChildItem (Join-Path $kt "weekend") -Filter "*.md" | Copy-Item -Destination $wkOut -Force
-          $dOut = Join-Path $pub "keiba-test\data"; New-Item -ItemType Directory -Force $dOut | Out-Null
-          Copy-Item (Join-Path $kt "data\weekend") $dOut -Recurse -Force -ErrorAction SilentlyContinue
+          $wkOut = Join-Path $pub "keiba-test/weekend"; New-Item -ItemType Directory -Force $wkOut | Out-Null
+          Copy-Item (Join-Path $kt "weekend/pred") $wkOut -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item (Join-Path $kt "weekend/log.txt") $wkOut -Force -ErrorAction SilentlyContinue
+          Get-ChildItem (Join-Path $kt "weekend") -Filter "*.md" -ErrorAction SilentlyContinue | Copy-Item -Destination $wkOut -Force
+          $dOut = Join-Path $pub "keiba-test/data"; New-Item -ItemType Directory -Force $dOut | Out-Null
+          Copy-Item (Join-Path $kt "data/weekend") $dOut -Recurse -Force -ErrorAction SilentlyContinue
+          $dbg = Join-Path $env:RUNNER_TEMP "debug.txt"
+          if (Test-Path $dbg) { Copy-Item $dbg (Join-Path $pub "debug.txt") -Force }
           Set-Location $pub
           git init -q -b gha-results
           git add -A
-          git -c user.name="keiba-bot" -c user.email="keiba-bot@users.noreply.github.com" commit -q -m ("試験の結果 " + (Get-Date -Format "MM/dd HH:mm"))
+          git -c user.name="keiba-bot" -c user.email="keiba-bot@users.noreply.github.com" commit -q -m ("trial result " + (Get-Date -Format "MM/dd HH:mm"))
           git push -q -f "https://x-access-token:$($env:GH_TOKEN)@github.com/$($env:REPO).git" HEAD:gha-results
-          Write-Host "gha-results に保存しました"
+          Write-Host "saved to gha-results"
