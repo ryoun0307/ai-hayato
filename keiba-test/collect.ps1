@@ -115,7 +115,12 @@ function Collect-Race([string]$RaceCname, [string]$Date, [string]$VenueName, [in
   $af = Join-Path $aDir ($name + ".json")
   if (Test-Path $qf) { Write-Host "  飛ばす（できている）: $name"; return }
 
-  $html = Get-Jra "POST" "https://www.jra.go.jp/JRADB/accessS.html" $RaceCname ("result_" + $Date + "_" + $VenueName + "_" + $R)
+  $rcache = Join-Path $cDir (("result_" + $Date + "_" + $VenueName + "_" + $R) + ".html")
+  $html = Get-Jra "POST" "https://www.jra.go.jp/JRADB/accessS.html" $RaceCname $null
+  if (Test-Path $rcache) { $html = [IO.File]::ReadAllText($rcache, $utf8) }   # 以前の控えがあればそれを使う
+  # まだ結果が出ていないレース（当日の途中）は、控えにも保存せず、次回に回す
+  if ($html -notmatch '<td class="place">') { Write-Host "  まだ結果が出ていません: $name"; return }
+  if (-not (Test-Path $rcache)) { [IO.File]::WriteAllText($rcache, $html, $utf8) }
   $wait = ""
 
   # --- レース情報 ---
@@ -214,7 +219,10 @@ Write-Host ("対象の開催：{0}（{1} 〜 {2}）" -f $meetings.Count, $From, 
 $done = 0
 foreach ($mt in $meetings) {
   Write-Host ("{0} {1}" -f $mt.date, $mt.venue)
-  $dayHtml = Get-Jra "POST" "https://www.jra.go.jp/JRADB/accessS.html" $mt.cname ("day_" + $mt.date + "_" + $mt.venue)
+  $dcache = Join-Path $cDir (("day_" + $mt.date + "_" + $mt.venue) + ".html")
+  $dayHtml = if (Test-Path $dcache) { [IO.File]::ReadAllText($dcache, $utf8) } else { Get-Jra "POST" "https://www.jra.go.jp/JRADB/accessS.html" $mt.cname $null }
+  # 開催日の一覧は、全レースがそろった（12レース）ときだけ控えに保存する（途中の一覧を控えると、あとのレースが抜けるため）
+  if (-not (Test-Path $dcache) -and @([regex]::Matches($dayHtml, 'pw01sde(?:10|01)\d\d\d{4}\d\d\d\d(\d\d)\d{8}/[0-9A-F]{2}') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique).Count -ge 12) { [IO.File]::WriteAllText($dcache, $dayHtml, $utf8) }
   $races = @([regex]::Matches($dayHtml, 'pw01sde(?:10|01)\d\d\d{4}\d\d\d\d(\d\d)\d{8}/[0-9A-F]{2}') | ForEach-Object { $_.Value } | Select-Object -Unique)
   foreach ($rc in $races) {
     $R = [int]([regex]::Match($rc, '^pw01sde(?:10|01)\d\d\d{4}\d\d\d\d(\d\d)').Groups[1].Value)

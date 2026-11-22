@@ -3,3 +3,4 @@ node_modules/
 .tmp_preview/
 keiba-test/cache/
 keiba-test/weekend/raw/
+keiba-test/weekend/sync.txt

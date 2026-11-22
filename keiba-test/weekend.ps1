@@ -18,6 +18,35 @@ foreach ($d in @($wk, $predDir, $rawDir, $cacheDir)) { New-Item -ItemType Direct
 $logFile = Join-Path $wk "log.txt"
 function Log([string]$s) { $line = "{0} {1}" -f (Get-Date -Format "MM/dd HH:mm:ss"), $s; Write-Host $line; [IO.File]::AppendAllText($logFile, $line + "`r`n", $utf8) }
 
+# ---- 予想と結果を Cloudflare の中継（/keiba）へ送る：ハヤトが「今日の予想は？」に答えるため ----
+# 設定は weekend\sync.txt（GitHub には上げない）。1行目 url=中継のURL　2行目 code=記憶の合言葉。無ければ何もしない。
+function Push-Sync([string]$D) {
+  try {
+    $cf = Join-Path $wk "sync.txt"; if (-not (Test-Path $cf)) { return }
+    $cfg = @{}; foreach ($ln in [IO.File]::ReadAllLines($cf, $utf8)) { $kv = $ln -split '=', 2; if ($kv.Count -eq 2) { $cfg[$kv[0].Trim()] = $kv[1].Trim() } }
+    if (-not $cfg.url -or -not $cfg.code) { return }
+    $syncRaces = @()
+    foreach ($pf in Get-ChildItem $predDir -Filter "${D}_*.json" | Sort-Object Name) {
+      $p = [IO.File]::ReadAllText($pf.FullName, $utf8) | ConvertFrom-Json
+      $o = [ordered]@{ race = $p.race; name = $p.name; class = $p.class; start = $p.start; heads = $p.heads; dist = $p.dist; surf = $p.surf; kind = $p.kind
+        honmei = $p.honmei; aite = @($p.aite); ana = @($p.ana); fetched = $p.fetched }
+      $af = Join-Path $root ("data\weekend\a\" + $pf.Name)
+      if (Test-Path $af) {
+        $a = [IO.File]::ReadAllText($af, $utf8) | ConvertFrom-Json
+        $top = @($a.results | Where-Object { $_.finish -match '^[123]$' } | Sort-Object { [int]$_.finish } | ForEach-Object { [ordered]@{ finish = [int]$_.finish; num = $_.number; name = ("$($_.name)" -replace '\s*ブリンカー着用', ''); pop = $_.popularity } })
+        $hf = @($a.results | Where-Object { "$($_.number)" -eq "$($p.honmei.num)" } | Select-Object -First 1)
+        $o["result"] = [ordered]@{ top3 = $top; honmei_finish = $(if ($hf.Count) { "$($hf[0].finish)" } else { "" }) }
+      }
+      $syncRaces += $o
+    }
+    if (-not $syncRaces.Count) { return }
+    $body = [ordered]@{ action = "put"; code = $cfg.code; date = $D; races = $syncRaces; updated = (Get-Date -Format "MM/dd HH:mm") } | ConvertTo-Json -Depth 8 -Compress
+    $uri = ($cfg.url.TrimEnd('/') -replace '/(memory|keiba)$', '') + "/keiba"
+    $r = Invoke-RestMethod -Uri $uri -Method Post -ContentType "application/json; charset=utf-8" -Headers @{ Origin = "https://ryoun0307.github.io" } -Body ([Text.Encoding]::UTF8.GetBytes($body))
+    Log ("ハヤトへ送りました：{0} {1}レース" -f $D, $syncRaces.Count)
+  } catch { Log ("ハヤトへ送れませんでした：" + $_.Exception.Message) }
+}
+
 $VENUES = @{ "01"="札幌"; "02"="函館"; "03"="福島"; "04"="新潟"; "05"="東京"; "06"="中山"; "07"="中京"; "08"="京都"; "09"="阪神"; "10"="小倉" }
 $NF = 8
 $FNAMES = @("人気(-ln)", "近5走の着順率", "近10走の3着内率", "同距離・同芝ダの3着内率", "同競馬場の3着内率", "騎手の3着内率", "馬体重の大増減", "前走の着順率")
@@ -212,6 +241,7 @@ if ($Mode -eq "result") {
   }
   [IO.File]::WriteAllText((Join-Path $wk ("結果_" + $Date + ".md")), $md.ToString(), (New-Object Text.UTF8Encoding($true)))
   Log ("答え合わせ：{0}レース → weekend\結果_{1}.md" -f $n, $Date)
+  Push-Sync $Date
   exit 0
 }
 
@@ -224,6 +254,7 @@ if ($Mode -eq "install") {
   $trigP = @(); $trigR = @()
   foreach ($d in $dates) {
     $trigP += New-ScheduledTaskTrigger -Once -At ([datetime]"$d 08:30") -RepetitionInterval (New-TimeSpan -Minutes 30) -RepetitionDuration (New-TimeSpan -Hours 7)
+    $trigR += New-ScheduledTaskTrigger -Once -At ([datetime]"$d 10:15") -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration (New-TimeSpan -Hours 7)   # レースが終わるたびに結果を集める
     $trigR += New-ScheduledTaskTrigger -Once -At ([datetime]"$d 17:30")
     $trigR += New-ScheduledTaskTrigger -Once -At ([datetime]"$d 19:30")
   }
@@ -233,7 +264,7 @@ if ($Mode -eq "install") {
   $actR = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$script`" -Mode result"
   Register-ScheduledTask -TaskName $taskNames[0] -Action $actP -Trigger $trigP -Settings $set -Force | Out-Null
   Register-ScheduledTask -TaskName $taskNames[1] -Action $actR -Trigger $trigR -Settings $set -Force | Out-Null
-  Log "自動実行を登録しました（11/28・29、12/5・6、12/12・13、12/19・20）：予想＝8:30から30分おき(15:30まで)、答え合わせ＝17:30と19:30"
+  Log "自動実行を登録しました（11/28・29、12/5・6、12/12・13、12/19・20）：予想＝8:30から30分おき(15:30まで)、答え合わせ＝10:15から15分おき(17:15まで)と17:30・19:30"
   exit 0
 }
 
@@ -341,3 +372,4 @@ foreach ($pf in Get-ChildItem $predDir -Filter "${Date}_*.json" | Sort-Object Na
 }
 [IO.File]::WriteAllText((Join-Path $wk ("予想_" + $Date + ".md")), $md.ToString(), (New-Object Text.UTF8Encoding($true)))
 Log "予想を weekend\予想_$Date.md にまとめました"
+Push-Sync $Date

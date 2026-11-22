@@ -8,6 +8,7 @@
 //    そのまま少しずつハヤトへ流します（届いた分から再生できるので速い）。
 //  ・/memory では、ハヤトの記憶を保存・読み出しします（PC と iPhone で共有するため）。
 //    保存先は Cloudflare の KV。「バインディング」で名前 MEMORY としてつないでください。
+//  ・/keiba では、PC が自動で作った競馬の予想・結果を保存し、ハヤトが読み出します（同じ KV・同じ合言葉）。
 // ============================================================
 
 // 声を指定しなかったときに使う声（Fish Audio のモデルID）
@@ -59,6 +60,33 @@ export default {
         })).filter((m) => m.text);
         await env.MEMORY.put(key, JSON.stringify({ memories: list, updated: Date.now() }));
         return json({ ok: true, count: list.length });
+      }
+      return json({ error: "使えない呼び出し方です" }, 400);
+    }
+
+    // ---- 競馬の予想と結果（PC が送り、ハヤトが読む）----
+    // 記憶と同じ合言葉を使う。保存先も同じ KV（MEMORY）。日付ごとに1つ保存。
+    if (new URL(request.url).pathname === "/keiba") {
+      if (!env.MEMORY) return json({ error: "Cloudflare に保存先（KV・名前 MEMORY）がつながっていません" }, 500);
+      const code = String(p.code || "");
+      if (code.length < 8) return json({ error: "合言葉は8文字以上にしてください" }, 400);
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("hayato-keiba:" + code));
+      const base = "keiba:" + [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("") + ":";
+      if (p.action === "put") {
+        const date = String(p.date || "");
+        if (!/^\d{8}$/.test(date)) return json({ error: "日付は YYYYMMDD で送ってください" }, 400);
+        const races = (Array.isArray(p.races) ? p.races : []).slice(0, 40);
+        const value = JSON.stringify({ date, races, updated: String(p.updated || "") });
+        if (value.length > 200000) return json({ error: "データが大きすぎます" }, 400);
+        await env.MEMORY.put(base + date, value, { expirationTtl: 60 * 60 * 24 * 60 }); // 60日で消える
+        await env.MEMORY.put(base + "latest", date, { expirationTtl: 60 * 60 * 24 * 60 });
+        return json({ ok: true, count: races.length });
+      }
+      if (p.action === "get") {
+        let date = String(p.date || "");
+        if (!/^\d{8}$/.test(date)) date = (await env.MEMORY.get(base + "latest")) || "";
+        const saved = date ? await env.MEMORY.get(base + date, "json") : null;
+        return json(saved ? { ok: true, ...saved } : { ok: false, date, error: "その日の予想はまだ届いていません" });
       }
       return json({ error: "使えない呼び出し方です" }, 400);
     }
