@@ -9,6 +9,8 @@
 //  ・/memory では、ハヤトの記憶を保存・読み出しします（PC と iPhone で共有するため）。
 //    保存先は Cloudflare の KV。「バインディング」で名前 MEMORY としてつないでください。
 //  ・/keiba では、PC が自動で作った競馬の予想・結果を保存し、ハヤトが読み出します（同じ KV・同じ合言葉）。
+//  ・/keiba-view では、ハヤト自身が出した競馬の予想（仮・最終）をレースごとに記録し、読み出します（同じ KV）。
+//    同じレースを何回聞かれても同じ答えにするためと、後日の答え合わせのため。
 // ============================================================
 
 // 声を指定しなかったときに使う声（Fish Audio のモデルID）
@@ -85,6 +87,49 @@ export default {
         if (!/^\d{8}$/.test(date)) date = (await env.MEMORY.get(base + "latest")) || "";
         const saved = date ? await env.MEMORY.get(base + date, "json") : null;
         return json(saved ? { ok: true, ...saved } : { ok: false, date, error: "その日の予想はまだ届いていません" });
+      }
+      return json({ error: "使えない呼び出し方です" }, 400);
+    }
+
+    // ---- ハヤト自身の競馬の予想（レースごとに仮・最終を記録）----
+    if (new URL(request.url).pathname === "/keiba-view") {
+      if (!env.MEMORY) return json({ error: "Cloudflare に保存先（KV・名前 MEMORY）がつながっていません" }, 500);
+      const base = "keiba:view:";
+      const TTL = 60 * 60 * 24 * 180; // 180日で消える
+      const clip = (v, n) => String(v == null ? "" : v).slice(0, n);
+      const horses = (a) => (Array.isArray(a) ? a : []).slice(0, 6).map((h) => clip(h, 40)).filter(Boolean);
+      if (p.action === "dates") {
+        const dates = (await env.MEMORY.get(base + "dates", "json")) || [];
+        return json({ ok: true, dates });
+      }
+      const date = String(p.date || "");
+      if (!/^\d{8}$/.test(date)) return json({ error: "日付は YYYYMMDD で送ってください" }, 400);
+      const saved = (await env.MEMORY.get(base + date, "json")) || { date, races: {} };
+      if (p.action === "get") return json({ ok: true, ...saved });
+      if (p.action === "save") {
+        const venue = clip(p.venue, 6), race = Number(p.race);
+        if (!venue || !(race >= 1 && race <= 12)) return json({ error: "競馬場とレース番号（1〜12）を送ってください" }, 400);
+        const stage = p.stage === "最終" ? "最終" : "仮";
+        const key = venue + "_" + race;
+        const r = saved.races[key] || { history: [] };
+        const view = {
+          stage, at: new Date().toISOString(),
+          honmei: clip(p.honmei, 40), aite: horses(p.aite), ana: horses(p.ana),
+          confidence: clip(p.confidence, 4), summary: clip(p.summary, 400), reason: clip(p.reason, 300),
+        };
+        if (!view.honmei) return json({ error: "本命の馬（馬番と馬名）を送ってください" }, 400);
+        r[stage === "最終" ? "final" : "provisional"] = view;
+        r.history = [...(r.history || []), { stage, at: view.at, honmei: view.honmei, reason: view.reason }].slice(-10);
+        saved.races[key] = r;
+        const value = JSON.stringify(saved);
+        if (value.length > 200000) return json({ error: "データが大きすぎます" }, 400);
+        await env.MEMORY.put(base + date, value, { expirationTtl: TTL });
+        const dates = (await env.MEMORY.get(base + "dates", "json")) || [];
+        if (!dates.includes(date)) {
+          dates.push(date); dates.sort();
+          await env.MEMORY.put(base + "dates", JSON.stringify(dates.slice(-60)), { expirationTtl: TTL });
+        }
+        return json({ ok: true, saved: key, stage });
       }
       return json({ error: "使えない呼び出し方です" }, 400);
     }

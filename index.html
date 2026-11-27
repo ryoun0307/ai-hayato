@@ -1691,6 +1691,49 @@ const KEIBA_SYSTEM_TOOL = {
     additionalProperties: false,
   },
 };
+// ハヤト自身の競馬の予想の記録（Cloudflare の /keiba-view）
+function keibaViewUrl() {
+  const u = keibaSyncUrl();
+  return u ? u.replace(/\/keiba$/, "/keiba-view") : "";
+}
+const KEIBA_VIEW_TOOL = {
+  name: "keiba_view",
+  description: "ハヤト（自分）が出した競馬の予想の記録。action=get：その日の記録（レースごとの仮予想・最終予想・変えた理由）を読む。" +
+    "action=save：自分の予想を記録する（stage=仮 または 最終）。action=dates：記録がある日の一覧。" +
+    "レースの予想を答える前に必ず get で記録を見る。記録があれば、それをそのまま答える（新しい情報がない限り変えない）。",
+  input_schema: {
+    type: "object",
+    properties: {
+      action: { type: "string", enum: ["get", "save", "dates"] },
+      date: { type: "string", description: "日付 YYYYMMDD（get・save で必要）" },
+      venue: { type: "string", description: "競馬場名（save で必要。東京、京都など）" },
+      race: { type: "integer", description: "レース番号 1〜12（save で必要）" },
+      stage: { type: "string", enum: ["仮", "最終"], description: "馬体重の発表前は 仮、発表後は 最終" },
+      honmei: { type: "string", description: "本命（例：5番ドウデュース）" },
+      aite: { type: "array", items: { type: "string" }, description: "相手（2〜4頭、例：3番〇〇）" },
+      ana: { type: "array", items: { type: "string" }, description: "穴（0〜2頭）" },
+      confidence: { type: "string", enum: ["A", "B", "C"], description: "自信度 A=高い C=低い" },
+      summary: { type: "string", description: "本命を選んだ根拠（短く）" },
+      reason: { type: "string", description: "前の記録から変えたときの理由（何が新しく分かったか）。初めてなら空" },
+    },
+    required: ["action"],
+    additionalProperties: false,
+  },
+};
+function keibaViewText(j, venue, race) {
+  const keys = Object.keys(j.races || {}).filter((k) => {
+    const [v, n] = k.split("_");
+    return (!venue || v === venue) && (!race || Number(n) === Number(race));
+  }).sort((a, b) => a.localeCompare(b, "ja", { numeric: true }));
+  if (!keys.length) return `${j.date} の、ハヤトの予想の記録はありません（この条件では）。`;
+  const one = (label, x) => x ? `  ${label}（${new Date(x.at).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}）本命:${x.honmei}` +
+    (x.aite?.length ? `／相手:${x.aite.join("、")}` : "") + (x.ana?.length ? `／穴:${x.ana.join("、")}` : "") +
+    (x.confidence ? `／自信度${x.confidence}` : "") + (x.summary ? `\n    根拠:${x.summary}` : "") + (x.reason ? `\n    変えた理由:${x.reason}` : "") : "";
+  return `${j.date} のハヤトの予想の記録\n` + keys.map((k) => {
+    const [v, n] = k.split("_"), r = j.races[k];
+    return `${v}${n}R\n` + [one("仮予想", r.provisional), one("最終予想", r.final)].filter(Boolean).join("\n");
+  }).join("\n");
+}
 function keibaSystemText(j, venue, race) {
   const fmt = (h) => h ? `${h.num}番${h.name}(${h.pop}人気)` : "";
   let rs = j.races || [];
@@ -1712,7 +1755,7 @@ function keibaSystemText(j, venue, race) {
   return `${j.date}のシステム予想（PCの自動予想・${j.updated || ""}更新）\n` + lines.join("\n");
 }
 function keibaTools() {
-  const sys = keibaSyncUrl() ? [KEIBA_SYSTEM_TOOL] : [];
+  const sys = keibaSyncUrl() ? [KEIBA_SYSTEM_TOOL, KEIBA_VIEW_TOOL] : [];
   if (!settings.keibaUrl) return sys;
   return [...sys, {
     name: "keiba_races",
@@ -1748,7 +1791,17 @@ function keibaPromptSection() {
       "- 競馬の予想を聞かれたら、まず keiba_system を見る。ある場合は、その本命・相手・堅さ判定を伝え、必要なら自分の見立て（最新ニュースなど）を足す。「システムの予想」と「自分の見立て」は分けて言う。\n" +
       "- 結果を聞かれたら keiba_system で結果を見て、本命が何着だったか、実際の1〜3着を伝える。結果が「まだ」なら、集計は10〜15分おきなので少し待ってもう一度聞くよう伝える。\n" +
       "- keiba_system のデータにあるのは、本命・相手・穴候補・堅さ判定と、1〜3着、本命の着順だけ。買い目、馬券が当たったか、払戻金・ワイド・馬連・複勝の的中は、データにないので推測で言わない。聞かれたら「そこまでのデータはない」と答え、本命が何着だったか、相手や穴候補が3着以内に入ったかを、データの範囲で伝える。\n" +
-      "- 的中率は46レースで、本命の複勝は約75%、単勝は約3割。大きく当たる保証はない、と正直に伝える（言いすぎない）。"
+      "- 的中率は46レースで、本命の複勝は約75%、単勝は約3割。大きく当たる保証はない、と正直に伝える（言いすぎない）。\n" +
+      "\n# ハヤトの予想の記録（ぶれないため・後日の答え合わせのため）\n" +
+      "- あるレースの予想（自分の見立て）を答える前に、必ず keiba_view（action=get、その日の日付）で記録を見る。\n" +
+      "- 記録があれば、それをそのまま答える（「前に出した予想のままです」と一言）。聞かれるたびに考え直さない。言い方は変わってもよいが、本命・相手・穴は変えない。\n" +
+      "- 変えてよいのは、記録したあとに新しい情報が出たときだけ：仮予想のあとに馬体重が発表された（最終予想を作る）、出走取消・除外、騎手の乗り替わり、馬場状態の大きな変化。" +
+      "変えるときは「〇〇が分かったので、本命を△△に変えます」と何がなぜ変わったかを言い、keiba_view（save）で reason に理由を書いて記録する。最終予想を記録したあとは、取消・除外・乗り替わり以外では変えない。\n" +
+      "- 記録がなければ、データ（keiba_system・keiba_race）を見て予想し、答える前に keiba_view（save）で記録する。馬体重が未発表なら stage=仮、発表後なら stage=最終。" +
+      "システム予想の本命を基準にし、違う馬を本命にするのは、はっきりした根拠があるときだけ（根拠を summary に書く）。\n" +
+      "- 「当たった？」「先週の予想はどうだった？」と聞かれたら、keiba_view（get、日付が分からなければ action=dates で記録のある日を見る）と keiba_system（同じ日）で、" +
+      "記録した最終予想（なければ仮予想）の本命が何着か、相手・穴が3着以内に入ったか、システムの本命と比べてどうだったかを伝える。keiba_system の結果は1〜3着だけなので、3着以内にいない馬は「4着以下」と言う。結果がまだなら、そう伝える。\n" +
+      "- 記録にない予想を「前にこう言った」と作らない。"
     : "";
   if (!settings.keibaUrl) return sysPart;
   return sysPart + "\n\n# 競馬データ\n" +
@@ -1759,6 +1812,22 @@ function keibaPromptSection() {
 }
 // ハヤト（Claude）から頼まれた競馬データを、GAS から取ってくる
 async function runKeibaTool(name, input = {}) {
+  if (name === "keiba_view") {
+    try {
+      const url = keibaViewUrl();
+      if (!url) throw new Error("声の中継（Cloudflare）の URL が設定されていません");
+      const body = { ...input };
+      if (body.date) body.date = String(body.date).replace(/\D/g, "");
+      const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const j = await r.json();
+      if (j.error) throw new Error(j.error);
+      if (input.action === "dates") return { content: "ハヤトの予想の記録がある日：" + ((j.dates || []).join("、") || "なし") };
+      if (input.action === "save") return { content: `記録しました（${j.saved}・${j.stage}予想）` };
+      return { content: keibaViewText(j, input.venue, input.race) };
+    } catch (e) {
+      return { content: "ハヤトの予想の記録を使えませんでした：" + (e?.message || e), is_error: true };
+    }
+  }
   if (name === "keiba_system") {
     try {
       const r = await fetch(keibaSyncUrl(), {
@@ -2486,7 +2555,7 @@ async function send(text) {
   // 答え方の指示は、毎回のメッセージの末尾に付ける（前提＝システムプロンプトは会話中に変えられないため）
   let hints = `（送信時刻: ${now}）`;
   if (mode.detail) hints += "\n（回答形式: 詳しく。1行目に【要点】と書いて、音声で読み上げる2〜3文の要約を書く。次に改行して【詳細】と書き、画面で読む詳しい説明を書く。詳細では改行と「・」で整理してよい。）";
-  if (mode.racing && keibaSyncUrl()) hints += "\n（競馬: まず keiba_system で、PC の自動予想（本命・相手・堅さ判定）と結果を見る。）";
+  if (mode.racing && keibaSyncUrl()) hints += "\n（競馬: まず keiba_system で、PC の自動予想（本命・相手・堅さ判定）と結果を見る。あるレースの予想を答えるときは keiba_view で自分の予想の記録も見て、記録があればそれを答える（新しい情報がない限り変えない）。新しく予想したら、答える前に keiba_view で記録する。）";
   if (mode.racing) hints += settings.keibaUrl
     ? "\n（競馬予想: まず keiba_race で JRA の出馬表データ（馬体重・オッズ・過去4走・血統）を取ってから判断する。Web検索は、当日の馬場傾向やニュースなどデータにない情報が必要なときだけ。）"
     : "\n（競馬予想: 必要に応じてWeb検索で出走表・過去成績・馬場状態・調教・騎手などを確認してから判断する。）";
