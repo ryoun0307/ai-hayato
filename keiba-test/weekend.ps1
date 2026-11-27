@@ -161,6 +161,9 @@ function Get-Jra([string]$Method, [string]$Url, [string]$Cname, [string]$CacheKe
   }
 }
 function Get-HorsePast([string]$HorseCname, [string]$RaceDate) {
+  # 控えがレースの前日より古いと、そのあと走ったレース（前走など）が抜けるので、読み直す
+  $hcf = Join-Path $cacheDir ("horse_" + ($HorseCname -replace '[^0-9A-Za-z]', '_') + ".html")
+  if ((Test-Path $hcf) -and (Get-Item $hcf).LastWriteTime -lt [datetime]::ParseExact($RaceDate, "yyyyMMdd", $null).AddDays(-1)) { Remove-Item $hcf -Force }
   $html = Get-Jra "GET" ("https://www.jra.go.jp/JRADB/accessU.html?CNAME=" + $HorseCname) $null ("horse_" + ($HorseCname -replace '[^0-9A-Za-z]', '_'))
   $start = $html.IndexOf("出走レース"); $runs = @()
   if ($start -ge 0) {
@@ -244,6 +247,16 @@ if ($Mode -eq "result") {
   [IO.File]::WriteAllText((Join-Path $wk ("結果_" + $Date + ".md")), $md.ToString(), (New-Object Text.UTF8Encoding($true)))
   Log ("答え合わせ：{0}レース → weekend\結果_{1}.md" -f $n, $Date)
   Push-Sync $Date
+  # 3案の並行記録（2026-11-28 から）：その日の最後の回（19時以降）に、レース後のデータで記録する
+  if ((Get-Date).Hour -ge 19 -and $Date -ge "20261128") {
+    $m7 = Join-Path $root "model7_forward.ps1"
+    $prev = ([datetime]::ParseExact($Date, "yyyyMMdd", $null)).AddDays(-1).ToString("yyyyMMdd")
+    foreach ($d7 in @($prev, $Date)) {
+      if ($d7 -lt "20261128") { continue }
+      if ($d7 -eq $prev -and ((Test-Path (Join-Path $wk ("3案\" + $d7 + ".json"))) -or -not (Test-Path (Join-Path $wk ("結果_" + $d7 + ".md"))))) { continue }
+      try { & powershell -NoProfile -ExecutionPolicy Bypass -File $m7 -Date $d7 | Out-Null } catch { Log ("3案の記録でエラー：" + $_.Exception.Message) }
+    }
+  }
   exit 0
 }
 

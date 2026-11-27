@@ -77,6 +77,9 @@ function ToInt([string]$s) {
 # ---------- 各馬の成績ページ：このレースの日付より前の4走と血統 ----------
 function Get-HorseInfo([string]$HorseCname, [string]$RaceDate) {
   $key = "horse_" + ($HorseCname -replace '[^0-9A-Za-z]', '_')
+  # 控えがレースの前日より古いと、そのあと走ったレース（前走など）が抜けるので、読み直す
+  $hcf = Join-Path $cDir ($key + ".html")
+  if ((Test-Path $hcf) -and (Get-Item $hcf).LastWriteTime -lt [datetime]::ParseExact($RaceDate, "yyyyMMdd", $null).AddDays(-1)) { Remove-Item $hcf -Force }
   $html = Get-Jra "GET" ("https://www.jra.go.jp/JRADB/accessU.html?CNAME=" + $HorseCname) $null $key
   $prof = @{}
   foreach ($label in @("父", "母", "母の父", "生年月日")) {
