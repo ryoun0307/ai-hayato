@@ -1752,11 +1752,13 @@ function jugglerTools() {
     name: "juggler_today",
     description: "ジャグラーの設定予想（BIGディッパー木場店・トーヨーホール木場駅前店）を返す。" +
       "what=today：今日の予想（ルールで選んだ台と、AI考察の本命・対抗・押さえの台、根拠、前日G数・差枚）。" +
-      "what=score：予想の成績（直近7・14・28日の高設定割合と店の平均、AI考察の成績）。",
+      "what=score：予想の成績（直近7・14・28日の高設定割合と店の平均、AI考察の成績）。" +
+      "what=result：答え合わせ（直近の日ごとに、予想した台が実際に高設定だったか。AI考察の台は台ごとの結果つき）。",
     input_schema: {
       type: "object",
       properties: {
-        what: { type: "string", enum: ["today", "score"], description: "today=今日の予想、score=予想の成績" },
+        what: { type: "string", enum: ["today", "score", "result"], description: "today=今日の予想、score=予想の成績（期間の平均）、result=日ごとの答え合わせ" },
+        days: { type: "integer", description: "result のとき、何日分さかのぼるか（1〜14、ふつうは3）" },
         store: { type: "string", enum: ["BIG", "トーヨー", ""], description: "店を絞るとき。空なら両方" },
       },
       required: ["what"],
@@ -1767,7 +1769,8 @@ function jugglerTools() {
 function jugglerPromptSection() {
   if (!settings.jugglerUrl) return "";
   return "\n\n# ジャグラーの設定予想\n" +
-    "- ジャグラーの設定・おすすめ台・どの台が入りそうかを聞かれたら、juggler_today（what=today）で今日の予想を取ってから答える。成績や当たり具合を聞かれたら what=score。\n" +
+    "- ジャグラーの設定・おすすめ台・どの台が入りそうかを聞かれたら、juggler_today（what=today）で今日の予想を取ってから答える。「昨日の予想はどうだった」「当たった？」など日ごとの結果は what=result（昨日だけなら days=1）、期間全体の成績は what=score。\n" +
+    "- 答え合わせでは、AI考察の本命・対抗・押さえのうち当たった台（当）と外れた台を台番で言い、ルールの台の結果と店全体の平均もひとこと添える。結果は前日の朝に出した予想と、その日のデータからの推定で、判定不可（3000G以下）の台は数に入れない。\n" +
     "- 予想はボスの予想システムが毎朝作ったもの。「ルールの台」は過去データで何度も繰り返している店の入れ方に当てはまる台、「AI考察の台」は Claude がデータを読んで選んだ広めの候補。分けて伝える。\n" +
     "- 記号（◎○△）は読み上げで聞き取りにくいので、本命・対抗・押さえと言葉で言う。台番と機種名、根拠を短く添える。\n" +
     "- 正直に：BIGディッパー木場店は予想が店の平均を上回っているが、トーヨーホール木場駅前店はまだ平均並みで読めていない。確実ではないと一言添える（言いすぎない）。\n" +
@@ -1776,7 +1779,8 @@ function jugglerPromptSection() {
 async function runJugglerTool(input = {}) {
   try {
     if (!settings.jugglerUrl) throw new Error("ジャグラー予想の URL が設定されていません");
-    const q = new URLSearchParams({ action: input.what === "score" ? "score" : "today" });
+    const q = new URLSearchParams({ action: ["score", "result"].includes(input.what) ? input.what : "today" });
+    if (input.what === "result") q.set("days", String(Math.min(Math.max(Number(input.days) || 3, 1), 14)));
     if (input.store === "BIG") q.set("store", "BIG");
     if (input.store === "トーヨー") q.set("store", "トーヨー");
     const ctrl = new AbortController();
