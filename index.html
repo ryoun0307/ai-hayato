@@ -1023,7 +1023,7 @@ function showToast(text, kind = "info") {
 const IDLE_TIME = 0.4; // 黙っているときに止めておく場面（口を閉じた場面）の秒数
 const charVideo = $("charVideo"), charCanvas = $("charCanvas");
 let charReady = false;
-const setCharTalking = (function setupCharacter() {
+const setCharState = (function setupCharacter() {
   const gl = charCanvas.getContext("webgl", { premultipliedAlpha: true, alpha: true });
   if (!gl) return () => {}; // WebGL が使えない端末では、キャラは表示しない
   const vs = `attribute vec2 p; varying vec2 v;
@@ -1058,8 +1058,22 @@ const setCharTalking = (function setupCharacter() {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
+  // 考え中の動画（あごに手を当てて考える）。読めないときは、考え中も止まった絵のまま
+  //   0〜1秒：立ちポーズ → 1〜1.3秒：手を上げる → 〜8.2秒：あごに手 → 8.2〜8.9秒：手を下ろす
+  const thinkVideo = document.createElement("video");
+  thinkVideo.src = "media/hayato_thinking.mp4";
+  thinkVideo.muted = true; thinkVideo.loop = false; thinkVideo.preload = "auto";
+  thinkVideo.setAttribute("playsinline", ""); thinkVideo.playsInline = true;
+  let thinkOk = false;
+  thinkVideo.addEventListener("loadeddata", () => { thinkOk = true; });
+  thinkVideo.addEventListener("error", () => { thinkOk = false; });
+  thinkVideo.load();
+  const THINK_HOLD_FROM = 2.0, THINK_HOLD_TO = 8.0;   // あごに手を当てている場面（考えている間はここをくり返す）
+  const THINK_LOWER_AT = 8.2, THINK_LOWER_END = 8.9;  // 手を下ろす場面
+  let src = charVideo;  // いま描いている動画
+
   function draw() {
-    if (charVideo.readyState < 2) return;
+    if (src.readyState < 2) return;
     // 画面に表示される大きさに合わせて描く（大きすぎると重くなるので上限あり）
     const r = charCanvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1068,13 +1082,16 @@ const setCharTalking = (function setupCharacter() {
     if (charCanvas.width !== w || charCanvas.height !== h) { charCanvas.width = w; charCanvas.height = h; }
     gl.viewport(0, 0, w, h);
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, charVideo);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
-  let talkingNow = false;
+  let mode = "idle";   // idle（黙っている）/ talk（話す）/ think（考える）/ lower（考え終わって手を下ろしている途中）
+  let want = "idle";   // 手を下ろし終わったあとに移る状態
   function loop() {
-    // 話している間だけ毎コマ描き直す（黙っている間は止めた場面のままなので描き直さない）
-    if (talkingNow) draw();
+    if (mode === "think" && thinkVideo.currentTime >= THINK_HOLD_TO) thinkVideo.currentTime = THINK_HOLD_FROM;
+    if (mode === "lower" && (thinkVideo.currentTime >= THINK_LOWER_END || thinkVideo.ended)) enter(want);
+    // 動いている間だけ毎コマ描き直す（黙っている間は止めた場面のままなので描き直さない）
+    if (mode !== "idle") draw();
     requestAnimationFrame(loop);
   }
   charVideo.addEventListener("loadeddata", () => {
@@ -1092,22 +1109,43 @@ const setCharTalking = (function setupCharacter() {
     draw();
   });
   charVideo.addEventListener("error", () => { /* 読み込めなければ、キャラは表示しない */ });
-  window.addEventListener("resize", () => { if (!talkingNow) draw(); });
+  window.addEventListener("resize", () => { if (mode === "idle") draw(); });
   charVideo.load();
   requestAnimationFrame(loop);
 
-  return function setTalking(on) {
-    if (!charReady || on === talkingNow) return;
-    talkingNow = on;
-    if (on) {
+  function enter(st) {
+    if (st === "talk") {
+      thinkVideo.pause(); src = charVideo; mode = "talk";
       // 毎回同じ動きにならないよう、少しずらした場面から話し始める
       const d = charVideo.duration || 10;
       charVideo.currentTime = Math.random() * Math.max(0, d - 3);
       charVideo.play().catch(() => {});
+    } else if (st === "think" && thinkOk) {
+      charVideo.pause(); src = thinkVideo; mode = "think";
+      thinkVideo.currentTime = 0;
+      thinkVideo.play().catch(() => {});
     } else {
-      charVideo.pause();
-      charVideo.currentTime = IDLE_TIME; // 口を閉じた場面に戻す
+      thinkVideo.pause(); charVideo.pause(); src = charVideo; mode = "idle";
+      charVideo.currentTime = IDLE_TIME; // 口を閉じた場面に戻す（戻ったら seeked で描く）
     }
+  }
+
+  // st：talk（話す）/ think（考える）/ idle（黙っている）
+  return function setState(st) {
+    if (!charReady) return;
+    if (st === "think" && !thinkOk) st = "idle";
+    want = st;
+    if (mode === "lower" || st === mode) return;   // 手を下ろしている途中は、下ろし終わってから切り替える
+    if (mode === "think") {
+      const t = thinkVideo.currentTime;
+      if (t > 1.0 && t < THINK_LOWER_AT) {          // 手を上げているので、下ろしてから次へ
+        mode = "lower";
+        thinkVideo.currentTime = THINK_LOWER_AT;
+        thinkVideo.play().catch(() => {});
+        return;
+      }
+    }
+    enter(st);
   };
 })();
 
@@ -1119,7 +1157,7 @@ const setCharTalking = (function setupCharacter() {
     const talking = fishPlaying || streamPlaying() || (synth && synth.speaking) || (speakQueue > 0 && !fishActive());
     hayatoEl.classList.toggle("talking", !!talking);
     hayatoEl.classList.toggle("thinking", busy && !talking);
-    setCharTalking(!!talking);
+    setCharState(talking ? "talk" : busy ? "think" : "idle");
     if (talking) {
       // 話している間は、少し不規則に口を開け閉めする
       if (--flip <= 0) { open = !open; flip = open ? 1 + Math.floor(Math.random() * 2) : 1 + Math.floor(Math.random() * 3); }
