@@ -155,35 +155,6 @@
   .avatar:not(.video) .aura { display: none; }
   /* 考え中は淡く光る */
   .avatar.thinking .float { filter: drop-shadow(0 0 14px rgba(150,170,255,.55)); }
-  /* 考え中の仕草：首をかしげるように、ゆっくり左右に傾いて少し止まる（話し始めたら元の動きに戻る） */
-  .avatar.video.thinking .float { animation: ponder 3.6s ease-in-out infinite; transform-origin: 50% 85%; }
-  @keyframes ponder {
-    0%, 100% { transform: translateY(-4px) rotate(0deg); }
-    20%, 42% { transform: translateY(-8px) rotate(-3.5deg); }
-    62%, 80% { transform: translateY(-6px) rotate(2.5deg); }
-  }
-  /* 頭の横に「考えている」吹き出し（・・・が順番に光る） */
-  .think-bubble {
-    position: absolute; left: 74%; top: 9%;
-    display: none; gap: 8px; padding: 11px 16px; border-radius: 999px;
-    background: rgba(20, 24, 48, .72); border: 1px solid rgba(150,170,255,.55);
-    box-shadow: 0 0 14px rgba(150,170,255,.35); pointer-events: none; z-index: 3;
-  }
-  .think-bubble::before, .think-bubble::after {   /* 吹き出しのしっぽ（小さな丸2つ） */
-    content: ""; position: absolute; border-radius: 50%;
-    background: rgba(20, 24, 48, .72); border: 1px solid rgba(150,170,255,.55);
-  }
-  .think-bubble::before { width: 12px; height: 12px; left: -6px; bottom: -10px; }
-  .think-bubble::after  { width: 7px;  height: 7px;  left: -15px; bottom: -20px; }
-  .think-bubble span {
-    width: 11px; height: 11px; border-radius: 50%; background: #cfd8ff;
-    animation: thinkdot 1.2s ease-in-out infinite; opacity: .25;
-  }
-  .think-bubble span:nth-child(2) { animation-delay: .2s; }
-  .think-bubble span:nth-child(3) { animation-delay: .4s; }
-  .avatar.video.thinking .think-bubble { display: flex; animation: bubblein .35s ease-out; }
-  @keyframes thinkdot { 0%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
-  @keyframes bubblein { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
 
   @keyframes float {
     0%, 100% { transform: translateY(0) rotate(-1.2deg); }
@@ -202,7 +173,7 @@
     96%           { transform: scaleY(.1); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .avatar .float, .avatar .aura, .avatar.talking .bob, .avatar.video.thinking .float, .think-bubble span { animation: none; }
+    .avatar .float, .avatar .aura, .avatar.talking .bob { animation: none; }
   }
 
   .toast {
@@ -537,7 +508,6 @@
     <div class="avatar" id="hayato">
       <div class="aura"></div>
       <div class="float">
-        <div class="think-bubble" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="bob">
           <!-- キャラの動画（緑の背景を透明にして canvas に描く） -->
           <video id="charVideo" src="media/hayato_talk.mp4" muted loop playsinline preload="auto" aria-hidden="true" style="display:none"></video>
