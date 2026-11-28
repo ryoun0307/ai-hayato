@@ -1,0 +1,648 @@
+{
+    "race":  {
+                 "date":  "20261122",
+                 "venue":  "京都",
+                 "race_no":  11,
+                 "day_label":  "2026年11月22日（日曜） 5回京都6日",
+                 "start_time":  "15時40分",
+                 "name":  "マイルチャンピオンシップ GⅠ",
+                 "category":  "3歳以上",
+                 "class":  "オープン",
+                 "rule":  "（国際）（指定）",
+                 "weight_rule":  "定量",
+                 "course":  "コース： 1,600 メートル （芝・右 外）",
+                 "track_condition":  "天候:晴 芝:良"
+             },
+    "horses":  [
+                   {
+                       "number":  1,
+                       "frame":  "1",
+                       "name":  "カクガイ エルデナリ",
+                       "jra_id":  "pw01dud002023190001/13",
+                       "sex_age":  "せん3",
+                       "weight_carried":  "57.0",
+                       "jockey":  "M.バルザローナ",
+                       "trainer":  "F.グラファール",
+                       "sire":  "Caravaggio",
+                       "dam":  "Erdana",
+                       "damsire":  "Sea The Stars",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260906",
+                                             "venue":  "仏",
+                                             "race":  "ムーラン・ド GⅠ",
+                                             "distance":  "芝1600",
+                                             "going":  "稍重",
+                                             "heads":  7,
+                                             "popularity":  null,
+                                             "finish":  "1",
+                                             "jockey":  "M.バルザローナ",
+                                             "weight":  "56.5",
+                                             "body_weight":  "",
+                                             "time":  "1:33.0",
+                                             "winner":  "(テンボブトニー)"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  438,
+                                     "body_weight_diff":  "",
+                                     "popularity":  4
+                                 }
+                   },
+                   {
+                       "number":  2,
+                       "frame":  "1",
+                       "name":  "エンブロイダリー",
+                       "jra_id":  "pw01dud002022105185/71",
+                       "sex_age":  "牝4",
+                       "weight_carried":  "56.0",
+                       "jockey":  "C.ルメール",
+                       "trainer":  "森 一誠",
+                       "sire":  "アドマイヤマーズ",
+                       "dam":  "ロッテンマイヤー",
+                       "damsire":  "クロフネ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260517",
+                                             "venue":  "東京",
+                                             "race":  "ヴィクトリア GⅠ",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  18,
+                                             "popularity":  1,
+                                             "finish":  "1",
+                                             "jockey":  "C.ルメール",
+                                             "weight":  "56.0",
+                                             "body_weight":  "492",
+                                             "time":  "1:30.9",
+                                             "winner":  "(カムニャック)"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  498,
+                                     "body_weight_diff":  "+6",
+                                     "popularity":  3
+                                 }
+                   },
+                   {
+                       "number":  14,
+                       "frame":  "7",
+                       "name":  "スターアニス",
+                       "jra_id":  "pw01dud002023106920/D5",
+                       "sex_age":  "牝3",
+                       "weight_carried":  "55.0",
+                       "jockey":  "松山 弘平",
+                       "trainer":  "高野 友和",
+                       "sire":  "ドレフォン",
+                       "dam":  "エピセアローム",
+                       "damsire":  "ダイワメジャー",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260927",
+                                             "venue":  "中山",
+                                             "race":  "スプリンター GⅠ",
+                                             "distance":  "芝1200",
+                                             "going":  "稍重",
+                                             "heads":  16,
+                                             "popularity":  1,
+                                             "finish":  "4",
+                                             "jockey":  "C.ルメール",
+                                             "weight":  "54.0",
+                                             "body_weight":  "484",
+                                             "time":  "1:09.4",
+                                             "winner":  "ピューロマジック"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  488,
+                                     "body_weight_diff":  "+4",
+                                     "popularity":  1
+                                 }
+                   },
+                   {
+                       "number":  18,
+                       "frame":  "8",
+                       "name":  "マルガイ オフトレイル",
+                       "jra_id":  "pw01dud002021110031/BB",
+                       "sex_age":  "牡5",
+                       "weight_carried":  "58.0",
+                       "jockey":  "菅原 明良",
+                       "trainer":  "吉村 圭司",
+                       "sire":  "Farhh",
+                       "dam":  "Rose Trail",
+                       "damsire":  "Kingmambo",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261012",
+                                             "venue":  "京都",
+                                             "race":  "MBSスワン GⅡ",
+                                             "distance":  "芝1400",
+                                             "going":  "良",
+                                             "heads":  18,
+                                             "popularity":  1,
+                                             "finish":  "3",
+                                             "jockey":  "菅原 明良",
+                                             "weight":  "58.0",
+                                             "body_weight":  "468",
+                                             "time":  "1:19.2",
+                                             "winner":  "ダイヤモンドノット"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  470,
+                                     "body_weight_diff":  "+2",
+                                     "popularity":  9
+                                 }
+                   },
+                   {
+                       "number":  16,
+                       "frame":  "8",
+                       "name":  "スズハローム",
+                       "jra_id":  "pw01dud002020105018/11",
+                       "sex_age":  "牡6",
+                       "weight_carried":  "58.0",
+                       "jockey":  "藤懸 貴志",
+                       "trainer":  "牧田 和弥",
+                       "sire":  "サトノダイヤモンド",
+                       "dam":  "アイライン",
+                       "damsire":  "ローレルゲレイロ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261012",
+                                             "venue":  "京都",
+                                             "race":  "MBSスワン GⅡ",
+                                             "distance":  "芝1400",
+                                             "going":  "良",
+                                             "heads":  18,
+                                             "popularity":  8,
+                                             "finish":  "2",
+                                             "jockey":  "藤懸 貴志",
+                                             "weight":  "57.0",
+                                             "body_weight":  "462",
+                                             "time":  "1:19.2",
+                                             "winner":  "ダイヤモンドノット"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  464,
+                                     "body_weight_diff":  "+2",
+                                     "popularity":  11
+                                 }
+                   },
+                   {
+                       "number":  11,
+                       "frame":  "6",
+                       "name":  "ガイアフォース",
+                       "jra_id":  "pw01dud002019104476/E1",
+                       "sex_age":  "牡7",
+                       "weight_carried":  "58.0",
+                       "jockey":  "西村 淳也",
+                       "trainer":  "杉山 晴紀",
+                       "sire":  "キタサンブラック",
+                       "dam":  "ナターレ",
+                       "damsire":  "クロフネ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260607",
+                                             "venue":  "東京",
+                                             "race":  "安田記念 GⅠ",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  17,
+                                             "popularity":  1,
+                                             "finish":  "2",
+                                             "jockey":  "横山 武史",
+                                             "weight":  "58.0",
+                                             "body_weight":  "498",
+                                             "time":  "1:32.1",
+                                             "winner":  "シックスペンス"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  502,
+                                     "body_weight_diff":  "+4",
+                                     "popularity":  6
+                                 }
+                   },
+                   {
+                       "number":  8,
+                       "frame":  "4",
+                       "name":  "ロデオドライブ",
+                       "jra_id":  "pw01dud002023107166/2E",
+                       "sex_age":  "牡3",
+                       "weight_carried":  "57.0",
+                       "jockey":  "J.モレイラ",
+                       "trainer":  "辻 哲英",
+                       "sire":  "サートゥルナーリア",
+                       "dam":  "ビバリーヒルズ",
+                       "damsire":  "スニッツェル",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260830",
+                                             "venue":  "新潟",
+                                             "race":  "新潟記念 GⅢ",
+                                             "distance":  "芝2000",
+                                             "going":  "稍重",
+                                             "heads":  11,
+                                             "popularity":  3,
+                                             "finish":  "2",
+                                             "jockey":  "C.ルメール",
+                                             "weight":  "57.0",
+                                             "body_weight":  "476",
+                                             "time":  "1:59.6",
+                                             "winner":  "ゾロアストロ"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  472,
+                                     "body_weight_diff":  "-4",
+                                     "popularity":  2
+                                 }
+                   },
+                   {
+                       "number":  10,
+                       "frame":  "5",
+                       "name":  "ウォーターリヒト",
+                       "jra_id":  "pw01dud002021100953/AC",
+                       "sex_age":  "牡5",
+                       "weight_carried":  "58.0",
+                       "jockey":  "幸 英明",
+                       "trainer":  "石橋 守",
+                       "sire":  "ドレフォン",
+                       "dam":  "ウォーターピオニー",
+                       "damsire":  "ヴィクトワールピサ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261017",
+                                             "venue":  "東京",
+                                             "race":  "富士S GⅡ",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  14,
+                                             "popularity":  7,
+                                             "finish":  "7",
+                                             "jockey":  "幸 英明",
+                                             "weight":  "57.0",
+                                             "body_weight":  "466",
+                                             "time":  "1:32.9",
+                                             "winner":  "シュガークン"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  474,
+                                     "body_weight_diff":  "+8",
+                                     "popularity":  16
+                                 }
+                   },
+                   {
+                       "number":  9,
+                       "frame":  "5",
+                       "name":  "ジューンテイク",
+                       "jra_id":  "pw01dud002021100913/6C",
+                       "sex_age":  "牡5",
+                       "weight_carried":  "58.0",
+                       "jockey":  "川田 将雅",
+                       "trainer":  "武 英智",
+                       "sire":  "キズナ",
+                       "dam":  "アドマイヤサブリナ",
+                       "damsire":  "シンボリクリスエス",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260920",
+                                             "venue":  "中山",
+                                             "race":  "オールカマー GⅡ",
+                                             "distance":  "芝2200",
+                                             "going":  "重",
+                                             "heads":  13,
+                                             "popularity":  4,
+                                             "finish":  "7",
+                                             "jockey":  "武 豊",
+                                             "weight":  "58.0",
+                                             "body_weight":  "504",
+                                             "time":  "2:18.1",
+                                             "winner":  "メイショウゲキリン"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  510,
+                                     "body_weight_diff":  "+6",
+                                     "popularity":  13
+                                 }
+                   },
+                   {
+                       "number":  13,
+                       "frame":  "7",
+                       "name":  "レザベーション",
+                       "jra_id":  "pw01dud002023103268/89",
+                       "sex_age":  "牡3",
+                       "weight_carried":  "57.0",
+                       "jockey":  "田口 貫太",
+                       "trainer":  "松下 武士",
+                       "sire":  "ダノンプレミアム",
+                       "dam":  "プレノタート",
+                       "damsire":  "ジャングルポケット",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261101",
+                                             "venue":  "京都",
+                                             "race":  "まほろばS リステッド",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  13,
+                                             "popularity":  1,
+                                             "finish":  "1",
+                                             "jockey":  "田口 貫太",
+                                             "weight":  "55.0",
+                                             "body_weight":  "468",
+                                             "time":  "1:33.5",
+                                             "winner":  "(スマートワイス)"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  470,
+                                     "body_weight_diff":  "+2",
+                                     "popularity":  15
+                                 }
+                   },
+                   {
+                       "number":  3,
+                       "frame":  "2",
+                       "name":  "ドラゴンブースト",
+                       "jra_id":  "pw01dud002022105891/0C",
+                       "sex_age":  "牡4",
+                       "weight_carried":  "58.0",
+                       "jockey":  "浜中 俊",
+                       "trainer":  "藤野 健太",
+                       "sire":  "スクリーンヒーロー",
+                       "dam":  "トーコーディオーネ",
+                       "damsire":  "エンパイアメーカー",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261004",
+                                             "venue":  "東京",
+                                             "race":  "毎日王冠 GⅡ",
+                                             "distance":  "芝1800",
+                                             "going":  "良",
+                                             "heads":  17,
+                                             "popularity":  8,
+                                             "finish":  "11",
+                                             "jockey":  "丹内 祐次",
+                                             "weight":  "57.0",
+                                             "body_weight":  "476",
+                                             "time":  "1:46.1",
+                                             "winner":  "セイウンハーデス"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  474,
+                                     "body_weight_diff":  "-2",
+                                     "popularity":  17
+                                 }
+                   },
+                   {
+                       "number":  15,
+                       "frame":  "7",
+                       "name":  "エコロブルーム",
+                       "jra_id":  "pw01dud002021105565/89",
+                       "sex_age":  "牡5",
+                       "weight_carried":  "58.0",
+                       "jockey":  "坂井 瑠星",
+                       "trainer":  "加藤 征弘",
+                       "sire":  "ダイワメジャー",
+                       "dam":  "シュガーショック",
+                       "damsire":  "Candy Ride",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260905",
+                                             "venue":  "中山",
+                                             "race":  "京成杯AH GⅢ",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  16,
+                                             "popularity":  5,
+                                             "finish":  "2",
+                                             "jockey":  "武 豊",
+                                             "weight":  "58.0",
+                                             "body_weight":  "476",
+                                             "time":  "1:32.1",
+                                             "winner":  "ピコローズ"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  480,
+                                     "body_weight_diff":  "+4",
+                                     "popularity":  14
+                                 }
+                   },
+                   {
+                       "number":  7,
+                       "frame":  "4",
+                       "name":  "ココナッツブラウン",
+                       "jra_id":  "pw01dud002020101607/F8",
+                       "sex_age":  "牝6",
+                       "weight_carried":  "56.0",
+                       "jockey":  "北村 友一",
+                       "trainer":  "上村 洋行",
+                       "sire":  "キタサンブラック",
+                       "dam":  "ルアーズストリート",
+                       "damsire":  "キングカメハメハ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260802",
+                                             "venue":  "札幌",
+                                             "race":  "クイーンS GⅢ",
+                                             "distance":  "芝1800",
+                                             "going":  "良",
+                                             "heads":  14,
+                                             "popularity":  1,
+                                             "finish":  "1",
+                                             "jockey":  "北村 友一",
+                                             "weight":  "55.0",
+                                             "body_weight":  "458",
+                                             "time":  "1:46.1",
+                                             "winner":  "(コガネノソラ)"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  462,
+                                     "body_weight_diff":  "+4",
+                                     "popularity":  12
+                                 }
+                   },
+                   {
+                       "number":  6,
+                       "frame":  "3",
+                       "name":  "ピコローズ",
+                       "jra_id":  "pw01dud002022101765/BB",
+                       "sex_age":  "牝4",
+                       "weight_carried":  "56.0",
+                       "jockey":  "三浦 皇成",
+                       "trainer":  "伊藤 大士",
+                       "sire":  "サトノダイヤモンド",
+                       "dam":  "ルージュノアール",
+                       "damsire":  "ストーミングホーム",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260905",
+                                             "venue":  "中山",
+                                             "race":  "京成杯AH GⅢ",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  16,
+                                             "popularity":  10,
+                                             "finish":  "1",
+                                             "jockey":  "三浦 皇成",
+                                             "weight":  "53.0",
+                                             "body_weight":  "444",
+                                             "time":  "1:32.0",
+                                             "winner":  "(エコロブルーム)"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  446,
+                                     "body_weight_diff":  "+2",
+                                     "popularity":  18
+                                 }
+                   },
+                   {
+                       "number":  12,
+                       "frame":  "6",
+                       "name":  "ワールズエンド",
+                       "jra_id":  "pw01dud002021105864/A9",
+                       "sex_age":  "牡5",
+                       "weight_carried":  "58.0",
+                       "jockey":  "C.デムーロ",
+                       "trainer":  "池添 学",
+                       "sire":  "ロードカナロア",
+                       "dam":  "リラヴァティ",
+                       "damsire":  "ゼンノロブロイ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260927",
+                                             "venue":  "中山",
+                                             "race":  "スプリンター GⅠ",
+                                             "distance":  "芝1200",
+                                             "going":  "稍重",
+                                             "heads":  16,
+                                             "popularity":  5,
+                                             "finish":  "2",
+                                             "jockey":  "津村 明秀",
+                                             "weight":  "58.0",
+                                             "body_weight":  "472",
+                                             "time":  "1:09.2",
+                                             "winner":  "ピューロマジック"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  474,
+                                     "body_weight_diff":  "+2",
+                                     "popularity":  7
+                                 }
+                   },
+                   {
+                       "number":  5,
+                       "frame":  "3",
+                       "name":  "アドマイヤズーム",
+                       "jra_id":  "pw01dud002022105396/56",
+                       "sex_age":  "牡4",
+                       "weight_carried":  "58.0",
+                       "jockey":  "武 豊",
+                       "trainer":  "友道 康夫",
+                       "sire":  "モーリス",
+                       "dam":  "ダイワズーム",
+                       "damsire":  "ハーツクライ",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261017",
+                                             "venue":  "東京",
+                                             "race":  "富士S GⅡ",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  14,
+                                             "popularity":  3,
+                                             "finish":  "6",
+                                             "jockey":  "武 豊",
+                                             "weight":  "58.0",
+                                             "body_weight":  "492",
+                                             "time":  "1:32.8",
+                                             "winner":  "シュガークン"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  484,
+                                     "body_weight_diff":  "-8",
+                                     "popularity":  5
+                                 }
+                   },
+                   {
+                       "number":  17,
+                       "frame":  "8",
+                       "name":  "マルガイ アンパドゥ",
+                       "jra_id":  "pw01dud002021110030/48",
+                       "sex_age":  "牡5",
+                       "weight_carried":  "58.0",
+                       "jockey":  "岩田 望来",
+                       "trainer":  "木村 哲也",
+                       "sire":  "Iffraaj",
+                       "dam":  "Latharna Skies",
+                       "damsire":  "Dubawi",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20261017",
+                                             "venue":  "東京",
+                                             "race":  "富士S GⅡ",
+                                             "distance":  "芝1600",
+                                             "going":  "良",
+                                             "heads":  14,
+                                             "popularity":  2,
+                                             "finish":  "2",
+                                             "jockey":  "岩田 望来",
+                                             "weight":  "57.0",
+                                             "body_weight":  "494",
+                                             "time":  "1:32.3",
+                                             "winner":  "シュガークン"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  490,
+                                     "body_weight_diff":  "-4",
+                                     "popularity":  8
+                                 }
+                   },
+                   {
+                       "number":  4,
+                       "frame":  "2",
+                       "name":  "シックスペンス ブリンカー着用",
+                       "jra_id":  "pw01dud002021105724/38",
+                       "sex_age":  "牡5",
+                       "weight_carried":  "58.0",
+                       "jockey":  "A.プーシャン",
+                       "trainer":  "田中 博康",
+                       "sire":  "キズナ",
+                       "dam":  "フィンレイズラッキーチャーム",
+                       "damsire":  "Twirling Candy",
+                       "past_runs":  [
+                                         {
+                                             "date":  "20260816",
+                                             "venue":  "仏",
+                                             "race":  "ジャック・ル GⅠ",
+                                             "distance":  "芝1600",
+                                             "going":  "稍重",
+                                             "heads":  10,
+                                             "popularity":  null,
+                                             "finish":  "10",
+                                             "jockey":  "武 豊",
+                                             "weight":  "60.0",
+                                             "body_weight":  "計不",
+                                             "time":  "1:39.5",
+                                             "winner":  "ライフ"
+                                         }
+                                     ],
+                       "final":  {
+                                     "body_weight":  510,
+                                     "body_weight_diff":  "",
+                                     "popularity":  10
+                                 }
+                   }
+               ]
+}

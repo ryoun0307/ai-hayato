@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261122",
+                 "venue":  "京都",
+                 "race_no":  6,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  16,
+                        "name":  "ダノンステート",
+                        "finish":  "1",
+                        "time":  "1:11.8",
+                        "margin":  "",
+                        "corner":  "6-6",
+                        "last3f":  "36.0",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  4,
+                        "name":  "スターフュージョン",
+                        "finish":  "2",
+                        "time":  "1:11.9",
+                        "margin":  "３／４",
+                        "corner":  "1-1",
+                        "last3f":  "36.8",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ラフォン",
+                        "finish":  "3",
+                        "time":  "1:12.0",
+                        "margin":  "アタマ",
+                        "corner":  "2-2",
+                        "last3f":  "36.8",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ヒッグスボソン",
+                        "finish":  "4",
+                        "time":  "1:12.3",
+                        "margin":  "２",
+                        "corner":  "14-12",
+                        "last3f":  "35.6",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  14,
+                        "name":  "サンライズジュピタ ブリンカー着用",
+                        "finish":  "5",
+                        "time":  "1:12.4",
+                        "margin":  "３／４",
+                        "corner":  "5-4",
+                        "last3f":  "36.8",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ペンテリコン",
+                        "finish":  "6",
+                        "time":  "1:12.5",
+                        "margin":  "クビ",
+                        "corner":  "3-3",
+                        "last3f":  "37.1",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  15,
+                        "name":  "ビサーロ",
+                        "finish":  "7",
+                        "time":  "1:12.5",
+                        "margin":  "クビ",
+                        "corner":  "7-7",
+                        "last3f":  "36.4",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  10,
+                        "name":  "サヨノパララックス",
+                        "finish":  "8",
+                        "time":  "1:12.6",
+                        "margin":  "１／２",
+                        "corner":  "13-12",
+                        "last3f":  "36.1",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  11,
+                        "name":  "ジューンオアシス",
+                        "finish":  "9",
+                        "time":  "1:12.8",
+                        "margin":  "１",
+                        "corner":  "10-10",
+                        "last3f":  "36.5",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  6,
+                        "name":  "マルチ クリノミニスター",
+                        "finish":  "10",
+                        "time":  "1:13.0",
+                        "margin":  "１ 1/2",
+                        "corner":  "10-10",
+                        "last3f":  "36.7",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  2,
+                        "name":  "スズノソレイユ",
+                        "finish":  "11",
+                        "time":  "1:13.0",
+                        "margin":  "クビ",
+                        "corner":  "10-12",
+                        "last3f":  "36.7",
+                        "popularity":  16
+                    },
+                    {
+                        "number":  5,
+                        "name":  "エシェックオロワ",
+                        "finish":  "12",
+                        "time":  "1:13.1",
+                        "margin":  "１／２",
+                        "corner":  "7-7",
+                        "last3f":  "37.1",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  1,
+                        "name":  "マルチ オドラニャソンソン",
+                        "finish":  "13",
+                        "time":  "1:13.2",
+                        "margin":  "１／２",
+                        "corner":  "14-12",
+                        "last3f":  "36.6",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  9,
+                        "name":  "マルチ アンピュルシオン",
+                        "finish":  "14",
+                        "time":  "1:13.3",
+                        "margin":  "クビ",
+                        "corner":  "7-7",
+                        "last3f":  "37.2",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  8,
+                        "name":  "フレイムスター ブリンカー着用",
+                        "finish":  "15",
+                        "time":  "1:13.4",
+                        "margin":  "３／４",
+                        "corner":  "14-12",
+                        "last3f":  "36.8",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  12,
+                        "name":  "マルチ エンブルーシャ",
+                        "finish":  "16",
+                        "time":  "1:15.4",
+                        "margin":  "大差",
+                        "corner":  "3-4",
+                        "last3f":  "40.0",
+                        "popularity":  12
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "16",
+                                       "yen":  340
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "16",
+                                        "yen":  140
+                                    },
+                                    {
+                                        "combo":  "4",
+                                        "yen":  130
+                                    },
+                                    {
+                                        "combo":  "7",
+                                        "yen":  250
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "2-8",
+                                        "yen":  510
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "4-16",
+                                     "yen":  270
+                                 },
+                                 {
+                                     "combo":  "7-16",
+                                     "yen":  700
+                                 },
+                                 {
+                                     "combo":  "4-7",
+                                     "yen":  530
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "4-16",
+                                       "yen":  590
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "16-4",
+                                       "yen":  1180
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "4-7-16",
+                                           "yen":  1770
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "16-4-7",
+                                          "yen":  8800
+                                      }
+                                  ]
+                }
+}

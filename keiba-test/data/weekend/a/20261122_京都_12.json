@@ -1,0 +1,206 @@
+{
+    "race":  {
+                 "date":  "20261122",
+                 "venue":  "京都",
+                 "race_no":  12,
+                 "name":  "醍醐ステークス"
+             },
+    "results":  [
+                    {
+                        "number":  11,
+                        "name":  "ルージュスプリヤ",
+                        "finish":  "1",
+                        "time":  "1:07.7",
+                        "margin":  "",
+                        "corner":  "1-1",
+                        "last3f":  "33.4",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  3,
+                        "name":  "シカゴスティング",
+                        "finish":  "2",
+                        "time":  "1:07.7",
+                        "margin":  "ハナ",
+                        "corner":  "6-6",
+                        "last3f":  "33.0",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  12,
+                        "name":  "マルガイ ジョヴィアン ブリンカー着用",
+                        "finish":  "3",
+                        "time":  "1:07.8",
+                        "margin":  "１／２",
+                        "corner":  "9-8",
+                        "last3f":  "32.8",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  9,
+                        "name":  "マリノトニトゥルス",
+                        "finish":  "4",
+                        "time":  "1:07.9",
+                        "margin":  "３／４",
+                        "corner":  "3-2",
+                        "last3f":  "33.4",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  10,
+                        "name":  "ディアドコス",
+                        "finish":  "5",
+                        "time":  "1:08.0",
+                        "margin":  "１／２",
+                        "corner":  "6-6",
+                        "last3f":  "33.2",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  8,
+                        "name":  "メルトユアハート ブリンカー着用",
+                        "finish":  "6",
+                        "time":  "1:08.0",
+                        "margin":  "クビ",
+                        "corner":  "3-4",
+                        "last3f":  "33.4",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  1,
+                        "name":  "トーラスシャイン",
+                        "finish":  "7",
+                        "time":  "1:08.1",
+                        "margin":  "クビ",
+                        "corner":  "9-10",
+                        "last3f":  "33.1",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  5,
+                        "name":  "クリエープキー",
+                        "finish":  "8",
+                        "time":  "1:08.1",
+                        "margin":  "クビ",
+                        "corner":  "3-4",
+                        "last3f":  "33.6",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  6,
+                        "name":  "ルーフ",
+                        "finish":  "9",
+                        "time":  "1:08.2",
+                        "margin":  "クビ",
+                        "corner":  "6-8",
+                        "last3f":  "33.4",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ポエットリー",
+                        "finish":  "10",
+                        "time":  "1:08.2",
+                        "margin":  "ハナ",
+                        "corner":  "11-11",
+                        "last3f":  "33.1",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  4,
+                        "name":  "ミロワール",
+                        "finish":  "11",
+                        "time":  "1:08.2",
+                        "margin":  "クビ",
+                        "corner":  "12-13",
+                        "last3f":  "32.9",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ファビュラススター",
+                        "finish":  "12",
+                        "time":  "1:08.3",
+                        "margin":  "１／２",
+                        "corner":  "2-2",
+                        "last3f":  "33.9",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  2,
+                        "name":  "トーセントラム ブリンカー着用",
+                        "finish":  "13",
+                        "time":  "1:08.4",
+                        "margin":  "３／４",
+                        "corner":  "12-11",
+                        "last3f":  "33.1",
+                        "popularity":  11
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "11",
+                                       "yen":  150
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "11",
+                                        "yen":  110
+                                    },
+                                    {
+                                        "combo":  "3",
+                                        "yen":  370
+                                    },
+                                    {
+                                        "combo":  "12",
+                                        "yen":  250
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "3-7",
+                                        "yen":  1700
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "3-11",
+                                     "yen":  650
+                                 },
+                                 {
+                                     "combo":  "11-12",
+                                     "yen":  420
+                                 },
+                                 {
+                                     "combo":  "3-12",
+                                     "yen":  2840
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "3-11",
+                                       "yen":  1770
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "11-3",
+                                       "yen":  1960
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "3-11-12",
+                                           "yen":  4340
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "11-3-12",
+                                          "yen":  14500
+                                      }
+                                  ]
+                }
+}

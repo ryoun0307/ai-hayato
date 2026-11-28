@@ -1,0 +1,256 @@
+{
+    "race":  {
+                 "date":  "20261128",
+                 "venue":  "京都",
+                 "race_no":  7,
+                 "name":  "3歳以上1勝クラス"
+             },
+    "results":  [
+                    {
+                        "number":  9,
+                        "name":  "ペイシャシス",
+                        "finish":  "1",
+                        "time":  "1:46.7",
+                        "margin":  "",
+                        "corner":  "14-11",
+                        "last3f":  "34.0",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  14,
+                        "name":  "アドマイヤシュラ",
+                        "finish":  "2",
+                        "time":  "1:46.8",
+                        "margin":  "１／２",
+                        "corner":  "7-8",
+                        "last3f":  "34.5",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  3,
+                        "name":  "スマートティアナ",
+                        "finish":  "3",
+                        "time":  "1:46.9",
+                        "margin":  "１／２",
+                        "corner":  "16-16",
+                        "last3f":  "33.9",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  8,
+                        "name":  "マルチ アイスヴィレッジ",
+                        "finish":  "4",
+                        "time":  "1:46.9",
+                        "margin":  "クビ",
+                        "corner":  "4-4",
+                        "last3f":  "34.8",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  1,
+                        "name":  "カラペルソナ",
+                        "finish":  "5",
+                        "time":  "1:46.9",
+                        "margin":  "ハナ",
+                        "corner":  "10-11",
+                        "last3f":  "34.3",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  10,
+                        "name":  "ブランドブラン",
+                        "finish":  "6",
+                        "time":  "1:46.9",
+                        "margin":  "クビ",
+                        "corner":  "2-2",
+                        "last3f":  "35.0",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  2,
+                        "name":  "コスモフィレンツェ",
+                        "finish":  "7",
+                        "time":  "1:47.1",
+                        "margin":  "１ 1/2",
+                        "corner":  "7-8",
+                        "last3f":  "34.8",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  5,
+                        "name":  "マルガイ ラッキーストーン",
+                        "finish":  "8",
+                        "time":  "1:47.3",
+                        "margin":  "１",
+                        "corner":  "14-15",
+                        "last3f":  "34.5",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  4,
+                        "name":  "マルガイ スノースケープ",
+                        "finish":  "9",
+                        "time":  "1:47.3",
+                        "margin":  "ハナ",
+                        "corner":  "4-2",
+                        "last3f":  "35.3",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  18,
+                        "name":  "アレンテージョ",
+                        "finish":  "10",
+                        "time":  "1:47.4",
+                        "margin":  "１／２",
+                        "corner":  "7-7",
+                        "last3f":  "35.2",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ブルーミングローズ",
+                        "finish":  "11",
+                        "time":  "1:47.4",
+                        "margin":  "アタマ",
+                        "corner":  "17-16",
+                        "last3f":  "34.4",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  6,
+                        "name":  "ニシノマルガリート",
+                        "finish":  "12",
+                        "time":  "1:47.6",
+                        "margin":  "１",
+                        "corner":  "10-10",
+                        "last3f":  "35.1",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  17,
+                        "name":  "マイネルビスマルク ブリンカー着用",
+                        "finish":  "13",
+                        "time":  "1:47.6",
+                        "margin":  "ハナ",
+                        "corner":  "18-18",
+                        "last3f":  "34.3",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  11,
+                        "name":  "トップオンザヒル",
+                        "finish":  "14",
+                        "time":  "1:47.9",
+                        "margin":  "２",
+                        "corner":  "3-4",
+                        "last3f":  "35.9",
+                        "popularity":  18
+                    },
+                    {
+                        "number":  16,
+                        "name":  "ゴーゴータカシ",
+                        "finish":  "15",
+                        "time":  "1:48.1",
+                        "margin":  "３／４",
+                        "corner":  "4-4",
+                        "last3f":  "36.0",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  7,
+                        "name":  "フィングステン",
+                        "finish":  "16",
+                        "time":  "1:48.3",
+                        "margin":  "１ 1/4",
+                        "corner":  "10-11",
+                        "last3f":  "35.7",
+                        "popularity":  17
+                    },
+                    {
+                        "number":  12,
+                        "name":  "ジャストビート",
+                        "finish":  "17",
+                        "time":  "1:49.6",
+                        "margin":  "８",
+                        "corner":  "10-11",
+                        "last3f":  "37.1",
+                        "popularity":  16
+                    },
+                    {
+                        "number":  15,
+                        "name":  "アージュドール ブリンカー着用",
+                        "finish":  "18",
+                        "time":  "1:50.0",
+                        "margin":  "２ 1/2",
+                        "corner":  "1-1",
+                        "last3f":  "38.9",
+                        "popularity":  15
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "9",
+                                       "yen":  840
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "9",
+                                        "yen":  250
+                                    },
+                                    {
+                                        "combo":  "14",
+                                        "yen":  170
+                                    },
+                                    {
+                                        "combo":  "3",
+                                        "yen":  470
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "5-7",
+                                        "yen":  1600
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "9-14",
+                                     "yen":  660
+                                 },
+                                 {
+                                     "combo":  "3-9",
+                                     "yen":  1640
+                                 },
+                                 {
+                                     "combo":  "3-14",
+                                     "yen":  1220
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "9-14",
+                                       "yen":  1770
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "9-14",
+                                       "yen":  3980
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "3-9-14",
+                                           "yen":  7190
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "9-14-3",
+                                          "yen":  39100
+                                      }
+                                  ]
+                }
+}

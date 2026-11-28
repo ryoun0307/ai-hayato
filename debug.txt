@@ -1,0 +1,31 @@
+**********************
+PowerShell transcript start
+Start time: 20261128162105
+Username: runnervmop6rv\runneradmin
+RunAs User: runnervmop6rv\runneradmin
+Configuration Name: 
+Machine: runnervmop6rv (Microsoft Windows NT 10.0.26100.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -command . 'D:\a\_temp\af958b45-a27d-404f-99f4-ffcd9a3acbf4.ps1'
+Process ID: 4364
+PSVersion: 7.6.10
+PSEdition: Core
+GitCommitId: 7.6.10
+OS: Microsoft Windows 10.0.26100
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+run: event=schedule date=20261129 hour=1 force=False
+From https://github.com/ryoun0307/ai-hayato
+ * branch            gha-results -> FETCH_HEAD
+ * [new branch]      gha-results -> origin/gha-results
+Preparing worktree (detached HEAD 66d83c6)
+HEAD is now at 66d83c6 trial result 11/28 16:24
+11/29 01:21:36 結果を集めます：20261129
+11/29 01:22:00 答え合わせ：0レース → weekend\結果_20261129.md
+**********************
+PowerShell transcript end
+End time: 20261129012201
+**********************

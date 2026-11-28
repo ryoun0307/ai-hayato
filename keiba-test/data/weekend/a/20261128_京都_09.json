@@ -1,0 +1,206 @@
+{
+    "race":  {
+                 "date":  "20261128",
+                 "venue":  "京都",
+                 "race_no":  9,
+                 "name":  "栂尾特別"
+             },
+    "results":  [
+                    {
+                        "number":  12,
+                        "name":  "レッドイステル",
+                        "finish":  "1",
+                        "time":  "1:52.2",
+                        "margin":  "",
+                        "corner":  "4-4-4-4",
+                        "last3f":  "37.1",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  1,
+                        "name":  "ロイスター",
+                        "finish":  "2",
+                        "time":  "1:52.3",
+                        "margin":  "１／２",
+                        "corner":  "10-10-10-7",
+                        "last3f":  "36.7",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  13,
+                        "name":  "ナイトスラッガー",
+                        "finish":  "3",
+                        "time":  "1:52.3",
+                        "margin":  "クビ",
+                        "corner":  "6-6-4-4",
+                        "last3f":  "37.1",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  7,
+                        "name":  "リメンバーヒム",
+                        "finish":  "4",
+                        "time":  "1:52.4",
+                        "margin":  "１／２",
+                        "corner":  "6-7-7-7",
+                        "last3f":  "37.0",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  6,
+                        "name":  "ジーニアスバローズ",
+                        "finish":  "5",
+                        "time":  "1:52.4",
+                        "margin":  "アタマ",
+                        "corner":  "3-3-2-1",
+                        "last3f":  "37.5",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  11,
+                        "name":  "アートレスマインド",
+                        "finish":  "6",
+                        "time":  "1:53.2",
+                        "margin":  "５",
+                        "corner":  "8-8-7-6",
+                        "last3f":  "37.8",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  8,
+                        "name":  "マルチ スカイドゥエラー",
+                        "finish":  "7",
+                        "time":  "1:53.5",
+                        "margin":  "２",
+                        "corner":  "13-13-13-13",
+                        "last3f":  "37.2",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  10,
+                        "name":  "クリノラピダス ブリンカー着用",
+                        "finish":  "8",
+                        "time":  "1:53.9",
+                        "margin":  "２",
+                        "corner":  "9-9-7-7",
+                        "last3f":  "38.6",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  3,
+                        "name":  "ストロングエース",
+                        "finish":  "9",
+                        "time":  "1:54.4",
+                        "margin":  "３",
+                        "corner":  "11-12-12-11",
+                        "last3f":  "38.8",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  9,
+                        "name":  "フォーワンセルフ ブリンカー着用",
+                        "finish":  "10",
+                        "time":  "1:54.6",
+                        "margin":  "１ 1/4",
+                        "corner":  "11-11-10-11",
+                        "last3f":  "38.9",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  4,
+                        "name":  "タイキインドラ",
+                        "finish":  "11",
+                        "time":  "1:54.6",
+                        "margin":  "アタマ",
+                        "corner":  "4-4-4-7",
+                        "last3f":  "39.5",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  5,
+                        "name":  "マハートマーベル ブリンカー着用",
+                        "finish":  "12",
+                        "time":  "1:54.7",
+                        "margin":  "クビ",
+                        "corner":  "2-2-2-2",
+                        "last3f":  "39.8",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  2,
+                        "name":  "テイエムパイロット",
+                        "finish":  "13",
+                        "time":  "1:56.0",
+                        "margin":  "８",
+                        "corner":  "1-1-1-2",
+                        "last3f":  "41.2",
+                        "popularity":  7
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "12",
+                                       "yen":  910
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "12",
+                                        "yen":  280
+                                    },
+                                    {
+                                        "combo":  "1",
+                                        "yen":  150
+                                    },
+                                    {
+                                        "combo":  "13",
+                                        "yen":  260
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "1-8",
+                                        "yen":  700
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "1-12",
+                                     "yen":  660
+                                 },
+                                 {
+                                     "combo":  "12-13",
+                                     "yen":  1290
+                                 },
+                                 {
+                                     "combo":  "1-13",
+                                     "yen":  700
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "1-12",
+                                       "yen":  1640
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "12-1",
+                                       "yen":  3660
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "1-12-13",
+                                           "yen":  3880
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "12-1-13",
+                                          "yen":  23100
+                                      }
+                                  ]
+                }
+}

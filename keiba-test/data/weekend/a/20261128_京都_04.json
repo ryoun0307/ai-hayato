@@ -1,0 +1,139 @@
+{
+    "race":  {
+                 "date":  "20261128",
+                 "venue":  "京都",
+                 "race_no":  4,
+                 "name":  "障害3歳以上未勝利"
+             },
+    "results":  [
+                    {
+                        "number":  3,
+                        "name":  "マルチ ローズピリオド",
+                        "finish":  "1",
+                        "time":  "3:22.8",
+                        "margin":  "",
+                        "corner":  "1-1-1-1",
+                        "last3f":  "13.9",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  1,
+                        "name":  "ラトラース",
+                        "finish":  "2",
+                        "time":  "3:22.9",
+                        "margin":  "クビ",
+                        "corner":  "2-2-2-2",
+                        "last3f":  "13.9",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  4,
+                        "name":  "アニージョ",
+                        "finish":  "3",
+                        "time":  "3:24.0",
+                        "margin":  "７",
+                        "corner":  "3-3-3-3",
+                        "last3f":  "14.0",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  5,
+                        "name":  "リードアクトレス",
+                        "finish":  "4",
+                        "time":  "3:24.8",
+                        "margin":  "５",
+                        "corner":  "4-4-4-4",
+                        "last3f":  "14.1",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  2,
+                        "name":  "ニヴルヘイム",
+                        "finish":  "5",
+                        "time":  "3:25.1",
+                        "margin":  "１ 1/2",
+                        "corner":  "6-6-5-4",
+                        "last3f":  "14.1",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  6,
+                        "name":  "クリアクォーツ",
+                        "finish":  "6",
+                        "time":  "3:25.7",
+                        "margin":  "３ 1/2",
+                        "corner":  "4-4-5-6",
+                        "last3f":  "14.1",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ウルトラハート",
+                        "finish":  "7",
+                        "time":  "3:33.9",
+                        "margin":  "大差",
+                        "corner":  "7-7-7-7",
+                        "last3f":  "14.7",
+                        "popularity":  7
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "3",
+                                       "yen":  820
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "3",
+                                        "yen":  230
+                                    },
+                                    {
+                                        "combo":  "1",
+                                        "yen":  110
+                                    }
+                                ],
+                    "wakuren":  [
+
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "1-3",
+                                     "yen":  230
+                                 },
+                                 {
+                                     "combo":  "3-4",
+                                     "yen":  920
+                                 },
+                                 {
+                                     "combo":  "1-4",
+                                     "yen":  330
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "1-3",
+                                       "yen":  440
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "3-1",
+                                       "yen":  1760
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "1-3-4",
+                                           "yen":  1270
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "3-1-4",
+                                          "yen":  12120
+                                      }
+                                  ]
+                }
+}

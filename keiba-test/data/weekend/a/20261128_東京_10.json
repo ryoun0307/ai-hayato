@@ -1,0 +1,236 @@
+{
+    "race":  {
+                 "date":  "20261128",
+                 "venue":  "東京",
+                 "race_no":  10,
+                 "name":  "シャングリラステークス"
+             },
+    "results":  [
+                    {
+                        "number":  6,
+                        "name":  "マジッククッキー ブリンカー着用",
+                        "finish":  "1",
+                        "time":  "1:23.8",
+                        "margin":  "",
+                        "corner":  "4-4",
+                        "last3f":  "35.0",
+                        "popularity":  1
+                    },
+                    {
+                        "number":  14,
+                        "name":  "レッドラパルマ ブリンカー着用",
+                        "finish":  "2",
+                        "time":  "1:23.9",
+                        "margin":  "１",
+                        "corner":  "3-2",
+                        "last3f":  "35.3",
+                        "popularity":  11
+                    },
+                    {
+                        "number":  7,
+                        "name":  "ジャンヌドゥレーヴ",
+                        "finish":  "3",
+                        "time":  "1:23.9",
+                        "margin":  "アタマ",
+                        "corner":  "8-9",
+                        "last3f":  "34.9",
+                        "popularity":  5
+                    },
+                    {
+                        "number":  10,
+                        "name":  "バルダンツァ",
+                        "finish":  "4",
+                        "time":  "1:24.1",
+                        "margin":  "１ 1/4",
+                        "corner":  "16-13",
+                        "last3f":  "34.7",
+                        "popularity":  7
+                    },
+                    {
+                        "number":  4,
+                        "name":  "サンマルノヴェル",
+                        "finish":  "5",
+                        "time":  "1:24.3",
+                        "margin":  "１",
+                        "corner":  "4-4",
+                        "last3f":  "35.5",
+                        "popularity":  9
+                    },
+                    {
+                        "number":  1,
+                        "name":  "パフ",
+                        "finish":  "6",
+                        "time":  "1:24.3",
+                        "margin":  "クビ",
+                        "corner":  "8-9",
+                        "last3f":  "35.3",
+                        "popularity":  12
+                    },
+                    {
+                        "number":  16,
+                        "name":  "モーニングマジック ブリンカー着用",
+                        "finish":  "7",
+                        "time":  "1:24.4",
+                        "margin":  "３／４",
+                        "corner":  "4-4",
+                        "last3f":  "35.7",
+                        "popularity":  10
+                    },
+                    {
+                        "number":  15,
+                        "name":  "セギレエルビエント",
+                        "finish":  "8",
+                        "time":  "1:24.5",
+                        "margin":  "１／２",
+                        "corner":  "8-7",
+                        "last3f":  "35.6",
+                        "popularity":  4
+                    },
+                    {
+                        "number":  2,
+                        "name":  "キョウエイカンセ ブリンカー着用",
+                        "finish":  "9",
+                        "time":  "1:24.7",
+                        "margin":  "１",
+                        "corner":  "12-13",
+                        "last3f":  "35.4",
+                        "popularity":  8
+                    },
+                    {
+                        "number":  11,
+                        "name":  "アルデトップガン",
+                        "finish":  "10",
+                        "time":  "1:24.9",
+                        "margin":  "１ 1/4",
+                        "corner":  "4-7",
+                        "last3f":  "36.0",
+                        "popularity":  6
+                    },
+                    {
+                        "number":  3,
+                        "name":  "マルガイ シゲルソロソロ",
+                        "finish":  "11",
+                        "time":  "1:24.9",
+                        "margin":  "アタマ",
+                        "corner":  "12-13",
+                        "last3f":  "35.6",
+                        "popularity":  13
+                    },
+                    {
+                        "number":  12,
+                        "name":  "サンドブラスト",
+                        "finish":  "12",
+                        "time":  "1:25.1",
+                        "margin":  "１ 1/4",
+                        "corner":  "2-2",
+                        "last3f":  "36.6",
+                        "popularity":  14
+                    },
+                    {
+                        "number":  13,
+                        "name":  "カルパ",
+                        "finish":  "13",
+                        "time":  "1:25.1",
+                        "margin":  "アタマ",
+                        "corner":  "15-16",
+                        "last3f":  "35.5",
+                        "popularity":  2
+                    },
+                    {
+                        "number":  5,
+                        "name":  "メイショウツヨキ",
+                        "finish":  "14",
+                        "time":  "1:25.3",
+                        "margin":  "１ 1/2",
+                        "corner":  "1-1",
+                        "last3f":  "36.8",
+                        "popularity":  3
+                    },
+                    {
+                        "number":  9,
+                        "name":  "レーウィン ブリンカー着用",
+                        "finish":  "15",
+                        "time":  "1:25.3",
+                        "margin":  "ハナ",
+                        "corner":  "12-11",
+                        "last3f":  "36.1",
+                        "popularity":  15
+                    },
+                    {
+                        "number":  8,
+                        "name":  "アイファースキャン ブリンカー着用",
+                        "finish":  "16",
+                        "time":  "1:26.7",
+                        "margin":  "８",
+                        "corner":  "8-11",
+                        "last3f":  "37.6",
+                        "popularity":  16
+                    }
+                ],
+    "payouts":  {
+                    "tansho":  [
+                                   {
+                                       "combo":  "6",
+                                       "yen":  150
+                                   }
+                               ],
+                    "fukusho":  [
+                                    {
+                                        "combo":  "6",
+                                        "yen":  110
+                                    },
+                                    {
+                                        "combo":  "14",
+                                        "yen":  670
+                                    },
+                                    {
+                                        "combo":  "7",
+                                        "yen":  300
+                                    }
+                                ],
+                    "wakuren":  [
+                                    {
+                                        "combo":  "3-7",
+                                        "yen":  670
+                                    }
+                                ],
+                    "wide":  [
+                                 {
+                                     "combo":  "6-14",
+                                     "yen":  930
+                                 },
+                                 {
+                                     "combo":  "6-7",
+                                     "yen":  510
+                                 },
+                                 {
+                                     "combo":  "7-14",
+                                     "yen":  5180
+                                 }
+                             ],
+                    "umaren":  [
+                                   {
+                                       "combo":  "6-14",
+                                       "yen":  2390
+                                   }
+                               ],
+                    "umatan":  [
+                                   {
+                                       "combo":  "6-14",
+                                       "yen":  2690
+                                   }
+                               ],
+                    "sanrenpuku":  [
+                                       {
+                                           "combo":  "6-7-14",
+                                           "yen":  7910
+                                       }
+                                   ],
+                    "sanrentan":  [
+                                      {
+                                          "combo":  "6-14-7",
+                                          "yen":  21170
+                                      }
+                                  ]
+                }
+}
