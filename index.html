@@ -1940,12 +1940,40 @@ let lastLoc = null; // 最後に調べた現在地（地図の中心に使う。
 function wantsLocation(text) {
   return /(近く|近所|この辺|このへん|この近辺|この周辺|周り|まわり|周辺|付近|ここから|ここの|現在地|今いる|いまいる|最寄り|歩いて行ける)/.test(text);
 }
+// 座標 → 住所・近くの駅（HeartRails の無料の仕組み。キー不要。5秒で取れなければあきらめる）
+async function heartrails(url) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 5000);
+  try { return (await (await fetch(url, { signal: ctrl.signal })).json()).response || {}; }
+  catch { return {}; }
+  finally { clearTimeout(timer); }
+}
+async function placeName({ lat, lon }) {
+  const r = await heartrails(`https://geoapi.heartrails.com/api/json?method=searchByGeoLocation&x=${lon}&y=${lat}`);
+  const a = (r.location || [])[0];
+  return a ? `${a.prefecture}${a.city}${a.town}` : "";
+}
+async function nearStations({ lat, lon }) {
+  const r = await heartrails(`https://express.heartrails.com/api/json?method=getStations&x=${lon}&y=${lat}`);
+  // 同じ駅の路線はまとめる（距離の近い順）
+  const byName = new Map();
+  for (const s of r.station || []) {
+    const k = s.name + "駅";
+    if (!byName.has(k)) byName.set(k, { lines: [], distance: s.distance });
+    byName.get(k).lines.push(s.line);
+  }
+  return [...byName].slice(0, 5).map(([n, v]) => `${n}（${v.lines.join("・")}、約${v.distance}）`).join("、");
+}
 function getLocation() {
   return new Promise((resolve) => {
     if (!navigator.geolocation) return resolve({ error: "このブラウザでは現在地を調べられません" });
     navigator.geolocation.getCurrentPosition(
-      (p) => {
+      async (p) => {
         lastLoc = { lat: p.coords.latitude, lon: p.coords.longitude, acc: Math.round(p.coords.accuracy), t: Date.now() };
+        // 座標だけでは Claude が場所を正しく推測できないので、住所と近くの駅（距離つき）に直して渡す
+        const [place, stations] = await Promise.all([placeName(lastLoc), nearStations(lastLoc)]);
+        lastLoc.place = place;
+        lastLoc.stations = stations;
         resolve(lastLoc);
       },
       (e) => resolve({ error: e.code === 1 ? "位置情報の利用が許可されていない" : "現在地を調べられなかった" }),
@@ -2585,7 +2613,9 @@ async function send(text) {
     setStatus("現在地を確認しています…");
     const loc = await getLocation();
     hints += loc.lat
-      ? `\n（現在地: 緯度${loc.lat.toFixed(5)}・経度${loc.lon.toFixed(5)}（誤差 約${loc.acc}m）。「近く」「この辺」「ここから」などはこの地点を基準に考え、必要ならWeb検索で周りの店や場所を調べる。緯度・経度の数字は読み上げない。）`
+      ? `\n（現在地: ${loc.place ? loc.place + "あたり、" : ""}緯度${loc.lat.toFixed(5)}・経度${loc.lon.toFixed(5)}（誤差 約${loc.acc}m）。` +
+        (loc.stations ? `現在地から近い駅（近い順・直線距離）: ${loc.stations}。最寄り駅を聞かれたら、この一覧の一番近い駅を答える（推測で別の駅にしない）。` : "") +
+        `「近く」「この辺」「ここから」などはこの場所を基準に考え、必要ならWeb検索で「${loc.place || "この地域"}」の周りの店や場所を調べる。緯度・経度の数字は読み上げない。）`
       : `\n（現在地: ${loc.error}。現在地が必要な質問なら、そのことを伝え、iPhone なら「設定」→「アプリ」→「Safari」→「位置情報」を「確認」か「許可」にすると使えると案内する。）`;
   }
   const userTurn = { role: "user", content: `${text}\n\n${hints}` };
