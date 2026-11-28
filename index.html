@@ -1935,6 +1935,24 @@ function mapPromptSection() {
     "- 検索語は、地図で1か所に絞れるよう具体的に書く（例：【地図：東京駅 丸の内口】【地図：港区赤坂 〇〇店】）。読点や句点、記号は入れない。\n" +
     "- 本文では「地図を出しておきます」程度に触れればよく、URLは書かない。";
 }
+// ---- 現在地（場所が関係する質問のときだけ使う） ----
+let lastLoc = null; // 最後に調べた現在地（地図の中心に使う。端末には保存しない）
+function wantsLocation(text) {
+  return /(近く|近所|この辺|このへん|この近辺|この周辺|周り|まわり|周辺|付近|ここから|ここの|現在地|今いる|いまいる|最寄り|歩いて行ける)/.test(text);
+}
+function getLocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) return resolve({ error: "このブラウザでは現在地を調べられません" });
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        lastLoc = { lat: p.coords.latitude, lon: p.coords.longitude, acc: Math.round(p.coords.accuracy), t: Date.now() };
+        resolve(lastLoc);
+      },
+      (e) => resolve({ error: e.code === 1 ? "位置情報の利用が許可されていない" : "現在地を調べられなかった" }),
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 120000 },
+    );
+  });
+}
 function mapBox(query) {
   const box = document.createElement("div");
   box.className = "map-box";
@@ -1944,7 +1962,9 @@ function mapBox(query) {
   f.allowFullscreen = true;
   f.title = "地図：" + query;
   f.src = "https://www.google.com/maps/embed/v1/search?key=" + encodeURIComponent(settings.mapsKey) +
-    "&q=" + encodeURIComponent(query) + "&language=ja&region=JP";
+    "&q=" + encodeURIComponent(query) + "&language=ja&region=JP" +
+    // 少し前（15分以内）に現在地を調べていれば、その周りを中心に地図を出す
+    (lastLoc && Date.now() - lastLoc.t < 15 * 60000 ? `&center=${lastLoc.lat.toFixed(5)},${lastLoc.lon.toFixed(5)}&zoom=15` : "");
   const a = document.createElement("a");
   a.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
   a.target = "_blank"; a.rel = "noopener";
@@ -2559,6 +2579,15 @@ async function send(text) {
   if (mode.racing) hints += settings.keibaUrl
     ? "\n（競馬予想: まず keiba_race で JRA の出馬表データ（馬体重・オッズ・過去4走・血統）を取ってから判断する。Web検索は、当日の馬場傾向やニュースなどデータにない情報が必要なときだけ。）"
     : "\n（競馬予想: 必要に応じてWeb検索で出走表・過去成績・馬場状態・調教・騎手などを確認してから判断する。）";
+  // 「近く」「この辺」など場所が関係する質問のときだけ、現在地を調べて伝える（保存はしない）
+  if (wantsLocation(text)) {
+    busy = true; // 現在地を調べている間に、もう一度送られないように
+    setStatus("現在地を確認しています…");
+    const loc = await getLocation();
+    hints += loc.lat
+      ? `\n（現在地: 緯度${loc.lat.toFixed(5)}・経度${loc.lon.toFixed(5)}（誤差 約${loc.acc}m）。「近く」「この辺」「ここから」などはこの地点を基準に考え、必要ならWeb検索で周りの店や場所を調べる。緯度・経度の数字は読み上げない。）`
+      : `\n（現在地: ${loc.error}。現在地が必要な質問なら、そのことを伝え、iPhone なら「設定」→「アプリ」→「Safari」→「位置情報」を「確認」か「許可」にすると使えると案内する。）`;
+  }
   const userTurn = { role: "user", content: `${text}\n\n${hints}` };
   history.push(userTurn);
 
