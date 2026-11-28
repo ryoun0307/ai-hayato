@@ -844,6 +844,7 @@ function buildSystemPrompt(userName) {
 - 一人称は「私」。${name}のことは「${name}」と呼ぶ。
 - 落ち着いた丁寧語。ただし堅苦しすぎず、簡潔に。「〜でございます」のような過剰な敬語は使わない。
 - 音声で読み上げられる前提で話す。1回の返答は基本2〜4文、長くても200字程度。
+- 読み上げで読み間違えやすい固有名詞（駅名・地名・人名・店名など）は、｜漢字《よみ》の形で書く（例：｜三田《みた》駅、｜御徒町《おかちまち》、｜神保町《じんぼうちょう》）。画面には漢字だけが出て、読み上げではよみが使われる。誰でも普通に読めるもの（東京、新宿など）には付けない。
 - 箇条書き、見出し、記号（*、#、- など）、絵文字、URLの羅列は使わない。耳で聞いて自然な文章にする。
 - 意見するときは「私は〜だと考えます。理由は〜です。それでも進めるなら、〜しておきます。」のように、意見・理由・代替案をセットで短く伝える。
 - メッセージの末尾に（回答形式: 詳しく…）とあるときは、その形式に従う。【要点】は耳で聞いて分かる2〜3文、【詳細】は画面で読む前提で、改行と「・」で整理して詳しく書いてよい。
@@ -2010,8 +2011,18 @@ function attachMap(text, logBody) {
   threadEl.scrollTop = threadEl.scrollHeight;
   logEl.scrollTop = logEl.scrollHeight;
 }
+// ---- 読みがな：ハヤトは読み間違えやすい名前を ｜漢字《よみ》 と書く ----
+// 画面：漢字だけ（書き途中の「《み」なども隠す）／読み上げ：よみだけ
+function rubyForView(t) {
+  return t.replace(/[｜|]([^｜|《》\n]+)《[^》\n]*》/g, "$1").replace(/《[^》\n]*》/g, "").replace(/《[^》\n]*$/, "").replace(/｜/g, "");
+}
+function rubyForSpeech(t) {
+  return t.replace(/[｜|][^｜|《》\n]+《([^》\n]+)》/g, "$1")
+    .replace(/[一-龠々ヶ〆]+《([^》\n]+)》/g, "$1") // ｜を付け忘れたときは、直前の漢字を読みに置きかえる
+    .replace(/[｜|《》]/g, "");
+}
 function cleanForSpeech(t) {
-  return stripMapTag(t).replace(/【要点】/g, "").replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク")
+  return rubyForSpeech(stripMapTag(t)).replace(/【要点】/g, "").replace(/[*#`_>|]/g, "").replace(/https?:\/\/\S+/g, "リンク")
     // 競馬の印は、記号のままだと「にじゅうまる」などと読まれるので、言葉にする
     .replace(/◎/g, "本命").replace(/[○〇]/g, "対抗").replace(/▲/g, "単穴").replace(/△/g, "連下").trim();
 }
@@ -2657,7 +2668,7 @@ async function send(text) {
   const onText = (delta) => {
     if (!shown) bodyEl.textContent = "";
     shown += delta;
-    const view = stripMapTag(shown); // 地図の印は画面の文字には出さない
+    const view = rubyForView(stripMapTag(shown)); // 地図の印・読みがなは画面の文字には出さない
     bodyEl.textContent = view;
     logEl.scrollTop = logEl.scrollHeight;
     // 吹き出しには、詳しく答えるときは要点だけ、ふだんは全文を出す
@@ -2727,7 +2738,7 @@ async function send(text) {
       history.push({ role: "assistant", content: final.content });
       if (!shown) bodyEl.textContent = "（返答なし）";
       attachMap(shown, bodyEl);
-      rememberFrom(text, stripMapTag(shown)); // 覚えておくべきことがあれば、裏で記憶に残す（返事は待たせない）
+      rememberFrom(text, rubyForView(stripMapTag(shown))); // 覚えておくべきことがあれば、裏で記憶に残す（返事は待たせない）
     }
   } catch (err) {
     dropTurn(userTurn);
